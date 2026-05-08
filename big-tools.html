@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big Tools | OAOA.dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="antialiased">
+
+    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
+        <a href="index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+                <a href="products.html" class="hover:text-gray-500 transition-colors">Products</a>
+                <a href="tools.html" class="text-black">Tools</a>
+            </div>
+            <a href="index.html#contact"
+               class="btn-outline hidden md:block px-6 py-2 text-[10px] font-bold uppercase tracking-widest">
+                Get in Touch
+            </a>
+        </div>
+    </nav>
+
+    <header class="max-w-6xl mx-auto px-6 pt-20 pb-20">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+            <a href="tools.html" class="hover:text-black">Tools</a>
+            <span class="mx-2">/</span>
+            <span class="text-black">Big Tools</span>
+        </div>
+        <h1 class="text-5xl md:text-8xl font-black uppercase leading-[0.9] tracking-tighter mb-12">
+            Big<br>Tools.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
+            API-backed utilities for testing and verifying live service integrations. Requires authentication.
+        </p>
+    </header>
+
+    <!-- Auth notice -->
+    <section class="max-w-6xl mx-auto px-6 pb-12">
+        <div class="border border-black bg-gray-50 p-5 mb-4 text-[11px] font-medium leading-relaxed text-gray-700 max-w-3xl">
+            <span class="font-black uppercase tracking-widest text-black text-[9px] block mb-2">Authentication Required</span>
+            These tools connect to live services via a backend API. You will be prompted to sign in with Microsoft or Google depending on the tool. No credentials are stored — sessions use short-lived OAuth tokens managed server-side.
+        </div>
+    </section>
+
+    <!-- Tool grid -->
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-black border border-black">
+
+            <!-- M365 OAuth Mail Tester -->
+            <a href="big-tools/m365-mail-tester.html"
+               class="bg-white p-10 flex flex-col hover:bg-gray-50 transition-colors group">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Email · Microsoft 365</span>
+                    <span class="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 border border-gray-300 text-gray-400">SSO Required</span>
+                </div>
+                <h2 class="text-xl font-black uppercase mb-3 group-hover:underline">OAuth Mail Tester</h2>
+                <p class="service-text text-sm flex-1 mb-6">
+                    Test OAuth 2.0 delegated mail send via Microsoft 365. Sign in, compose a test message, and inspect the full delivery result and Graph API response.
+                </p>
+                <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Open Tool →</span>
+            </a>
+
+            <!-- Placeholder -->
+            <div class="bg-white p-10 flex items-center justify-center">
+                <p class="text-[9px] font-bold text-gray-300 uppercase tracking-widest">More coming soon</p>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="max-w-6xl mx-auto px-6 py-20 text-center">
+        <div class="mt-12 pt-10 b-light flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            <div class="flex gap-10 mb-6 md:mb-0">
+                <a href="index.html" class="text-black/80 hover:text-black">Home</a>
+                <a href="products.html" class="text-black/80 hover:text-black">Products</a>
+                <a href="tools.html" class="text-black/80 hover:text-black">Tools</a>
+                <a href="mini-tools.html" class="text-black/80 hover:text-black">Mini Tools</a>
+                <a href="big-tools.html" class="text-black hover:text-black">Big Tools</a>
+            </div>
+            <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
