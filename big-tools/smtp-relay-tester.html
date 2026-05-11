@@ -122,13 +122,24 @@
                                    value="25" min="1" max="65535">
                         </div>
                     </div>
-                    <div>
-                        <label class="field-label">Security / Auth Method</label>
+                    <div class="mb-6">
+                        <label class="field-label">Security Mode</label>
                         <select class="field-input" id="field-relay-security">
-                            <option value="none">None (plain SMTP)</option>
-                            <option value="starttls">STARTTLS</option>
-                            <option value="tls">TLS (implicit / port 465)</option>
+                            <option value="Auto">Auto (recommended)</option>
+                            <option value="None">None (plain SMTP)</option>
+                            <option value="StartTls">STARTTLS</option>
+                            <option value="SslOnConnect">SSL on Connect (implicit TLS / port 465)</option>
                         </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="field-label">Username <span class="normal-case font-normal text-gray-400">(optional)</span></label>
+                            <input type="text" class="field-input font-mono" id="field-username" placeholder="Leave blank if not required" autocomplete="off">
+                        </div>
+                        <div>
+                            <label class="field-label">Password <span class="normal-case font-normal text-gray-400">(optional)</span></label>
+                            <input type="password" class="field-input" id="field-password" placeholder="Leave blank if not required" autocomplete="off">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -236,47 +247,98 @@
             document.getElementById('spf-example-ip').textContent   = 'ip4:unavailable';
         }
 
-        /* ── Send ── */
-        function sendMail() {
-            const relayHost     = document.getElementById('field-relay-host').value.trim();
-            const relayPort     = parseInt(document.getElementById('field-relay-port').value, 10) || 25;
-            const relaySecurity = document.getElementById('field-relay-security').value;
-            const from          = document.getElementById('field-from').value.trim();
-            const to            = document.getElementById('field-to').value.trim();
-            const subject       = document.getElementById('field-subject').value.trim();
+        /* ── Send + Poll ── */
+        let pollInterval = null;
+        let seenLogs = 0;
 
-            if (!relayHost) { appendLog('error', 'SMTP relay address is required.'); return; }
+        function sendMail() {
+            const relayAddress   = document.getElementById('field-relay-host').value.trim();
+            const port           = parseInt(document.getElementById('field-relay-port').value, 10) || 25;
+            const securityMode   = document.getElementById('field-relay-security').value;
+            const from           = document.getElementById('field-from').value.trim();
+            const to             = document.getElementById('field-to').value.trim();
+            const subject        = document.getElementById('field-subject').value.trim();
+            const username       = document.getElementById('field-username').value.trim();
+            const password       = document.getElementById('field-password').value;
+
+            if (!relayAddress) { appendLog('error', 'SMTP relay address is required.'); return; }
             if (!from || !to || !subject) { appendLog('error', 'From, To, and Subject are required.'); return; }
 
             const btn = document.getElementById('send-btn'); btn.disabled = true;
-            appendLog('pending', 'Connecting to ' + relayHost + ':' + relayPort + ' [' + relaySecurity.toUpperCase() + '] ...');
+            seenLogs = 0;
             document.getElementById('raw-response').value = '';
+            appendLog('pending', 'Connecting to ' + relayAddress + ':' + port + ' [' + securityMode + '] ...');
 
             fetch(`${API_BASE}/api/tools/smtp-relay-tester/send`, {
                 method: 'POST', credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-                body: JSON.stringify({ relayHost, relayPort, relaySecurity, from, to, subject })
+                body: JSON.stringify({ relayAddress, subject, from, to, port, securityMode, username, password })
             })
-            .then(r => r.json())
+            .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
             .then(data => {
-                document.getElementById('raw-response').value = data.transcript || JSON.stringify(data.raw ?? data, null, 2);
-                if (data.success) {
-                    setResultSuccess(data.messageId);
-                    appendLog('success', 'Message accepted by ' + relayHost);
+                if (data.taskId) {
+                    appendLog('info', 'Task started — ' + data.taskId);
+                    startPolling(data.taskId, relayAddress);
                 } else {
-                    setResultError(data.error || 'Unknown error.');
-                    appendLog('error', 'Relay failed: ' + (data.error || 'unknown'));
+                    setResultError('No taskId returned.'); btn.disabled = false;
                 }
             })
-            .catch(err => { setResultError(err.message); appendLog('error', 'Request failed: ' + err.message); })
-            .finally(() => { btn.disabled = false; });
+            .catch(err => {
+                setResultError(err.message || JSON.stringify(err));
+                appendLog('error', 'Request failed: ' + (err.message || JSON.stringify(err)));
+                btn.disabled = false;
+            });
         }
 
-        function setResultSuccess(id) {
+        function startPolling(taskId, relayAddress) {
+            if (pollInterval) clearInterval(pollInterval);
+            pollInterval = setInterval(() => poll(taskId, relayAddress), 1500);
+        }
+
+        function poll(taskId, relayAddress) {
+            fetch(`${API_BASE}/api/tools/smtp-relay-tester/poll/${taskId}`, {
+                credentials: 'include',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            })
+            .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
+            .then(data => {
+                /* Append only new log lines */
+                if (Array.isArray(data.logs)) {
+                    data.logs.slice(seenLogs).forEach(line => {
+                        const type = /error|fail/i.test(line) ? 'error'
+                                   : /success|accept|250/i.test(line) ? 'success'
+                                   : 'info';
+                        appendLog(type, line);
+                    });
+                    seenLogs = data.logs.length;
+                }
+
+                if (data.status === 'completed') {
+                    clearInterval(pollInterval);
+                    document.getElementById('raw-response').value = data.finalTranscript || '';
+                    setResultSuccess();
+                    appendLog('success', 'Message accepted by ' + relayAddress);
+                    document.getElementById('send-btn').disabled = false;
+                } else if (data.status === 'error') {
+                    clearInterval(pollInterval);
+                    document.getElementById('raw-response').value = data.finalTranscript || '';
+                    setResultError(data.errorMessage || 'Relay failed.');
+                    appendLog('error', 'Relay failed: ' + (data.errorMessage || 'unknown'));
+                    document.getElementById('send-btn').disabled = false;
+                }
+            })
+            .catch(err => {
+                clearInterval(pollInterval);
+                setResultError('Poll error: ' + err.message);
+                appendLog('error', 'Poll failed: ' + err.message);
+                document.getElementById('send-btn').disabled = false;
+            });
+        }
+
+        function setResultSuccess() {
             const el = document.getElementById('result-summary'); el.className = 'border border-black bg-white p-6 mb-6';
             el.innerHTML = `<span class="text-[9px] font-bold uppercase tracking-widest text-black block mb-2">Relayed</span>
-                <p class="text-sm font-medium">Message accepted — connector and SPF are working correctly.</p>
-                ${id ? `<p class="text-xs text-gray-500 mt-2 font-mono">ID: ${id}</p>` : ''}`;
+                <p class="text-sm font-medium">Message accepted — connector and SPF are working correctly.</p>`;
         }
         function setResultError(msg) {
             const el = document.getElementById('result-summary'); el.className = 'border border-red-500 bg-white p-6 mb-6';
@@ -290,8 +352,11 @@
             div.textContent = '[' + ts + '] ' + msg; log.appendChild(div); log.scrollTop = log.scrollHeight;
         }
         function clearLog() {
+            if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+            seenLogs = 0;
             document.getElementById('activity-log').innerHTML = '<div class="log-entry info">[ Log cleared ]</div>';
             document.getElementById('raw-response').value = '';
+            document.getElementById('send-btn').disabled = false;
             const s = document.getElementById('result-summary'); s.className = 'border border-dashed border-gray-300 p-6 mb-6 text-center';
             s.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet</p>';
         }
