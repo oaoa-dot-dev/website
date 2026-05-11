@@ -217,7 +217,7 @@
         })
         .then(r => r.ok ? r.json() : Promise.reject())
         .then(info => {
-            const ip = info.outboundIp;
+            const ip = info.serverIp;
             if (ip) {
                 document.getElementById('tool-ip-display').textContent = ip;
                 document.getElementById('tool-ip-display').classList.remove('text-gray-400');
