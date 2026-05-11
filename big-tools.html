@@ -7,8 +7,41 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Stage visibility */
+        .stage { display: none; }
+        body[data-stage="signedout"] .stage-signedout { display: block; }
+        body[data-stage="waiting"]   .stage-waiting   { display: block; }
+        body[data-stage="authed"]    .stage-authed    { display: block; }
+
+        /* Tool grid locked until authed */
+        #tool-grid {
+            position: relative;
+        }
+        #tool-grid-lock {
+            display: flex;
+        }
+        body[data-stage="authed"] #tool-grid-lock {
+            display: none;
+        }
+        body[data-stage="authed"] #tool-grid a {
+            pointer-events: auto;
+            opacity: 1;
+        }
+        body:not([data-stage="authed"]) #tool-grid a {
+            pointer-events: none;
+            opacity: 0.3;
+            filter: grayscale(1);
+        }
+        body:not([data-stage="authed"]) #tool-grid .placeholder-cell {
+            opacity: 0.3;
+        }
+
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.25} }
+        .pulse { animation: pulse-dot 1.2s ease-in-out infinite; }
+    </style>
 </head>
-<body class="antialiased">
+<body class="antialiased" data-stage="signedout">
 
     <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
         <a href="index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
@@ -24,7 +57,7 @@
         </div>
     </nav>
 
-    <header class="max-w-6xl mx-auto px-6 pt-20 pb-20">
+    <header class="max-w-6xl mx-auto px-6 pt-20 pb-12">
         <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
             <a href="tools.html" class="hover:text-black">Tools</a>
             <span class="mx-2">/</span>
@@ -34,41 +67,116 @@
             Big<br>Tools.
         </h1>
         <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
-            API-backed utilities for testing and verifying live service integrations. Requires authentication.
+            API-backed utilities for testing and verifying live service integrations.
         </p>
     </header>
 
-    <!-- Auth notice -->
     <section class="max-w-6xl mx-auto px-6 pb-12">
-        <div class="border border-black bg-gray-50 p-5 mb-4 text-[11px] font-medium leading-relaxed text-gray-700 max-w-3xl">
-            <span class="font-black uppercase tracking-widest text-black text-[9px] block mb-2">Authentication Required</span>
-            These tools connect to live services via a backend API. You will be prompted to sign in with Microsoft or Google depending on the tool. No credentials are stored — sessions use short-lived OAuth tokens managed server-side.
+
+        <!-- ── SIGN IN GATE ── -->
+        <div class="stage stage-signedout border border-black p-8 md:p-12 mb-10">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-4">Authentication Required</span>
+            <p class="text-sm font-medium text-gray-600 mb-2 max-w-lg">
+                Sign in with your Microsoft or Google account to access the tools below. Your session is used to associate any stored data with your account.
+            </p>
+            <p class="text-[10px] text-gray-400 mb-8 max-w-lg">
+                A small popup will handle the sign-in — you won't leave this page. No credentials are stored; the API holds only a short-lived session token.
+            </p>
+            <div class="flex flex-wrap gap-4">
+                <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-3"
+                        onclick="openAuthPopup('Microsoft')">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="0"   y="0"   width="7.5" height="7.5" fill="#f25022"/>
+                        <rect x="8.5" y="0"   width="7.5" height="7.5" fill="#7fba00"/>
+                        <rect x="0"   y="8.5" width="7.5" height="7.5" fill="#00a4ef"/>
+                        <rect x="8.5" y="8.5" width="7.5" height="7.5" fill="#ffb900"/>
+                    </svg>
+                    Sign in with Microsoft
+                </button>
+                <!-- Uncomment when Google provider is wired up:
+                <button class="btn-outline px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-3"
+                        onclick="openAuthPopup('Google')">
+                    Sign in with Google
+                </button>
+                -->
+            </div>
         </div>
+
+        <!-- ── WAITING FOR POPUP ── -->
+        <div class="stage stage-waiting border border-black p-8 md:p-12 mb-10">
+            <div class="flex items-center gap-4 mb-4">
+                <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
+                <p class="text-sm font-bold uppercase tracking-widest">Waiting for sign-in...</p>
+            </div>
+            <p class="text-xs text-gray-500 mb-6 max-w-sm">
+                Complete sign-in in the popup window. If it was blocked by your browser, use the button below.
+            </p>
+            <div class="flex gap-4">
+                <button class="btn-black px-6 py-3 text-[10px] font-bold uppercase tracking-widest"
+                        onclick="openAuthPopup(lastProvider)">
+                    Reopen Popup
+                </button>
+                <button class="btn-outline px-6 py-3 text-[10px] font-bold uppercase tracking-widest"
+                        onclick="cancelAuth()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+
+        <!-- ── AUTHED BANNER ── -->
+        <div class="stage stage-authed border border-black p-6 md:p-8 mb-10 bg-gray-50">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
+                    <div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block">Signed in</span>
+                        <span id="auth-name-display" class="text-sm font-bold"></span>
+                        <span id="auth-email-display" class="text-xs text-gray-500 ml-2"></span>
+                    </div>
+                </div>
+                <button class="btn-outline px-5 py-2 text-[10px] font-bold uppercase tracking-widest"
+                        onclick="signOut()">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+
     </section>
 
-    <!-- Tool grid -->
+    <!-- ── TOOL GRID ── -->
     <section class="max-w-6xl mx-auto px-6 pb-24">
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-black border border-black">
 
-            <!-- M365 OAuth Mail Tester -->
-            <a href="big-tools/m365-mail-tester.html"
-               class="bg-white p-10 flex flex-col hover:bg-gray-50 transition-colors group">
-                <div class="flex items-center gap-3 mb-4">
-                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Email · Microsoft 365</span>
-                    <span class="text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 border border-gray-300 text-gray-400">SSO Required</span>
-                </div>
-                <h2 class="text-xl font-black uppercase mb-3 group-hover:underline">OAuth Mail Tester</h2>
-                <p class="service-text text-sm flex-1 mb-6">
-                    Test OAuth 2.0 delegated mail send via Microsoft 365. Sign in, compose a test message, and inspect the full delivery result and Graph API response.
+        <div id="tool-grid" class="relative">
+
+            <!-- Lock overlay shown when signed out -->
+            <div id="tool-grid-lock"
+                 class="absolute inset-0 z-10 flex items-center justify-center bg-white/60">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                    Sign in above to access tools
                 </p>
-                <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Open Tool →</span>
-            </a>
-
-            <!-- Placeholder -->
-            <div class="bg-white p-10 flex items-center justify-center">
-                <p class="text-[9px] font-bold text-gray-300 uppercase tracking-widest">More coming soon</p>
             </div>
 
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-black border border-black">
+
+                <!-- M365 OAuth Mail Tester -->
+                <a href="big-tools/m365-mail-tester.html"
+                   class="bg-white p-10 flex flex-col hover:bg-gray-50 transition-colors group">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Email · Microsoft 365</span>
+                    </div>
+                    <h2 class="text-xl font-black uppercase mb-3 group-hover:underline">OAuth Mail Tester</h2>
+                    <p class="service-text text-sm flex-1 mb-6">
+                        Test OAuth 2.0 delegated mail send via Microsoft 365. Compose a test message and inspect the full Graph API response.
+                    </p>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Open Tool →</span>
+                </a>
+
+                <!-- Placeholder -->
+                <div class="placeholder-cell bg-white p-10 flex items-center justify-center">
+                    <p class="text-[9px] font-bold text-gray-300 uppercase tracking-widest">More coming soon</p>
+                </div>
+
+            </div>
         </div>
     </section>
 
@@ -84,6 +192,95 @@
             <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
         </div>
     </footer>
+
+    <script>
+        const API_BASE    = 'https://bigtools.oaoa.dev';
+        const PAGE_ORIGIN = window.location.origin;
+
+        let authPopup  = null;
+        let lastProvider = 'Microsoft';
+
+        function setStage(stage) {
+            document.body.setAttribute('data-stage', stage);
+        }
+
+        function openAuthPopup(provider) {
+            lastProvider = provider || 'Microsoft';
+            const loginUrl = `${API_BASE}/api/auth/login?provider=${lastProvider}&origin=${encodeURIComponent(PAGE_ORIGIN)}`;
+            const opts     = 'width=520,height=640,left=200,top=100,resizable=yes,scrollbars=yes';
+
+            if (authPopup && !authPopup.closed) authPopup.focus();
+            else authPopup = window.open(loginUrl, 'oaoa_auth', opts);
+
+            setStage('waiting');
+
+            const closeWatcher = setInterval(() => {
+                if (authPopup && authPopup.closed) {
+                    clearInterval(closeWatcher);
+                    if (document.body.getAttribute('data-stage') === 'waiting') {
+                        setStage('signedout');
+                    }
+                }
+            }, 500);
+        }
+
+        window.addEventListener('message', function(event) {
+            if (event.origin !== API_BASE) return;
+            const { token, profile } = event.data || {};
+            if (!token || !profile) return;
+            if (authPopup && !authPopup.closed) authPopup.close();
+            sessionStorage.setItem('bigtool_token',   token);
+            sessionStorage.setItem('bigtool_name',    profile.name  || '');
+            sessionStorage.setItem('bigtool_email',   profile.email || '');
+            sessionStorage.setItem('bigtool_provider', profile.provider || lastProvider);
+            setAuthed(profile.name, profile.email);
+        });
+
+        function setAuthed(name, email) {
+            document.getElementById('auth-name-display').textContent  = name  || '';
+            document.getElementById('auth-email-display').textContent = email || '';
+            setStage('authed');
+        }
+
+        function cancelAuth() {
+            if (authPopup && !authPopup.closed) authPopup.close();
+            setStage('signedout');
+        }
+
+        function signOut() {
+            sessionStorage.removeItem('bigtool_token');
+            sessionStorage.removeItem('bigtool_name');
+            sessionStorage.removeItem('bigtool_email');
+            sessionStorage.removeItem('bigtool_provider');
+            setStage('signedout');
+            fetch(`${API_BASE}/api/auth/signout`, {
+                method: 'POST', credentials: 'include'
+            }).catch(() => {});
+        }
+
+        /* Restore session on load */
+        (function restoreSession() {
+            const token = sessionStorage.getItem('bigtool_token');
+            if (!token) return;
+
+            fetch(`${API_BASE}/api/auth/session`, {
+                credentials: 'include',
+                headers: { 'Authorization': 'Bearer ' + token }
+            })
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(s => {
+                if (s.authenticated) {
+                    setAuthed(
+                        s.name  || sessionStorage.getItem('bigtool_name'),
+                        s.email || sessionStorage.getItem('bigtool_email')
+                    );
+                } else {
+                    sessionStorage.removeItem('bigtool_token');
+                }
+            })
+            .catch(() => sessionStorage.removeItem('bigtool_token'));
+        })();
+    </script>
 
     <script src="js/main.js"></script>
 </body>

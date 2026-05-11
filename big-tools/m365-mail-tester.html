@@ -25,16 +25,8 @@
             background: #fff;
             font-family: inherit;
         }
-        .field-input:focus {
-            outline: none;
-            box-shadow: 3px 3px 0 #000;
-        }
-        .field-input:disabled {
-            background: #f9f9f9;
-            color: #aaa;
-            border-color: #ddd;
-            cursor: not-allowed;
-        }
+        .field-input:focus { outline: none; box-shadow: 3px 3px 0 #000; }
+        .field-input:disabled { background: #f9f9f9; color: #aaa; border-color: #ddd; cursor: not-allowed; }
         textarea.field-input { resize: vertical; min-height: 120px; }
 
         .log-entry {
@@ -48,24 +40,9 @@
         .log-entry.success { color: #15803d; }
         .log-entry.error   { color: #dc2626; }
         .log-entry.pending { color: #d97706; }
-
-        /* Stage visibility */
-        .stage { display: none; }
-        body[data-stage="signedout"] .stage-signedout { display: block; }
-        body[data-stage="waiting"]   .stage-waiting   { display: block; }
-        body[data-stage="authed"]    .stage-authed    { display: block; }
-
-        /* Lock compose/send until authed */
-        .requires-auth .field-input,
-        .requires-auth button { opacity: 0.35; pointer-events: none; }
-        body[data-stage="authed"] .requires-auth .field-input,
-        body[data-stage="authed"] .requires-auth button { opacity: 1; pointer-events: auto; }
-
-        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.25} }
-        .pulse { animation: pulse-dot 1.2s ease-in-out infinite; }
     </style>
 </head>
-<body class="antialiased" data-stage="signedout">
+<body class="antialiased">
 
     <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
         <a href="../index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
@@ -93,120 +70,77 @@
             OAuth<br>Mail<br>Tester.
         </h1>
         <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
-            Test delegated mail send via Microsoft 365. Sign in with your M365 account, compose a message, and inspect the full Graph API response.
+            Test delegated mail send via Microsoft 365. Compose a message and inspect the full Graph API response.
         </p>
     </header>
 
     <section class="max-w-6xl mx-auto px-6 pb-24">
 
+        <!-- Session banner -->
+        <div class="border border-black bg-gray-50 p-5 mb-10 flex items-center justify-between max-w-3xl">
+            <div class="flex items-center gap-4">
+                <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
+                <div>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block">Signed in</span>
+                    <span id="auth-name-display" class="text-sm font-bold"></span>
+                    <span id="auth-email-display" class="text-xs text-gray-500 ml-2"></span>
+                </div>
+            </div>
+            <a href="../big-tools.html"
+               class="btn-outline px-5 py-2 text-[10px] font-bold uppercase tracking-widest">
+                ← Big Tools
+            </a>
+        </div>
+
         <!-- How it works -->
-        <div class="border border-black bg-gray-50 p-5 mb-10 text-[11px] font-medium leading-relaxed text-gray-700 max-w-3xl">
+        <div class="border border-black bg-white p-5 mb-10 text-[11px] font-medium leading-relaxed text-gray-700 max-w-3xl">
             <span class="font-black uppercase tracking-widest text-black text-[9px] block mb-2">How This Works</span>
-            Clicking "Sign in with Microsoft" opens a small popup window that handles the OAuth 2.0 redirect flow with
-            Microsoft. Once you authorise, the popup closes automatically and this page unlocks. Mail is sent via the
-            <strong>Microsoft Graph API</strong> (<code class="text-xs">/v1.0/me/sendMail</code>) using delegated
-            <code class="text-xs">Mail.Send</code> permissions. Your credentials are never stored — the API holds only a
-            short-lived JWT session token.
+            Mail is sent via the <strong>Microsoft Graph API</strong>
+            (<code class="text-xs">/v1.0/me/sendMail</code>) using your delegated
+            <code class="text-xs">Mail.Send</code> permissions. The API server sends on your behalf using
+            the session token established when you signed in.
         </div>
 
         <div class="border border-black">
 
-            <!-- ══ SIGN IN (signed out) ══ -->
-            <div class="stage stage-signedout p-8 md:p-12 border-b border-black">
-                <span class="field-label mb-4 block">Step 1 — Authenticate</span>
-                <p class="text-sm font-medium text-gray-600 mb-8 max-w-lg">
-                    Sign in with your Microsoft 365 account. A small popup will open to handle the Microsoft login — no redirect away from this page.
-                </p>
-                <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-3"
-                        onclick="openAuthPopup()">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="0"   y="0"   width="7.5" height="7.5" fill="#f25022"/>
-                        <rect x="8.5" y="0"   width="7.5" height="7.5" fill="#7fba00"/>
-                        <rect x="0"   y="8.5" width="7.5" height="7.5" fill="#00a4ef"/>
-                        <rect x="8.5" y="8.5" width="7.5" height="7.5" fill="#ffb900"/>
-                    </svg>
-                    Sign in with Microsoft
-                </button>
-            </div>
-
-            <!-- ══ WAITING FOR POPUP ══ -->
-            <div class="stage stage-waiting p-8 md:p-12 border-b border-black">
-                <span class="field-label mb-4 block">Step 1 — Authenticate</span>
-                <div class="flex items-center gap-4 mb-6">
-                    <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
-                    <p class="text-sm font-bold uppercase tracking-widest">Waiting for Microsoft sign-in...</p>
-                </div>
-                <p class="text-xs text-gray-500 mb-6 max-w-sm">
-                    Complete sign-in in the popup window. If it was blocked by your browser, use the button below.
-                </p>
-                <div class="flex gap-4">
-                    <button class="btn-black px-6 py-3 text-[10px] font-bold uppercase tracking-widest"
-                            onclick="openAuthPopup()">
-                        Reopen Popup
-                    </button>
-                    <button class="btn-outline px-6 py-3 text-[10px] font-bold uppercase tracking-widest"
-                            onclick="cancelAuth()">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-
-            <!-- ══ AUTHED BANNER ══ -->
-            <div class="stage stage-authed p-6 md:p-8 border-b border-black bg-gray-50">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
-                        <div>
-                            <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block">Signed in</span>
-                            <span id="auth-name-display" class="text-sm font-bold"></span>
-                            <span id="auth-email-display" class="text-xs text-gray-500 ml-2"></span>
-                        </div>
-                    </div>
-                    <button class="btn-outline px-5 py-2 text-[10px] font-bold uppercase tracking-widest"
-                            onclick="signOut()">
-                        Sign Out
-                    </button>
-                </div>
-            </div>
-
-            <!-- ══ COMPOSE ══ -->
-            <div class="requires-auth p-8 md:p-12 border-b border-black">
-                <span class="field-label mb-6 block">Step 2 — Compose</span>
+            <!-- ── COMPOSE ── -->
+            <div class="p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-6 block">Step 1 — Compose</span>
 
                 <div class="grid md:grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="field-label">From</label>
                         <input type="email" class="field-input" id="field-from"
-                               placeholder="Populated after sign-in" disabled>
+                               placeholder="Populated from your session" disabled>
                     </div>
                     <div>
                         <label class="field-label">To</label>
                         <input type="email" class="field-input" id="field-to"
-                               placeholder="recipient@example.com" disabled>
+                               placeholder="recipient@example.com">
                     </div>
                 </div>
 
                 <div class="mb-6">
                     <label class="field-label">Subject</label>
                     <input type="text" class="field-input" id="field-subject"
-                           value="OAuth Mail Test — OAOA.dev" disabled>
+                           value="OAuth Mail Test — OAOA.dev">
                 </div>
 
                 <div class="mb-8">
                     <label class="field-label">Body</label>
-                    <textarea class="field-input" id="field-body" disabled>This is a test message sent via OAuth 2.0 delegated mail send through Microsoft Graph API.</textarea>
+                    <textarea class="field-input" id="field-body">This is a test message sent via OAuth 2.0 delegated mail send through Microsoft Graph API.</textarea>
                 </div>
 
                 <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]"
-                        id="send-btn" disabled onclick="sendMail()">
+                        id="send-btn" onclick="sendMail()">
                     Send Test Email
                 </button>
             </div>
 
-            <!-- ══ RESULTS / LOG ══ -->
+            <!-- ── RESULTS / LOG ── -->
             <div class="p-8 md:p-12">
                 <div class="flex items-center justify-between mb-6">
-                    <span class="field-label mb-0">Step 3 — Result</span>
+                    <span class="field-label mb-0">Step 2 — Result</span>
                     <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
                             onclick="clearLog()">
                         Clear
@@ -252,97 +186,33 @@
     </footer>
 
     <script>
-        const API_BASE    = 'https://bigtools.oaoa.dev';
-        const PAGE_ORIGIN = window.location.origin;  // e.g. https://oaoa.dev
+        const API_BASE = 'https://bigtools.oaoa.dev';
 
-        let authToken  = sessionStorage.getItem('bigtool_token')  || null;
-        let authPopup  = null;
+        /* ── Session check — redirect to big-tools.html if no valid session ── */
+        const authToken = sessionStorage.getItem('bigtool_token');
 
-        /* ── Stage control ── */
-        function setStage(stage) {
-            document.body.setAttribute('data-stage', stage);
-        }
-
-        /* ── Popup auth ── */
-        function openAuthPopup() {
-            const loginUrl = `${API_BASE}/api/auth/login?provider=Microsoft&origin=${encodeURIComponent(PAGE_ORIGIN)}`;
-            const opts     = 'width=520,height=640,left=200,top=100,resizable=yes,scrollbars=yes';
-
-            if (authPopup && !authPopup.closed) authPopup.focus();
-            else authPopup = window.open(loginUrl, 'oaoa_auth', opts);
-
-            setStage('waiting');
-            appendLog('pending', 'Auth popup opened — waiting for Microsoft sign-in...');
-
-            /* Poll for accidental close without completing auth */
-            const closeWatcher = setInterval(() => {
-                if (authPopup && authPopup.closed) {
-                    clearInterval(closeWatcher);
-                    if (document.body.getAttribute('data-stage') === 'waiting') {
-                        setStage('signedout');
-                        appendLog('info', 'Popup closed before completing sign-in.');
-                    }
-                }
-            }, 500);
-        }
-
-        /*
-         * The API callback must return an HTML page (not JSON) that does:
-         *
-         *   window.opener.postMessage({ token, profile }, '<origin passed in login URL>');
-         *   window.close();
-         *
-         * This page listens for that message. The origin check below ensures
-         * we only accept messages from our own API server.
-         */
-        window.addEventListener('message', function(event) {
-            if (event.origin !== API_BASE) return;
-
-            const { token, profile } = event.data || {};
-            if (!token || !profile) return;
-
-            if (authPopup && !authPopup.closed) authPopup.close();
-
-            authToken = token;
-            sessionStorage.setItem('bigtool_token', token);
-            setAuthed(profile.name, profile.email);
-        });
-
-        /* ── Authed state ── */
-        function setAuthed(name, email) {
-            document.getElementById('auth-name-display').textContent  = name;
-            document.getElementById('auth-email-display').textContent = email;
-            document.getElementById('field-from').value = email;
-
-            ['field-to', 'field-subject', 'field-body', 'send-btn'].forEach(id => {
-                document.getElementById(id).disabled = false;
+        if (!authToken) {
+            window.location.href = '../big-tools.html';
+        } else {
+            /* Validate token is still alive, then populate UI */
+            fetch(`${API_BASE}/api/auth/session`, {
+                credentials: 'include',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            })
+            .then(r => r.ok ? r.json() : Promise.reject('session-invalid'))
+            .then(s => {
+                if (!s.authenticated) throw new Error('session-invalid');
+                const name  = s.name  || sessionStorage.getItem('bigtool_name')  || '';
+                const email = s.email || sessionStorage.getItem('bigtool_email') || '';
+                document.getElementById('auth-name-display').textContent  = name;
+                document.getElementById('auth-email-display').textContent = email;
+                document.getElementById('field-from').value = email;
+                appendLog('info', 'Session active — signed in as ' + name);
+            })
+            .catch(() => {
+                sessionStorage.removeItem('bigtool_token');
+                window.location.href = '../big-tools.html';
             });
-
-            setStage('authed');
-            appendLog('success', 'Signed in as ' + name + ' (' + email + ')');
-        }
-
-        function cancelAuth() {
-            if (authPopup && !authPopup.closed) authPopup.close();
-            setStage('signedout');
-            appendLog('info', 'Sign-in cancelled.');
-        }
-
-        function signOut() {
-            authToken = null;
-            sessionStorage.removeItem('bigtool_token');
-
-            document.getElementById('field-from').value = '';
-            ['field-to', 'field-subject', 'field-body', 'send-btn'].forEach(id => {
-                document.getElementById(id).disabled = true;
-            });
-
-            setStage('signedout');
-            appendLog('info', 'Signed out.');
-
-            fetch(`${API_BASE}/api/auth/signout`, {
-                method: 'POST', credentials: 'include'
-            }).catch(() => {});
         }
 
         /* ── Send mail ── */
@@ -355,14 +225,11 @@
                 appendLog('error', 'To and Subject are required.');
                 return;
             }
-            if (!authToken) {
-                appendLog('error', 'Not authenticated — please sign in first.');
-                return;
-            }
 
+            const btn = document.getElementById('send-btn');
+            btn.disabled = true;
             appendLog('pending', 'Sending via Graph API /v1.0/me/sendMail ...');
             document.getElementById('raw-response').value = '';
-            document.getElementById('send-btn').disabled = true;
 
             fetch(`${API_BASE}/api/tools/m365-mail-tester/send`, {
                 method: 'POST',
@@ -380,7 +247,7 @@
                     setResultSuccess(data.messageId);
                     appendLog('success', 'Message accepted. ID: ' + (data.messageId || 'n/a'));
                 } else {
-                    setResultError(data.error || 'Unknown error from API.');
+                    setResultError(data.error || 'Unknown error.');
                     appendLog('error', 'Send failed: ' + (data.error || 'unknown'));
                 }
             })
@@ -388,9 +255,7 @@
                 appendLog('error', 'Request failed: ' + err.message);
                 setResultError(err.message);
             })
-            .finally(() => {
-                document.getElementById('send-btn').disabled = false;
-            });
+            .finally(() => { btn.disabled = false; });
         }
 
         /* ── Utilities ── */
@@ -426,28 +291,6 @@
             s.className = 'border border-dashed border-gray-300 p-6 mb-6 text-center';
             s.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet — send a test email to see the outcome here</p>';
         }
-
-        /* ── Restore session on page load ── */
-        (function restoreSession() {
-            const stored = sessionStorage.getItem('bigtool_token');
-            if (!stored) return;
-
-            /* Validate the stored token is still alive */
-            fetch(`${API_BASE}/api/auth/session`, {
-                credentials: 'include',
-                headers: { 'Authorization': 'Bearer ' + stored }
-            })
-            .then(r => r.ok ? r.json() : Promise.reject())
-            .then(s => {
-                if (s.authenticated) {
-                    authToken = stored;
-                    setAuthed(s.name || s.email, s.email);
-                } else {
-                    sessionStorage.removeItem('bigtool_token');
-                }
-            })
-            .catch(() => sessionStorage.removeItem('bigtool_token'));
-        })();
     </script>
 
     <script src="../js/main.js"></script>
