@@ -29,6 +29,32 @@
         .field-input:disabled { background: #f9f9f9; color: #aaa; border-color: #ddd; cursor: not-allowed; }
         textarea.field-input { resize: vertical; min-height: 120px; }
 
+        /* Mail account auth stages */
+        .mail-stage { display: none; }
+        [data-mail-stage="idle"]    .mail-stage-idle    { display: block; }
+        [data-mail-stage="device"]  .mail-stage-device  { display: block; }
+        [data-mail-stage="polling"] .mail-stage-polling { display: block; }
+        [data-mail-stage="authed"]  .mail-stage-authed  { display: block; }
+
+        /* Compose locked until mail account authed */
+        .requires-mail-auth .field-input,
+        .requires-mail-auth button {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        [data-mail-stage="authed"] .requires-mail-auth .field-input,
+        [data-mail-stage="authed"] .requires-mail-auth button {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .device-code-display {
+            font-family: 'Courier New', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 0.35em;
+        }
+
         .log-entry {
             font-family: 'Courier New', monospace;
             font-size: 0.75rem;
@@ -40,6 +66,9 @@
         .log-entry.success { color: #15803d; }
         .log-entry.error   { color: #dc2626; }
         .log-entry.pending { color: #d97706; }
+
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.25} }
+        .pulse { animation: pulse-dot 1.2s ease-in-out infinite; }
     </style>
 </head>
 <body class="antialiased">
@@ -70,19 +99,19 @@
             OAuth<br>Mail<br>Tester.
         </h1>
         <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
-            Test delegated mail send via Microsoft 365. Compose a message and inspect the full Graph API response.
+            Test delegated mail send via Microsoft 365. Authenticate the sending account, compose a message, and inspect the full Graph API response.
         </p>
     </header>
 
     <section class="max-w-6xl mx-auto px-6 pb-24">
 
-        <!-- Session banner -->
-        <div class="border border-black bg-gray-50 p-5 mb-10 flex items-center justify-between max-w-3xl">
+        <!-- Operator session banner -->
+        <div class="border border-black bg-gray-50 p-5 mb-10 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
                 <div>
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block">Signed in</span>
-                    <span id="auth-name-display" class="text-sm font-bold"></span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block">Operator session</span>
+                    <span id="auth-name-display"  class="text-sm font-bold"></span>
                     <span id="auth-email-display" class="text-xs text-gray-500 ml-2"></span>
                 </div>
             </div>
@@ -92,55 +121,156 @@
             </a>
         </div>
 
-        <!-- How it works -->
-        <div class="border border-black bg-white p-5 mb-10 text-[11px] font-medium leading-relaxed text-gray-700 max-w-3xl">
-            <span class="font-black uppercase tracking-widest text-black text-[9px] block mb-2">How This Works</span>
-            Mail is sent via the <strong>Microsoft Graph API</strong>
-            (<code class="text-xs">/v1.0/me/sendMail</code>) using your delegated
-            <code class="text-xs">Mail.Send</code> permissions. The API server sends on your behalf using
-            the session token established when you signed in.
-        </div>
+        <!-- Main tool card -->
+        <div class="border border-black" data-mail-stage="idle" id="tool-card">
 
-        <div class="border border-black">
-
-            <!-- ── COMPOSE ── -->
+            <!-- ══════════════════════════════════════
+                 STEP 1 — SENDER ACCOUNT AUTH
+            ══════════════════════════════════════ -->
             <div class="p-8 md:p-12 border-b border-black">
-                <span class="field-label mb-6 block">Step 1 — Compose</span>
+                <span class="field-label mb-1 block">Step 1 — Authenticate Sending Account</span>
+                <p class="text-sm font-medium text-gray-600 mb-8 max-w-lg">
+                    This is the Microsoft 365 account that will send the test email — separate from your operator login above.
+                    The device code flow lets you authorise it without leaving this page.
+                </p>
+
+                <!-- idle: request code -->
+                <div class="mail-stage mail-stage-idle">
+                    <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-3"
+                            onclick="requestDeviceCode()">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="0"   y="0"   width="7.5" height="7.5" fill="#f25022"/>
+                            <rect x="8.5" y="0"   width="7.5" height="7.5" fill="#7fba00"/>
+                            <rect x="0"   y="8.5" width="7.5" height="7.5" fill="#00a4ef"/>
+                            <rect x="8.5" y="8.5" width="7.5" height="7.5" fill="#ffb900"/>
+                        </svg>
+                        Generate Device Login Code
+                    </button>
+                </div>
+
+                <!-- device: show code, waiting for user to go authenticate -->
+                <div class="mail-stage mail-stage-device">
+                    <div class="border border-black bg-white p-8 mb-6 max-w-md">
+                        <div class="mb-6">
+                            <span class="field-label mb-2 block">1. Open this URL on any device</span>
+                            <a id="device-url-display"
+                               href="https://microsoft.com/devicelogin"
+                               target="_blank" rel="noopener"
+                               class="text-sm font-bold underline hover:no-underline break-all">
+                                microsoft.com/devicelogin
+                            </a>
+                        </div>
+                        <div>
+                            <span class="field-label mb-2 block">2. Enter this code</span>
+                            <div id="device-code-display" class="device-code-display mb-2">——————</div>
+                            <button onclick="copyDeviceCode()"
+                                    class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors">
+                                Copy code
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6">
+                        <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
+                        Waiting — complete sign-in in the browser, then click below
+                    </div>
+                    <div class="flex gap-4">
+                        <button class="btn-black px-6 py-3 text-[10px] font-bold uppercase tracking-widest"
+                                onclick="startPolling()">
+                            I've signed in — continue
+                        </button>
+                        <button class="btn-outline px-6 py-3 text-[10px] font-bold uppercase tracking-widest"
+                                onclick="resetMailAuth()">
+                            Cancel
+                        </button>
+                        <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors self-center"
+                                onclick="requestDeviceCode()">
+                            Regenerate code
+                        </button>
+                    </div>
+                </div>
+
+                <!-- polling: actively checking for token -->
+                <div class="mail-stage mail-stage-polling">
+                    <div class="border border-black bg-white p-8 mb-6 max-w-md">
+                        <div class="mb-6">
+                            <span class="field-label mb-2 block">URL</span>
+                            <span id="polling-url-display" class="text-sm font-bold break-all"></span>
+                        </div>
+                        <div>
+                            <span class="field-label mb-2 block">Code</span>
+                            <div id="polling-code-display" class="device-code-display">——————</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6">
+                        <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
+                        <span id="polling-status-text">Checking for authorisation...</span>
+                    </div>
+                    <button class="btn-outline px-6 py-3 text-[10px] font-bold uppercase tracking-widest"
+                            onclick="resetMailAuth()">
+                        Cancel
+                    </button>
+                </div>
+
+                <!-- authed: sender account confirmed -->
+                <div class="mail-stage mail-stage-authed">
+                    <div class="flex items-center gap-6">
+                        <div class="flex items-center gap-4">
+                            <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
+                            <div>
+                                <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block">Sending as</span>
+                                <span id="sender-email-display" class="text-sm font-bold"></span>
+                            </div>
+                        </div>
+                        <button class="btn-outline px-5 py-2 text-[10px] font-bold uppercase tracking-widest"
+                                onclick="resetMailAuth()">
+                            Change Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════
+                 STEP 2 — COMPOSE
+            ══════════════════════════════════════ -->
+            <div class="requires-mail-auth p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-6 block">Step 2 — Compose</span>
 
                 <div class="grid md:grid-cols-2 gap-6 mb-6">
                     <div>
                         <label class="field-label">From</label>
                         <input type="email" class="field-input" id="field-from"
-                               placeholder="Populated from your session" disabled>
+                               placeholder="Populated from sender account" disabled>
                     </div>
                     <div>
                         <label class="field-label">To</label>
                         <input type="email" class="field-input" id="field-to"
-                               placeholder="recipient@example.com">
+                               placeholder="recipient@example.com" disabled>
                     </div>
                 </div>
 
                 <div class="mb-6">
                     <label class="field-label">Subject</label>
                     <input type="text" class="field-input" id="field-subject"
-                           value="OAuth Mail Test — OAOA.dev">
+                           value="OAuth Mail Test — OAOA.dev" disabled>
                 </div>
 
                 <div class="mb-8">
                     <label class="field-label">Body</label>
-                    <textarea class="field-input" id="field-body">This is a test message sent via OAuth 2.0 delegated mail send through Microsoft Graph API.</textarea>
+                    <textarea class="field-input" id="field-body" disabled>This is a test message sent via OAuth 2.0 delegated mail send through Microsoft Graph API.</textarea>
                 </div>
 
                 <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]"
-                        id="send-btn" onclick="sendMail()">
+                        id="send-btn" disabled onclick="sendMail()">
                     Send Test Email
                 </button>
             </div>
 
-            <!-- ── RESULTS / LOG ── -->
+            <!-- ══════════════════════════════════════
+                 STEP 3 — RESULTS
+            ══════════════════════════════════════ -->
             <div class="p-8 md:p-12">
                 <div class="flex items-center justify-between mb-6">
-                    <span class="field-label mb-0">Step 2 — Result</span>
+                    <span class="field-label mb-0">Step 3 — Result</span>
                     <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
                             onclick="clearLog()">
                         Clear
@@ -169,7 +299,7 @@
                 </div>
             </div>
 
-        </div>
+        </div><!-- /tool-card -->
     </section>
 
     <footer class="max-w-6xl mx-auto px-6 py-20 text-center">
@@ -186,11 +316,14 @@
     </footer>
 
     <script>
-        const API_BASE = 'https://bigtools.oaoa.dev';
-
-        /* ── Session check — redirect to big-tools.html if no valid session ── */
+        const API_BASE  = 'https://bigtools.oaoa.dev';
         const authToken = sessionStorage.getItem('bigtool_token');
 
+        let currentDeviceCode = null;
+        let pollInterval      = null;
+        let pollAttempts      = 0;
+
+        /* ── Operator session check on load ── */
         if (!authToken) {
             window.location.href = '../big-tools.html';
         } else {
@@ -202,8 +335,7 @@
             .then(profile => {
                 document.getElementById('auth-name-display').textContent  = profile.name  || '';
                 document.getElementById('auth-email-display').textContent = profile.email || '';
-                document.getElementById('field-from').value = profile.email || '';
-                appendLog('info', 'Session active — signed in as ' + profile.name);
+                appendLog('info', 'Operator session active — ' + profile.name);
             })
             .catch(() => {
                 sessionStorage.removeItem('bigtool_token');
@@ -211,7 +343,116 @@
             });
         }
 
-        /* ── Send mail ── */
+        /* ── Mail stage control ── */
+        function setMailStage(stage) {
+            document.getElementById('tool-card').setAttribute('data-mail-stage', stage);
+        }
+
+        /* ── Step 1a: request device code ── */
+        function requestDeviceCode() {
+            appendLog('pending', 'Requesting device code from API...');
+
+            fetch(`${API_BASE}/api/tools/m365-mail-tester/device-code`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            })
+            .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
+            .then(data => {
+                currentDeviceCode = data.deviceCode;
+
+                const url = data.verificationUri || data.verificationUrl || 'https://microsoft.com/devicelogin';
+
+                document.getElementById('device-code-display').textContent = data.userCode;
+                document.getElementById('polling-code-display').textContent = data.userCode;
+
+                const urlShort = url.replace('https://', '');
+                document.getElementById('device-url-display').textContent = urlShort;
+                document.getElementById('device-url-display').href        = url;
+                document.getElementById('polling-url-display').textContent = urlShort;
+
+                setMailStage('device');
+                appendLog('success', 'Device code issued — visit ' + urlShort + ' and enter: ' + data.userCode);
+            })
+            .catch(err => {
+                appendLog('error', 'Failed to get device code: ' + (err.message || err.error || JSON.stringify(err)));
+            });
+        }
+
+        /* ── Step 1b: user clicks "I've signed in" — begin polling ── */
+        function startPolling() {
+            if (!currentDeviceCode) return;
+            setMailStage('polling');
+            pollAttempts = 0;
+
+            pollInterval = setInterval(pollForToken, 5000);
+            pollForToken(); // first check immediately
+        }
+
+        function pollForToken() {
+            pollAttempts++;
+            document.getElementById('polling-status-text').textContent =
+                'Checking for authorisation... (' + pollAttempts + ')';
+
+            fetch(`${API_BASE}/api/tools/m365-mail-tester/device-poll`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: JSON.stringify({ deviceCode: currentDeviceCode })
+            })
+            .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
+            .then(data => {
+                if (data.status === 'authorized') {
+                    clearInterval(pollInterval);
+                    setSenderAuthed(data.email);
+                } else if (data.status === 'expired') {
+                    clearInterval(pollInterval);
+                    setMailStage('idle');
+                    appendLog('error', 'Device code expired — please generate a new one.');
+                } else if (data.status === 'error') {
+                    clearInterval(pollInterval);
+                    setMailStage('device');
+                    appendLog('error', 'Authorisation error: ' + (data.error || 'unknown'));
+                }
+                // status === 'pending' — keep polling
+            })
+            .catch(err => {
+                clearInterval(pollInterval);
+                setMailStage('device');
+                appendLog('error', 'Poll request failed: ' + (err.message || err.error || JSON.stringify(err)));
+            });
+        }
+
+        function setSenderAuthed(email) {
+            document.getElementById('sender-email-display').textContent = email || '';
+            document.getElementById('field-from').value = email || '';
+
+            ['field-to', 'field-subject', 'field-body', 'send-btn'].forEach(id => {
+                document.getElementById(id).disabled = false;
+            });
+
+            setMailStage('authed');
+            appendLog('success', 'Sender account authorised — ' + email);
+        }
+
+        function resetMailAuth() {
+            clearInterval(pollInterval);
+            currentDeviceCode = null;
+            pollAttempts = 0;
+
+            document.getElementById('field-from').value = '';
+            ['field-to', 'field-subject', 'field-body', 'send-btn'].forEach(id => {
+                document.getElementById(id).disabled = true;
+            });
+
+            setMailStage('idle');
+            appendLog('info', 'Sender account auth reset.');
+        }
+
+        /* ── Step 2: send mail ── */
         function sendMail() {
             const to      = document.getElementById('field-to').value.trim();
             const subject = document.getElementById('field-subject').value.trim();
@@ -248,13 +489,23 @@
                 }
             })
             .catch(err => {
-                appendLog('error', 'Request failed: ' + err.message);
                 setResultError(err.message);
+                appendLog('error', 'Request failed: ' + err.message);
             })
             .finally(() => { btn.disabled = false; });
         }
 
         /* ── Utilities ── */
+        function copyDeviceCode() {
+            const code = document.getElementById('device-code-display').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('[onclick="copyDeviceCode()"]');
+                const orig = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = orig; }, 1500);
+            });
+        }
+
         function setResultSuccess(messageId) {
             const el = document.getElementById('result-summary');
             el.className = 'border border-black bg-white p-6 mb-6';
