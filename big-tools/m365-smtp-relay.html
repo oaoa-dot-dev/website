@@ -81,12 +81,28 @@
         <!-- Prerequisites -->
         <div class="border border-black bg-white p-5 mb-10 text-[11px] font-medium leading-relaxed text-gray-700 max-w-3xl">
             <span class="font-black uppercase tracking-widest text-black text-[9px] block mb-2">What You Need</span>
-            <ol class="list-decimal list-inside space-y-1">
-                <li>An <strong>Exchange Online mail flow connector</strong> configured to accept SMTP relay from this tool.</li>
-                <li>An Entra app registration with the delegated <strong><code class="text-xs">SMTP.Send</code></strong> permission and <strong>SMTP AUTH enabled</strong> for the sending account in Exchange Online.</li>
-                <li>Your <strong>tenant OAuth URL</strong> — typically <code class="text-xs">login.microsoftonline.com/{tenant-id}</code>.</li>
+            <ol class="list-decimal list-inside space-y-2">
+                <li>
+                    <strong>SMTP AUTH enabled</strong> for the sending account in Exchange Online Admin
+                    (<code class="text-xs">Exchange Admin → Mailboxes → [account] → Mail flow settings → SMTP AUTH</code>).
+                </li>
+                <li>
+                    An <strong>Exchange Online mail flow connector</strong> configured to accept SMTP relay
+                    from this tool's outbound IP:
+                    <span id="tool-ip-inline" class="font-mono font-bold text-black ml-1">
+                        <span class="text-gray-300">fetching...</span>
+                    </span>
+                </li>
+                <li>
+                    Your <strong>tenant OAuth URL</strong> — typically
+                    <code class="text-xs">login.microsoftonline.com/{tenant-id}</code>.
+                </li>
             </ol>
-            <p class="mt-3">The API server connects to <code class="text-xs">smtp.office365.com:587</code> and authenticates via <code class="text-xs">AUTH XOAUTH2</code> using the token from the device code flow.</p>
+            <p class="mt-3">
+                The API server connects to <code class="text-xs">smtp.office365.com:587</code> and authenticates
+                via <code class="text-xs">AUTH XOAUTH2</code>. No Entra app registration is required —
+                authentication uses Microsoft's own first-party OAuth endpoint for your tenant.
+            </p>
         </div>
 
         <div class="border border-black" data-mail-stage="idle" id="tool-card">
@@ -247,6 +263,25 @@
             .then(p => { document.getElementById('auth-name-display').textContent=p.name||''; document.getElementById('auth-email-display').textContent=p.email||''; appendLog('info','Operator session active — '+p.name); })
             .catch(() => { sessionStorage.removeItem('bigtool_token'); window.location.href='../big-tools.html'; });
         }
+
+        /* Fetch tool info (outbound IP etc.) — shown in prerequisites so user knows what to whitelist */
+        fetch(`${API_BASE}/api/tools/m365-smtp-relay/info`, {
+            credentials: 'include',
+            headers: { 'Authorization': 'Bearer ' + (authToken || '') }
+        })
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(info => {
+            const el = document.getElementById('tool-ip-inline');
+            if (info.outboundIp) {
+                el.textContent = info.outboundIp;
+            } else {
+                el.innerHTML = '<span class="text-gray-400">not available</span>';
+            }
+        })
+        .catch(() => {
+            document.getElementById('tool-ip-inline').innerHTML =
+                '<span class="text-gray-400">could not fetch — check API</span>';
+        });
 
         function setMailStage(s) { document.getElementById('tool-card').setAttribute('data-mail-stage',s); }
 
