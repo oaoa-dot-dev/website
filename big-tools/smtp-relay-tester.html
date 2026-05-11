@@ -12,6 +12,7 @@
         .field-input { width:100%; border:1px solid #000; padding:10px 14px; font-size:.875rem; background:#fff; font-family:inherit; }
         .field-input:focus { outline:none; box-shadow:3px 3px 0 #000; }
         textarea.field-input { resize:vertical; min-height:120px; }
+        select.field-input { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23000'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; cursor:pointer; }
 
         .ip-badge { font-family:'Courier New',monospace; font-size:.8rem; font-weight:900; background:#000; color:#fff; padding:2px 8px; letter-spacing:.05em; display:inline-block; }
 
@@ -106,12 +107,29 @@
                     Enter the SMTP relay address for your tenant. This is typically your tenant's mail protection hostname from your MX record.
                 </p>
                 <div class="max-w-xl">
-                    <label class="field-label">SMTP Relay Address</label>
-                    <input type="text" class="field-input font-mono" id="field-relay-host"
-                           placeholder="your-tenant.mail.protection.outlook.com">
-                    <p class="text-[9px] text-gray-400 font-medium mt-2 uppercase tracking-wider">
-                        Find this in your domain's MX record or Exchange Online admin · Port 25 will be used
-                    </p>
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="col-span-2">
+                            <label class="field-label">SMTP Relay Address</label>
+                            <input type="text" class="field-input font-mono" id="field-relay-host"
+                                   placeholder="your-tenant.mail.protection.outlook.com">
+                            <p class="text-[9px] text-gray-400 font-medium mt-2 uppercase tracking-wider">
+                                Find this in your domain's MX record or Exchange Online admin
+                            </p>
+                        </div>
+                        <div>
+                            <label class="field-label">Port</label>
+                            <input type="number" class="field-input font-mono" id="field-relay-port"
+                                   value="25" min="1" max="65535">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="field-label">Security / Auth Method</label>
+                        <select class="field-input" id="field-relay-security">
+                            <option value="none">None (plain SMTP)</option>
+                            <option value="starttls">STARTTLS</option>
+                            <option value="tls">TLS (implicit / port 465)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -220,22 +238,24 @@
 
         /* ── Send ── */
         function sendMail() {
-            const relayHost = document.getElementById('field-relay-host').value.trim();
-            const from      = document.getElementById('field-from').value.trim();
-            const to        = document.getElementById('field-to').value.trim();
-            const subject   = document.getElementById('field-subject').value.trim();
+            const relayHost     = document.getElementById('field-relay-host').value.trim();
+            const relayPort     = parseInt(document.getElementById('field-relay-port').value, 10) || 25;
+            const relaySecurity = document.getElementById('field-relay-security').value;
+            const from          = document.getElementById('field-from').value.trim();
+            const to            = document.getElementById('field-to').value.trim();
+            const subject       = document.getElementById('field-subject').value.trim();
 
             if (!relayHost) { appendLog('error', 'SMTP relay address is required.'); return; }
             if (!from || !to || !subject) { appendLog('error', 'From, To, and Subject are required.'); return; }
 
             const btn = document.getElementById('send-btn'); btn.disabled = true;
-            appendLog('pending', 'Connecting to ' + relayHost + ':25 ...');
+            appendLog('pending', 'Connecting to ' + relayHost + ':' + relayPort + ' [' + relaySecurity.toUpperCase() + '] ...');
             document.getElementById('raw-response').value = '';
 
             fetch(`${API_BASE}/api/tools/smtp-relay-tester/send`, {
                 method: 'POST', credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-                body: JSON.stringify({ relayHost, from, to, subject })
+                body: JSON.stringify({ relayHost, relayPort, relaySecurity, from, to, subject })
             })
             .then(r => r.json())
             .then(data => {
