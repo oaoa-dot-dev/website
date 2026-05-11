@@ -132,10 +132,6 @@
                     <label class="field-label">Subject</label>
                     <input type="text" class="field-input" id="field-subject" value="SMTP Relay Test — OAOA.dev">
                 </div>
-                <div class="mb-8">
-                    <label class="field-label">Body</label>
-                    <textarea class="field-input" id="field-body">This is a test message sent via connector-based SMTP relay. If you received this, your Exchange connector and SPF record are correctly configured.</textarea>
-                </div>
                 <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]"
                         id="send-btn" onclick="sendMail()">
                     Send Relay Test
@@ -228,7 +224,6 @@
             const from      = document.getElementById('field-from').value.trim();
             const to        = document.getElementById('field-to').value.trim();
             const subject   = document.getElementById('field-subject').value.trim();
-            const body      = document.getElementById('field-body').value.trim();
 
             if (!relayHost) { appendLog('error', 'SMTP relay address is required.'); return; }
             if (!from || !to || !subject) { appendLog('error', 'From, To, and Subject are required.'); return; }
@@ -240,7 +235,7 @@
             fetch(`${API_BASE}/api/tools/smtp-relay-tester/send`, {
                 method: 'POST', credentials: 'include',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
-                body: JSON.stringify({ relayHost, from, to, subject, body })
+                body: JSON.stringify({ relayHost, from, to, subject })
             })
             .then(r => r.json())
             .then(data => {
