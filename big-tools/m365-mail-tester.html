@@ -51,14 +51,43 @@
         .log-entry.error   { color: #dc2626; }
         .log-entry.pending { color: #d97706; }
 
-        /* Auth state visibility */
-        .auth-required  { display: block; }
-        .auth-active    { display: none; }
-        body.authed .auth-required { display: none; }
-        body.authed .auth-active   { display: block; }
+        .device-code-display {
+            font-family: 'Courier New', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        /* Auth stage visibility — body gets a data-auth-stage attribute */
+        .stage { display: none; }
+        body[data-auth-stage="tenant"]  .stage-tenant  { display: block; }
+        body[data-auth-stage="device"]  .stage-device  { display: block; }
+        body[data-auth-stage="polling"] .stage-polling { display: block; }
+        body[data-auth-stage="authed"]  .stage-authed  { display: block; }
+
+        /* Compose + results always rendered but locked until authed */
+        .requires-auth input,
+        .requires-auth textarea,
+        .requires-auth button {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        body[data-auth-stage="authed"] .requires-auth input,
+        body[data-auth-stage="authed"] .requires-auth textarea,
+        body[data-auth-stage="authed"] .requires-auth button {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+        .pulse { animation: pulse-dot 1.2s ease-in-out infinite; }
     </style>
 </head>
-<body class="antialiased">
+<body class="antialiased" data-auth-stage="tenant">
 
     <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
         <a href="../index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
@@ -86,47 +115,138 @@
             OAuth<br>Mail<br>Tester.
         </h1>
         <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
-            Test delegated mail send via Microsoft 365 using OAuth 2.0. Sign in, compose, send, and inspect the full Graph API response.
+            Test delegated mail send via Microsoft 365 using the OAuth 2.0 Device Code flow. No redirect URI required.
         </p>
     </header>
 
     <section class="max-w-6xl mx-auto px-6 pb-24">
 
-        <!-- API integration notice -->
+        <!-- How it works notice -->
         <div class="border border-black bg-gray-50 p-5 mb-10 text-[11px] font-medium leading-relaxed text-gray-700 max-w-3xl">
             <span class="font-black uppercase tracking-widest text-black text-[9px] block mb-2">How This Works</span>
-            Clicking "Sign in with Microsoft" initiates an OAuth 2.0 Authorization Code flow via the OAOA API server.
-            The API handles token exchange and stores a short-lived session. Mail is sent via the
-            <strong>Microsoft Graph API</strong> (<code class="text-xs">/v1.0/me/sendMail</code>) using your delegated permissions —
-            your credentials are never stored. Requires the <code class="text-xs">Mail.Send</code> scope.
+            This tool uses the <strong>OAuth 2.0 Device Authorization Grant</strong> (RFC 8628).
+            Enter your tenant endpoint, the API server requests a device code from Microsoft, and you authenticate
+            at <strong>login.microsoftonline.com/devicelogin</strong> on any device using the displayed code.
+            Once authorised, mail is sent via the <strong>Microsoft Graph API</strong>
+            (<code class="text-xs">/v1.0/me/sendMail</code>) using delegated <code class="text-xs">Mail.Send</code>
+            permissions. Your credentials are never stored — only a short-lived session token is held server-side.
         </div>
 
         <div class="border border-black">
 
-            <!-- ── AUTH GATE (shown when signed out) ── -->
-            <div class="auth-required p-8 md:p-12 border-b border-black">
-                <span class="field-label mb-4 block">Step 1 — Authenticate</span>
+            <!-- ══════════════════════════════════════
+                 STEP 1 — TENANT ENDPOINT
+                 Stage: tenant
+            ══════════════════════════════════════ -->
+            <div class="stage stage-tenant p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-1 block">Step 1 of 3 — Organisation Endpoint</span>
                 <p class="text-sm font-medium text-gray-600 mb-8 max-w-lg">
-                    Sign in with your Microsoft 365 account to grant this tool permission to send mail on your behalf.
+                    Enter your Microsoft 365 tenant identifier. This is used to scope the device code request to your organisation.
                 </p>
-                <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-3 opacity-50 cursor-not-allowed"
-                        disabled title="Requires API server — not yet wired up">
-                    <!-- Microsoft logo mark (SVG, inline, no external fetch) -->
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="0" y="0" width="7.5" height="7.5" fill="#f25022"/>
-                        <rect x="8.5" y="0" width="7.5" height="7.5" fill="#7fba00"/>
-                        <rect x="0" y="8.5" width="7.5" height="7.5" fill="#00a4ef"/>
-                        <rect x="8.5" y="8.5" width="7.5" height="7.5" fill="#ffb900"/>
-                    </svg>
-                    Sign in with Microsoft
-                </button>
-                <p class="text-[9px] font-bold uppercase tracking-widest text-gray-300 mt-4">
-                    Not yet connected — API server required
-                </p>
+
+                <div class="max-w-xl mb-4">
+                    <label class="field-label">Tenant ID or Domain</label>
+                    <input type="text" id="field-tenant" class="field-input"
+                           placeholder="e.g. contoso.com  or  xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+                    <p class="text-[9px] text-gray-400 font-medium mt-2 uppercase tracking-wider">
+                        The API will call
+                        <code class="font-mono">login.microsoftonline.com/{tenant}/oauth2/v2.0/devicecode</code>
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-4 mt-6">
+                    <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]"
+                            onclick="requestDeviceCode()">
+                        Generate Device Code
+                    </button>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-300">
+                        Requires API server
+                    </span>
+                </div>
             </div>
 
-            <!-- ── SIGNED IN STATE (shown when authed) ── -->
-            <div class="auth-active p-8 md:p-12 border-b border-black bg-gray-50">
+            <!-- ══════════════════════════════════════
+                 STEP 2 — DEVICE CODE DISPLAY
+                 Stage: device
+            ══════════════════════════════════════ -->
+            <div class="stage stage-device p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-1 block">Step 2 of 3 — Authorise on Your Device</span>
+                <p class="text-sm font-medium text-gray-600 mb-8 max-w-lg">
+                    Open the URL below on any browser (phone, another tab, etc.) and enter the code when prompted.
+                    This page will detect authorisation automatically.
+                </p>
+
+                <div class="border border-black bg-white p-8 mb-8 max-w-xl">
+                    <div class="mb-6">
+                        <span class="field-label mb-3 block">Go to</span>
+                        <a id="device-verification-url" href="https://login.microsoftonline.com/devicelogin"
+                           target="_blank" rel="noopener"
+                           class="text-sm font-bold underline hover:no-underline">
+                            login.microsoftonline.com/devicelogin
+                        </a>
+                    </div>
+                    <div>
+                        <span class="field-label mb-3 block">Enter this code</span>
+                        <div id="device-code-display" class="device-code-display">ABCD-EFGH</div>
+                        <button onclick="copyDeviceCode()"
+                                class="mt-3 text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors">
+                            Copy code
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                    <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
+                    Waiting for you to authorise at Microsoft...
+                </div>
+
+                <div class="mt-6 flex gap-4">
+                    <button class="btn-outline px-6 py-3 text-[10px] font-bold uppercase tracking-widest"
+                            onclick="setStage('tenant')">
+                        ← Back
+                    </button>
+                    <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors self-center"
+                            onclick="requestDeviceCode()">
+                        Regenerate code
+                    </button>
+                </div>
+            </div>
+
+            <!-- ══════════════════════════════════════
+                 STEP 2b — POLLING / WAITING
+                 Stage: polling (same UI as device but with full-width waiting bar)
+            ══════════════════════════════════════ -->
+            <div class="stage stage-polling p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-4 block">Step 2 of 3 — Waiting for Authorisation</span>
+                <div class="border border-black bg-white p-8 mb-6 max-w-xl">
+                    <div class="mb-6">
+                        <span class="field-label mb-3 block">Go to</span>
+                        <a id="polling-verification-url" href="https://login.microsoftonline.com/devicelogin"
+                           target="_blank" rel="noopener"
+                           class="text-sm font-bold underline hover:no-underline">
+                            login.microsoftonline.com/devicelogin
+                        </a>
+                    </div>
+                    <div>
+                        <span class="field-label mb-3 block">Enter code</span>
+                        <div id="polling-code-display" class="device-code-display">ABCD-EFGH</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6">
+                    <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
+                    <span id="polling-status-text">Polling for token...</span>
+                </div>
+                <button class="btn-outline px-6 py-3 text-[10px] font-bold uppercase tracking-widest"
+                        onclick="cancelPolling()">
+                    Cancel
+                </button>
+            </div>
+
+            <!-- ══════════════════════════════════════
+                 AUTHED BANNER
+                 Stage: authed
+            ══════════════════════════════════════ -->
+            <div class="stage stage-authed p-8 md:p-12 border-b border-black bg-gray-50">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
@@ -134,6 +254,9 @@
                             <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block">Signed in as</span>
                             <span id="auth-user-display" class="text-sm font-bold">user@organisation.com</span>
                         </div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 ml-2">
+                            via <span id="auth-tenant-display"></span>
+                        </span>
                     </div>
                     <button class="btn-outline px-5 py-2 text-[10px] font-bold uppercase tracking-widest"
                             onclick="signOut()">
@@ -142,9 +265,11 @@
                 </div>
             </div>
 
-            <!-- ── COMPOSE FORM ── -->
-            <div class="p-8 md:p-12 border-b border-black">
-                <span class="field-label mb-6 block">Step 2 — Compose</span>
+            <!-- ══════════════════════════════════════
+                 STEP 3 — COMPOSE
+            ══════════════════════════════════════ -->
+            <div class="requires-auth p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-6 block">Step 3 of 3 — Compose &amp; Send</span>
 
                 <div class="grid md:grid-cols-2 gap-6 mb-6">
                     <div>
@@ -165,43 +290,37 @@
                            placeholder="OAuth Mail Test — OAOA.dev" disabled>
                 </div>
 
-                <div class="mb-6">
+                <div class="mb-8">
                     <label class="field-label">Body</label>
                     <textarea class="field-input" id="field-body"
-                              placeholder="This is a test message sent via OAuth 2.0 delegated mail send through Microsoft Graph API." disabled></textarea>
+                              placeholder="This is a test message sent via OAuth 2.0 Device Code flow through Microsoft Graph API." disabled></textarea>
                 </div>
 
-                <div class="flex items-center gap-4">
-                    <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] opacity-50 cursor-not-allowed"
-                            disabled id="send-btn" onclick="sendMail()">
-                        Send Test Email
-                    </button>
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-300">
-                        Sign in to enable
-                    </span>
-                </div>
+                <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]"
+                        id="send-btn" disabled onclick="sendMail()">
+                    Send Test Email
+                </button>
             </div>
 
-            <!-- ── RESULTS / LOG ── -->
+            <!-- ══════════════════════════════════════
+                 RESULTS / LOG
+            ══════════════════════════════════════ -->
             <div class="p-8 md:p-12">
                 <div class="flex items-center justify-between mb-6">
-                    <span class="field-label mb-0">Step 3 — Result</span>
+                    <span class="field-label mb-0">Result</span>
                     <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
                             onclick="clearLog()">
                         Clear
                     </button>
                 </div>
 
-                <!-- Status summary -->
-                <div id="result-summary"
-                     class="border border-dashed border-gray-300 p-6 mb-6 text-center">
+                <div id="result-summary" class="border border-dashed border-gray-300 p-6 mb-6 text-center">
                     <p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">
-                        No result yet — send a test email to see the outcome here
+                        No result yet
                     </p>
                 </div>
 
-                <!-- Activity log -->
-                <div>
+                <div class="mb-6">
                     <span class="field-label mb-3 block">Activity Log</span>
                     <div id="activity-log"
                          class="border border-black bg-gray-50 p-6 min-h-32 max-h-64 overflow-y-auto">
@@ -209,13 +328,11 @@
                     </div>
                 </div>
 
-                <!-- Raw API response -->
-                <div class="mt-6">
+                <div>
                     <span class="field-label mb-3 block">Raw API Response</span>
                     <textarea id="raw-response"
                               class="w-full border border-black p-4 bg-gray-50 text-xs font-mono min-h-32 focus:outline-none"
-                              readonly
-                              placeholder="Graph API response will appear here..."></textarea>
+                              readonly placeholder="Graph API response will appear here..."></textarea>
                 </div>
             </div>
 
@@ -237,46 +354,171 @@
 
     <script>
         /*
-         * TEMPLATE ONLY — no API calls are made from this file.
+         * TEMPLATE ONLY — no real API calls are made from this file.
          *
-         * Wiring checklist (to be completed when the API server is ready):
+         * ── Wiring checklist ──────────────────────────────────────────────────
          *
-         *  signIn()   → redirect to GET /api/auth/microsoft?redirect=<this page>
-         *  signOut()  → call POST /api/auth/signout, clear session cookie, reload
-         *  sendMail() → call POST /api/tools/m365-mail-tester/send
-         *               body: { to, subject, body }
-         *               expects: { success: bool, messageId?: string, error?: string, raw: object }
+         * 1. requestDeviceCode()
+         *    POST /api/auth/m365/device-code
+         *    body:    { tenant }
+         *    expects: { userCode, deviceCode, verificationUrl, expiresIn, interval }
+         *    On success → display userCode, start pollForToken()
          *
-         * On page load, check GET /api/auth/session to determine signed-in state.
-         * If session exists, call setAuthed(email) to unlock the form.
+         * 2. pollForToken()   (called internally on interval)
+         *    POST /api/auth/m365/device-token
+         *    body:    { tenant, deviceCode }
+         *    expects: { status: 'pending' | 'authorized' | 'expired' | 'error',
+         *               email?: string, sessionToken?: string, error?: string }
+         *    On 'authorized' → call setAuthed(email)
+         *    On 'expired'    → call setStage('tenant'), show expiry message
+         *    Poll interval comes from the device code response (typically 5s)
+         *
+         * 3. sendMail()
+         *    POST /api/tools/m365-mail-tester/send
+         *    body:    { to, subject, body }
+         *    headers: include session cookie or Bearer token
+         *    expects: { success: bool, messageId?: string, error?: string, raw: object }
+         *
+         * 4. signOut()
+         *    POST /api/auth/signout
+         *    On complete → setStage('tenant'), clear session
+         *
+         * 5. On page load → GET /api/auth/session
+         *    expects: { authenticated: bool, email?: string, tenant?: string }
+         *    If authenticated → setAuthed(email, tenant)
+         * ─────────────────────────────────────────────────────────────────────
          */
 
-        function setAuthed(email) {
-            document.getElementById('auth-user-display').textContent = email;
+        let pollTimer = null;
+
+        function setStage(stage) {
+            document.body.setAttribute('data-auth-stage', stage);
+        }
+
+        /* ── Step 1: request device code ── */
+        function requestDeviceCode() {
+            const tenant = document.getElementById('field-tenant').value.trim();
+            if (!tenant) {
+                appendLog('error', 'Enter a tenant ID or domain first.');
+                return;
+            }
+
+            appendLog('pending', 'Requesting device code for tenant: ' + tenant);
+
+            /* TODO: wire up real call
+            fetch('/api/auth/m365/device-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tenant })
+            })
+            .then(r => r.json())
+            .then(data => {
+                showDeviceCode(data.userCode, data.verificationUrl);
+                pollForToken(tenant, data.deviceCode, data.interval || 5);
+            })
+            .catch(err => appendLog('error', 'Failed to get device code: ' + err.message));
+            */
+
+            /* Stub — remove when API is wired */
+            setTimeout(() => {
+                appendLog('info', 'Stub: would call login.microsoftonline.com/' + tenant + '/oauth2/v2.0/devicecode');
+                showDeviceCode('ABCD-EFGH', 'https://login.microsoftonline.com/devicelogin', tenant);
+            }, 400);
+        }
+
+        function showDeviceCode(userCode, verificationUrl, tenant) {
+            document.getElementById('device-code-display').textContent  = userCode;
+            document.getElementById('polling-code-display').textContent = userCode;
+
+            const urlEl = document.getElementById('device-verification-url');
+            urlEl.textContent = verificationUrl.replace('https://', '');
+            urlEl.href = verificationUrl;
+
+            const pollUrlEl = document.getElementById('polling-verification-url');
+            pollUrlEl.textContent = verificationUrl.replace('https://', '');
+            pollUrlEl.href = verificationUrl;
+
+            setStage('device');
+            appendLog('success', 'Device code issued. Visit ' + verificationUrl + ' and enter: ' + userCode);
+        }
+
+        /* ── Step 2: poll for token ── */
+        function pollForToken(tenant, deviceCode, intervalSeconds) {
+            setStage('polling');
+            let attempts = 0;
+
+            pollTimer = setInterval(() => {
+                attempts++;
+                document.getElementById('polling-status-text').textContent =
+                    'Polling for token... (' + attempts + ')';
+
+                /* TODO: wire up real poll
+                fetch('/api/auth/m365/device-token', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ tenant, deviceCode })
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'authorized') {
+                        clearInterval(pollTimer);
+                        setAuthed(data.email, tenant);
+                    } else if (data.status === 'expired') {
+                        clearInterval(pollTimer);
+                        setStage('tenant');
+                        appendLog('error', 'Device code expired. Please generate a new one.');
+                    } else if (data.status === 'error') {
+                        clearInterval(pollTimer);
+                        setStage('device');
+                        appendLog('error', 'Auth error: ' + data.error);
+                    }
+                    // status === 'pending' → keep polling
+                })
+                .catch(err => appendLog('error', 'Poll request failed: ' + err.message));
+                */
+
+            }, (intervalSeconds || 5) * 1000);
+        }
+
+        function cancelPolling() {
+            if (pollTimer) clearInterval(pollTimer);
+            pollTimer = null;
+            setStage('tenant');
+            appendLog('info', 'Authorisation cancelled.');
+        }
+
+        /* ── Authed state ── */
+        function setAuthed(email, tenant) {
+            if (pollTimer) clearInterval(pollTimer);
+
+            document.getElementById('auth-user-display').textContent   = email;
+            document.getElementById('auth-tenant-display').textContent = tenant || '';
             document.getElementById('field-from').value = email;
-            document.getElementById('field-from').placeholder = email;
-            document.body.classList.add('authed');
+
             ['field-to', 'field-subject', 'field-body', 'send-btn'].forEach(id => {
-                const el = document.getElementById(id);
-                el.disabled = false;
-                el.classList.remove('opacity-50', 'cursor-not-allowed');
+                document.getElementById(id).disabled = false;
             });
-            document.querySelector('#send-btn + span').textContent = '';
-            appendLog('info', 'Authenticated as ' + email);
+
+            setStage('authed');
+            appendLog('success', 'Authenticated as ' + email);
         }
 
         function signOut() {
-            document.body.classList.remove('authed');
+            if (pollTimer) clearInterval(pollTimer);
+
             document.getElementById('field-from').value = '';
             ['field-to', 'field-subject', 'field-body', 'send-btn'].forEach(id => {
-                const el = document.getElementById(id);
-                el.disabled = true;
-                el.classList.add('opacity-50', 'cursor-not-allowed');
+                document.getElementById(id).disabled = true;
             });
+
+            setStage('tenant');
             appendLog('info', 'Signed out.');
+
             /* TODO: call POST /api/auth/signout */
         }
 
+        /* ── Compose & send ── */
         function sendMail() {
             const to      = document.getElementById('field-to').value.trim();
             const subject = document.getElementById('field-subject').value.trim();
@@ -287,10 +529,10 @@
                 return;
             }
 
-            appendLog('pending', 'Sending via Graph API...');
+            appendLog('pending', 'Sending via Graph API /v1.0/me/sendMail...');
             document.getElementById('raw-response').value = '';
 
-            /* TODO: replace stub with real API call
+            /* TODO: wire up real call
             fetch('/api/tools/m365-mail-tester/send', {
                 method: 'POST',
                 credentials: 'include',
@@ -311,32 +553,39 @@
             .catch(err => appendLog('error', 'Request failed: ' + err.message));
             */
 
-            /* Stub response for template demonstration */
+            /* Stub — remove when API is wired */
             setTimeout(() => {
-                const stub = { status: 'stub', message: 'API not yet connected — this is a template response.' };
+                const stub = { status: 'stub', message: 'API not yet connected.' };
                 document.getElementById('raw-response').value = JSON.stringify(stub, null, 2);
-                appendLog('error', 'API not connected. Wire up the fetch() call above.');
                 setResultError('API server not yet connected.');
+                appendLog('error', 'Stub response — wire up the fetch() call above.');
             }, 600);
+        }
+
+        /* ── Utilities ── */
+        function copyDeviceCode() {
+            const code = document.getElementById('device-code-display').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('[onclick="copyDeviceCode()"]');
+                const orig = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = orig; }, 1500);
+            });
         }
 
         function setResultSuccess(messageId) {
             const el = document.getElementById('result-summary');
             el.className = 'border border-black bg-white p-6 mb-6';
-            el.innerHTML = `
-                <span class="text-[9px] font-bold uppercase tracking-widest text-black block mb-2">Accepted</span>
+            el.innerHTML = `<span class="text-[9px] font-bold uppercase tracking-widest text-black block mb-2">Accepted</span>
                 <p class="text-sm font-medium">Message accepted by Microsoft Graph.</p>
-                ${messageId ? `<p class="text-xs text-gray-500 mt-2 font-mono">ID: ${messageId}</p>` : ''}
-            `;
+                ${messageId ? `<p class="text-xs text-gray-500 mt-2 font-mono">ID: ${messageId}</p>` : ''}`;
         }
 
         function setResultError(msg) {
             const el = document.getElementById('result-summary');
             el.className = 'border border-red-500 bg-white p-6 mb-6';
-            el.innerHTML = `
-                <span class="text-[9px] font-bold uppercase tracking-widest text-red-600 block mb-2">Failed</span>
-                <p class="text-sm font-medium text-red-700">${msg}</p>
-            `;
+            el.innerHTML = `<span class="text-[9px] font-bold uppercase tracking-widest text-red-600 block mb-2">Failed</span>
+                <p class="text-sm font-medium text-red-700">${msg}</p>`;
         }
 
         function appendLog(type, msg) {
@@ -352,16 +601,16 @@
         function clearLog() {
             document.getElementById('activity-log').innerHTML = '<div class="log-entry info">[ Log cleared ]</div>';
             document.getElementById('raw-response').value = '';
-            const summary = document.getElementById('result-summary');
-            summary.className = 'border border-dashed border-gray-300 p-6 mb-6 text-center';
-            summary.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet — send a test email to see the outcome here</p>';
+            const s = document.getElementById('result-summary');
+            s.className = 'border border-dashed border-gray-300 p-6 mb-6 text-center';
+            s.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet</p>';
         }
 
-        /* On load: check session with API server
+        /* On page load: check for existing session
          * TODO: replace with real session check
          * fetch('/api/auth/session', { credentials: 'include' })
          *   .then(r => r.json())
-         *   .then(s => { if (s.authenticated) setAuthed(s.email); });
+         *   .then(s => { if (s.authenticated) setAuthed(s.email, s.tenant); });
          */
     </script>
 
