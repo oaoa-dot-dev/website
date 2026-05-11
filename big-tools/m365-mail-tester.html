@@ -213,7 +213,7 @@
 
                 <!-- authed: sender account confirmed -->
                 <div class="mail-stage mail-stage-authed">
-                    <div class="flex items-center gap-6">
+                    <div class="flex flex-wrap items-start gap-6">
                         <div class="flex items-center gap-4">
                             <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
                             <div>
@@ -221,10 +221,15 @@
                                 <span id="sender-email-display" class="text-sm font-bold"></span>
                             </div>
                         </div>
-                        <button class="btn-outline px-5 py-2 text-[10px] font-bold uppercase tracking-widest"
-                                onclick="resetMailAuth()">
-                            Change Account
-                        </button>
+                        <div class="flex flex-col gap-2">
+                            <button class="btn-black px-5 py-2 text-[10px] font-bold uppercase tracking-widest"
+                                    onclick="revokeSenderAccount()">
+                                Revoke &amp; Sign Out
+                            </button>
+                            <p class="text-[9px] text-gray-400 font-medium max-w-xs">
+                                Invalidates the token server-side — the account cannot be used to send until re-authorised.
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -438,18 +443,54 @@
             appendLog('success', 'Sender account authorised — ' + email);
         }
 
+        /* Cancel mid-flow (no token to revoke yet) */
         function resetMailAuth() {
             clearInterval(pollInterval);
             currentDeviceCode = null;
             pollAttempts = 0;
-
             document.getElementById('field-from').value = '';
             ['field-to', 'field-subject', 'field-body', 'send-btn'].forEach(id => {
                 document.getElementById(id).disabled = true;
             });
-
             setMailStage('idle');
-            appendLog('info', 'Sender account auth reset.');
+            appendLog('info', 'Sender account auth cancelled.');
+        }
+
+        /* Revoke an established sender session — invalidates token server-side */
+        function revokeSenderAccount() {
+            const btn = document.querySelector('[onclick="revokeSenderAccount()"]');
+            const orig = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = 'Revoking...';
+            appendLog('pending', 'Revoking sender account token server-side...');
+
+            fetch(`${API_BASE}/api/tools/m365-mail-tester/revoke`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            })
+            .then(r => {
+                if (r.ok) {
+                    appendLog('success', 'Sender token revoked — account can no longer send until re-authorised.');
+                } else {
+                    appendLog('error', 'Revoke request returned ' + r.status + ' — clearing local session anyway.');
+                }
+            })
+            .catch(err => {
+                appendLog('error', 'Revoke request failed (' + err.message + ') — clearing local session anyway.');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = orig;
+                clearInterval(pollInterval);
+                currentDeviceCode = null;
+                pollAttempts = 0;
+                document.getElementById('field-from').value = '';
+                ['field-to', 'field-subject', 'field-body', 'send-btn'].forEach(id => {
+                    document.getElementById(id).disabled = true;
+                });
+                setMailStage('idle');
+            });
         }
 
         /* ── Step 2: send mail ── */
