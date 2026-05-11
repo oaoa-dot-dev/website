@@ -158,15 +158,24 @@
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-black border border-black">
 
-                <!-- M365 OAuth Mail Tester -->
-                <a href="big-tools/m365-mail-tester.html"
+                <!-- Graph API Mail Sender -->
+                <a href="big-tools/m365-graph-mail.html"
                    class="bg-white p-10 flex flex-col hover:bg-gray-50 transition-colors group">
-                    <div class="flex items-center gap-3 mb-4">
-                        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Email · Microsoft 365</span>
-                    </div>
-                    <h2 class="text-xl font-black uppercase mb-3 group-hover:underline">OAuth Mail Tester</h2>
+                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-4">Email · Microsoft Graph API</span>
+                    <h2 class="text-xl font-black uppercase mb-3 group-hover:underline">Graph API Mail Sender</h2>
                     <p class="service-text text-sm flex-1 mb-6">
-                        Test OAuth 2.0 delegated mail send via Microsoft 365. Compose a test message and inspect the full Graph API response.
+                        Test delegated mail send via <code class="text-xs">POST /v1.0/me/sendMail</code>. Requires an Entra app registration with <code class="text-xs">Mail.Send</code> permission and a Client ID + Tenant ID.
+                    </p>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Open Tool →</span>
+                </a>
+
+                <!-- OAuth SMTP Relay -->
+                <a href="big-tools/m365-smtp-relay.html"
+                   class="bg-white p-10 flex flex-col hover:bg-gray-50 transition-colors group">
+                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-4">Email · Exchange Online SMTP Relay</span>
+                    <h2 class="text-xl font-black uppercase mb-3 group-hover:underline">OAuth SMTP Relay Tester</h2>
+                    <p class="service-text text-sm flex-1 mb-6">
+                        Test end-to-end OAuth SMTP relay via <code class="text-xs">smtp.office365.com:587</code> using <code class="text-xs">AUTH XOAUTH2</code>. Requires an Exchange Online connector and <code class="text-xs">SMTP.Send</code> scope.
                     </p>
                     <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Open Tool →</span>
                 </a>
