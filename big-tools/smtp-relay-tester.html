@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMTP Relay Tester | Big Tools | OAOA.dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .field-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.3em; color:#6b7280; display:block; margin-bottom:6px; }
+        .field-input { width:100%; border:1px solid #000; padding:10px 14px; font-size:.875rem; background:#fff; font-family:inherit; }
+        .field-input:focus { outline:none; box-shadow:3px 3px 0 #000; }
+        .field-input:disabled { background:#f9f9f9; color:#aaa; border-color:#ddd; cursor:not-allowed; }
+        textarea.field-input { resize:vertical; min-height:120px; }
+
+        .mail-stage { display:none; }
+        [data-mail-stage="idle"]    .mail-stage-idle    { display:block; }
+        [data-mail-stage="device"]  .mail-stage-device  { display:block; }
+        [data-mail-stage="polling"] .mail-stage-polling { display:block; }
+        [data-mail-stage="authed"]  .mail-stage-authed  { display:block; }
+
+        .requires-mail-auth .field-input,
+        .requires-mail-auth button { opacity:.35; pointer-events:none; }
+        [data-mail-stage="authed"] .requires-mail-auth .field-input,
+        [data-mail-stage="authed"] .requires-mail-auth button { opacity:1; pointer-events:auto; }
+
+        .device-code-display { font-family:'Courier New',monospace; font-size:2rem; font-weight:900; letter-spacing:.35em; }
+        .log-entry { font-family:'Courier New',monospace; font-size:.75rem; padding:6px 0; border-bottom:1px solid #eee; }
+        .log-entry:last-child { border-bottom:none; }
+        .log-entry.info    { color:#555; }
+        .log-entry.success { color:#15803d; }
+        .log-entry.error   { color:#dc2626; }
+        .log-entry.pending { color:#d97706; }
+
+        .ip-badge {
+            font-family:'Courier New',monospace;
+            font-size:.8rem;
+            font-weight:900;
+            background:#000;
+            color:#fff;
+            padding:2px 8px;
+            letter-spacing:.05em;
+            display:inline-block;
+        }
+
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.25} }
+        .pulse { animation:pulse-dot 1.2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
+        <a href="../index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+                <a href="../products.html" class="hover:text-gray-500 transition-colors">Products</a>
+                <a href="../tools.html" class="text-black">Tools</a>
+            </div>
+            <a href="../index.html#contact" class="btn-outline hidden md:block px-6 py-2 text-[10px] font-bold uppercase tracking-widest">Get in Touch</a>
+        </div>
+    </nav>
+
+    <header class="max-w-6xl mx-auto px-6 pt-20 pb-12">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+            <a href="../tools.html" class="hover:text-black">Tools</a> <span class="mx-2">/</span>
+            <a href="../big-tools.html" class="hover:text-black">Big Tools</a> <span class="mx-2">/</span>
+            <span class="text-black">SMTP Relay Tester</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter mb-8">
+            SMTP<br>Relay<br>Tester.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
+            Test connector-based SMTP relay into your Microsoft 365 tenant. No app registration required — just a connector and an SPF record.
+        </p>
+    </header>
+
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+
+        <!-- Operator session banner -->
+        <div class="border border-black bg-gray-50 p-5 mb-10 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
+                <div>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block">Operator session</span>
+                    <span id="auth-name-display"  class="text-sm font-bold"></span>
+                    <span id="auth-email-display" class="text-xs text-gray-500 ml-2"></span>
+                </div>
+            </div>
+            <a href="../big-tools.html" class="btn-outline px-5 py-2 text-[10px] font-bold uppercase tracking-widest">← Big Tools</a>
+        </div>
+
+        <!-- Prerequisites -->
+        <div class="border border-black bg-white p-6 mb-10 max-w-3xl">
+            <span class="font-black uppercase tracking-widest text-black text-[9px] block mb-4">Before You Start — Two Things to Configure</span>
+
+            <div class="grid md:grid-cols-2 gap-6">
+
+                <!-- Connector -->
+                <div class="border border-black p-5">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block mb-3">1 — Exchange Online Connector</span>
+                    <p class="text-[11px] font-medium text-gray-700 leading-relaxed mb-4">
+                        Create an inbound connector in Exchange Online Admin that accepts SMTP relay from this tool's outbound IP:
+                    </p>
+                    <div id="prereq-ip-block" class="mb-4">
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Outbound IP</span>
+                        <span id="tool-ip-display" class="ip-badge text-gray-400">fetching...</span>
+                    </div>
+                    <p class="text-[10px] text-gray-500 leading-relaxed">
+                        Connector type: <strong>From the internet</strong> ·
+                        Restriction: <strong>By sender IP</strong>
+                    </p>
+                </div>
+
+                <!-- SPF -->
+                <div class="border border-black p-5">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block mb-3">2 — SPF Record</span>
+                    <p class="text-[11px] font-medium text-gray-700 leading-relaxed mb-4">
+                        Add the tool's outbound IP to your domain's SPF record so Microsoft doesn't reject the relay as spoofed:
+                    </p>
+                    <div id="prereq-spf-block" class="bg-gray-50 border border-gray-200 p-3">
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-1">Add to your SPF TXT record</span>
+                        <code id="tool-spf-display" class="text-xs font-mono text-gray-400">ip4:fetching...</code>
+                    </div>
+                    <p class="text-[10px] text-gray-500 leading-relaxed mt-3">
+                        Example full record:<br>
+                        <code class="text-[9px]">v=spf1 include:spf.protection.outlook.com <span id="spf-example-ip" class="font-bold">ip4:x.x.x.x</span> -all</code>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="border border-black" data-mail-stage="idle" id="tool-card">
+
+            <!-- ══ STEP 1 — ACCOUNT AUTH ══ -->
+            <div class="p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-1 block">Step 1 — Authenticate Sending Account</span>
+                <p class="text-sm font-medium text-gray-600 mb-2 max-w-lg">
+                    Sign in with the Microsoft 365 account that will send the relay test.
+                    This authorises the OAOA.dev tool in your tenant — no app registration required on your end.
+                </p>
+                <p class="text-[10px] text-gray-400 mb-8 max-w-lg uppercase tracking-wider font-bold">
+                    The account must exist in the tenant whose connector and SPF you configured above.
+                </p>
+
+                <!-- idle -->
+                <div class="mail-stage mail-stage-idle">
+                    <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-3"
+                            onclick="requestDeviceCode()">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="0" y="0" width="7.5" height="7.5" fill="#f25022"/><rect x="8.5" y="0" width="7.5" height="7.5" fill="#7fba00"/><rect x="0" y="8.5" width="7.5" height="7.5" fill="#00a4ef"/><rect x="8.5" y="8.5" width="7.5" height="7.5" fill="#ffb900"/></svg>
+                        Generate Device Login Code
+                    </button>
+                </div>
+
+                <!-- device: show code -->
+                <div class="mail-stage mail-stage-device">
+                    <div class="border border-black bg-white p-8 mb-6 max-w-md">
+                        <div class="mb-6">
+                            <span class="field-label mb-2 block">1. Open this URL on any device</span>
+                            <a id="device-url-display" href="https://microsoft.com/devicelogin" target="_blank" rel="noopener"
+                               class="text-sm font-bold underline hover:no-underline break-all">microsoft.com/devicelogin</a>
+                        </div>
+                        <div>
+                            <span class="field-label mb-2 block">2. Enter this code</span>
+                            <div id="device-code-display" class="device-code-display mb-2">——————</div>
+                            <button onclick="copyDeviceCode()" class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors">Copy code</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6">
+                        <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
+                        Waiting — complete sign-in in the browser, then click below
+                    </div>
+                    <div class="flex gap-4">
+                        <button class="btn-black px-6 py-3 text-[10px] font-bold uppercase tracking-widest" onclick="startPolling()">I've signed in — continue</button>
+                        <button class="btn-outline px-6 py-3 text-[10px] font-bold uppercase tracking-widest" onclick="resetMailAuth()">Cancel</button>
+                        <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors self-center" onclick="requestDeviceCode()">Regenerate code</button>
+                    </div>
+                </div>
+
+                <!-- polling -->
+                <div class="mail-stage mail-stage-polling">
+                    <div class="border border-black bg-white p-8 mb-6 max-w-md">
+                        <div class="mb-4"><span class="field-label mb-2 block">URL</span><span id="polling-url-display" class="text-sm font-bold break-all"></span></div>
+                        <div><span class="field-label mb-2 block">Code</span><div id="polling-code-display" class="device-code-display">——————</div></div>
+                    </div>
+                    <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6">
+                        <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
+                        <span id="polling-status-text">Checking for authorisation...</span>
+                    </div>
+                    <button class="btn-outline px-6 py-3 text-[10px] font-bold uppercase tracking-widest" onclick="resetMailAuth()">Cancel</button>
+                </div>
+
+                <!-- authed -->
+                <div class="mail-stage mail-stage-authed">
+                    <div class="flex flex-wrap items-start gap-6">
+                        <div class="flex items-center gap-4">
+                            <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
+                            <div>
+                                <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block">Sending as</span>
+                                <span id="sender-email-display" class="text-sm font-bold"></span>
+                                <span class="text-[9px] text-gray-400 block mt-0.5">SMTP relay · connector auth · OAOA.dev app</span>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <button class="btn-black px-5 py-2 text-[10px] font-bold uppercase tracking-widest" onclick="revokeSenderAccount()">Revoke &amp; Sign Out</button>
+                            <p class="text-[9px] text-gray-400 font-medium max-w-xs">Invalidates the token server-side — cannot relay until re-authorised.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ STEP 2 — COMPOSE ══ -->
+            <div class="requires-mail-auth p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-6 block">Step 2 — Compose</span>
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="field-label">From</label>
+                        <input type="email" class="field-input" id="field-from" placeholder="Populated from sender account" disabled>
+                    </div>
+                    <div>
+                        <label class="field-label">To</label>
+                        <input type="email" class="field-input" id="field-to" placeholder="recipient@example.com" disabled>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="field-label">Subject</label>
+                    <input type="text" class="field-input" id="field-subject" value="SMTP Relay Test — OAOA.dev" disabled>
+                </div>
+                <div class="mb-8">
+                    <label class="field-label">Body</label>
+                    <textarea class="field-input" id="field-body" disabled>This is a test message sent via connector-based SMTP relay through Microsoft 365. If you received this, your Exchange connector and SPF record are correctly configured.</textarea>
+                </div>
+                <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]" id="send-btn" disabled onclick="sendMail()">Send Relay Test</button>
+            </div>
+
+            <!-- ══ STEP 3 — RESULTS ══ -->
+            <div class="p-8 md:p-12">
+                <div class="flex items-center justify-between mb-6">
+                    <span class="field-label mb-0">Step 3 — Result</span>
+                    <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors" onclick="clearLog()">Clear</button>
+                </div>
+                <div id="result-summary" class="border border-dashed border-gray-300 p-6 mb-6 text-center">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet</p>
+                </div>
+                <div class="mb-6">
+                    <span class="field-label mb-3 block">Activity Log</span>
+                    <div id="activity-log" class="border border-black bg-gray-50 p-6 min-h-32 max-h-64 overflow-y-auto">
+                        <div class="log-entry info">[ Waiting for action... ]</div>
+                    </div>
+                </div>
+                <div>
+                    <span class="field-label mb-3 block">SMTP Session Transcript</span>
+                    <textarea id="raw-response" class="w-full border border-black p-4 bg-gray-50 text-xs font-mono min-h-32 focus:outline-none" readonly placeholder="SMTP session transcript will appear here..."></textarea>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="max-w-6xl mx-auto px-6 py-20 text-center">
+        <div class="mt-12 pt-10 b-light flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            <div class="flex gap-10 mb-6 md:mb-0">
+                <a href="../index.html" class="text-black/80 hover:text-black">Home</a>
+                <a href="../products.html" class="text-black/80 hover:text-black">Products</a>
+                <a href="../tools.html" class="text-black/80 hover:text-black">Tools</a>
+                <a href="../big-tools.html" class="text-black/80 hover:text-black">Big Tools</a>
+            </div>
+            <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE  = 'https://bigtools.oaoa.dev';
+        const authToken = sessionStorage.getItem('bigtool_token');
+        let currentDeviceCode = null, pollInterval = null, pollAttempts = 0;
+
+        /* ── Operator session check ── */
+        if (!authToken) { window.location.href = '../big-tools.html'; }
+        else {
+            fetch(`${API_BASE}/api/profile/me`, { credentials:'include', headers:{'Authorization':'Bearer '+authToken} })
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(p => {
+                document.getElementById('auth-name-display').textContent  = p.name  || '';
+                document.getElementById('auth-email-display').textContent = p.email || '';
+                appendLog('info', 'Operator session active — ' + p.name);
+            })
+            .catch(() => { sessionStorage.removeItem('bigtool_token'); window.location.href = '../big-tools.html'; });
+        }
+
+        /* ── Fetch tool info — outbound IP for connector + SPF setup ── */
+        fetch(`${API_BASE}/api/tools/smtp-relay-tester/info`, {
+            credentials: 'include',
+            headers: { 'Authorization': 'Bearer ' + (authToken || '') }
+        })
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(info => {
+            const ip = info.outboundIp || null;
+            if (ip) {
+                document.getElementById('tool-ip-display').textContent = ip;
+                document.getElementById('tool-ip-display').classList.remove('text-gray-400');
+                document.getElementById('tool-spf-display').textContent = 'ip4:' + ip;
+                document.getElementById('tool-spf-display').classList.remove('text-gray-400');
+                document.getElementById('spf-example-ip').textContent = 'ip4:' + ip;
+            } else {
+                setIpUnavailable();
+            }
+        })
+        .catch(() => setIpUnavailable());
+
+        function setIpUnavailable() {
+            document.getElementById('tool-ip-display').innerHTML   = '<span class="text-gray-400 font-sans text-xs normal-case font-medium tracking-normal">could not fetch — check API</span>';
+            document.getElementById('tool-spf-display').textContent = 'ip4:unavailable';
+            document.getElementById('spf-example-ip').textContent   = 'ip4:unavailable';
+        }
+
+        /* ── Mail stage control ── */
+        function setMailStage(s) { document.getElementById('tool-card').setAttribute('data-mail-stage', s); }
+
+        /* ── Device code — no app details needed, API uses its own pre-registered app ── */
+        function requestDeviceCode() {
+            appendLog('pending', 'Requesting device code via OAOA.dev app...');
+
+            fetch(`${API_BASE}/api/tools/smtp-relay-tester/device-code`, {
+                method: 'POST', credentials: 'include',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            })
+            .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
+            .then(data => {
+                currentDeviceCode = data.deviceCode;
+                const url = data.verificationUri || data.verificationUrl || 'https://microsoft.com/devicelogin';
+                const urlShort = url.replace('https://', '');
+
+                document.getElementById('device-code-display').textContent  = data.userCode;
+                document.getElementById('polling-code-display').textContent = data.userCode;
+                document.getElementById('device-url-display').textContent   = urlShort;
+                document.getElementById('device-url-display').href          = url;
+                document.getElementById('polling-url-display').textContent  = urlShort;
+
+                setMailStage('device');
+                appendLog('success', 'Device code issued — visit ' + urlShort + ' and enter: ' + data.userCode);
+            })
+            .catch(err => appendLog('error', 'Failed to get device code: ' + (err.message || err.error || JSON.stringify(err))));
+        }
+
+        function startPolling() {
+            if (!currentDeviceCode) return;
+            setMailStage('polling'); pollAttempts = 0;
+            pollInterval = setInterval(pollForToken, 5000);
+            pollForToken();
+        }
+
+        function pollForToken() {
+            pollAttempts++;
+            document.getElementById('polling-status-text').textContent = 'Checking for authorisation... (' + pollAttempts + ')';
+
+            fetch(`${API_BASE}/api/tools/smtp-relay-tester/device-poll`, {
+                method: 'POST', credentials: 'include',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ deviceCode: currentDeviceCode })
+            })
+            .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
+            .then(data => {
+                if (data.status === 'authorized') {
+                    clearInterval(pollInterval);
+                    setSenderAuthed(data.email);
+                } else if (data.status === 'expired') {
+                    clearInterval(pollInterval); setMailStage('idle');
+                    appendLog('error', 'Device code expired — please generate a new one.');
+                } else if (data.status === 'error') {
+                    clearInterval(pollInterval); setMailStage('device');
+                    appendLog('error', 'Auth error: ' + (data.error || 'unknown'));
+                }
+            })
+            .catch(err => { clearInterval(pollInterval); setMailStage('device'); appendLog('error', 'Poll failed: ' + (err.message || JSON.stringify(err))); });
+        }
+
+        function setSenderAuthed(email) {
+            document.getElementById('sender-email-display').textContent = email || '';
+            document.getElementById('field-from').value = email || '';
+            ['field-to', 'field-subject', 'field-body', 'send-btn'].forEach(id => { document.getElementById(id).disabled = false; });
+            setMailStage('authed');
+            appendLog('success', 'Sender authorised via OAOA.dev app — ' + email);
+        }
+
+        function resetMailAuth() {
+            clearInterval(pollInterval); currentDeviceCode = null; pollAttempts = 0;
+            document.getElementById('field-from').value = '';
+            ['field-to', 'field-subject', 'field-body', 'send-btn'].forEach(id => { document.getElementById(id).disabled = true; });
+            setMailStage('idle');
+            appendLog('info', 'Sender auth cancelled.');
+        }
+
+        function revokeSenderAccount() {
+            const btn = document.querySelector('[onclick="revokeSenderAccount()"]');
+            btn.disabled = true; btn.textContent = 'Revoking...';
+            appendLog('pending', 'Revoking sender token server-side...');
+
+            fetch(`${API_BASE}/api/tools/smtp-relay-tester/revoke`, {
+                method: 'POST', credentials: 'include',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            })
+            .then(r => appendLog(r.ok ? 'success' : 'error', r.ok ? 'Token revoked.' : 'Revoke returned ' + r.status + ' — clearing locally.'))
+            .catch(err => appendLog('error', 'Revoke failed (' + err.message + ') — clearing locally.'))
+            .finally(() => { btn.disabled = false; btn.textContent = 'Revoke & Sign Out'; resetMailAuth(); });
+        }
+
+        function sendMail() {
+            const to      = document.getElementById('field-to').value.trim();
+            const subject = document.getElementById('field-subject').value.trim();
+            const body    = document.getElementById('field-body').value.trim();
+            if (!to || !subject) { appendLog('error', 'To and Subject are required.'); return; }
+
+            const btn = document.getElementById('send-btn'); btn.disabled = true;
+            appendLog('pending', 'Sending SMTP relay test...');
+            document.getElementById('raw-response').value = '';
+
+            fetch(`${API_BASE}/api/tools/smtp-relay-tester/send`, {
+                method: 'POST', credentials: 'include',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+                body: JSON.stringify({ to, subject, body })
+            })
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('raw-response').value = data.transcript || JSON.stringify(data.raw ?? data, null, 2);
+                if (data.success) { setResultSuccess(data.messageId); appendLog('success', 'Message relayed successfully.'); }
+                else { setResultError(data.error || 'Unknown error.'); appendLog('error', 'Relay failed: ' + (data.error || 'unknown')); }
+            })
+            .catch(err => { setResultError(err.message); appendLog('error', 'Request failed: ' + err.message); })
+            .finally(() => { btn.disabled = false; });
+        }
+
+        function copyDeviceCode() {
+            navigator.clipboard.writeText(document.getElementById('device-code-display').textContent).then(() => {
+                const btn = document.querySelector('[onclick="copyDeviceCode()"]'); const orig = btn.textContent;
+                btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = orig; }, 1500);
+            });
+        }
+        function setResultSuccess(id) {
+            const el = document.getElementById('result-summary'); el.className = 'border border-black bg-white p-6 mb-6';
+            el.innerHTML = `<span class="text-[9px] font-bold uppercase tracking-widest text-black block mb-2">Relayed</span><p class="text-sm font-medium">Message accepted — connector and SPF are working correctly.</p>${id ? `<p class="text-xs text-gray-500 mt-2 font-mono">ID: ${id}</p>` : ''}`;
+        }
+        function setResultError(msg) {
+            const el = document.getElementById('result-summary'); el.className = 'border border-red-500 bg-white p-6 mb-6';
+            el.innerHTML = `<span class="text-[9px] font-bold uppercase tracking-widest text-red-600 block mb-2">Failed</span><p class="text-sm font-medium text-red-700">${msg}</p>`;
+        }
+        function appendLog(type, msg) {
+            const log = document.getElementById('activity-log');
+            const ts = new Date().toLocaleTimeString('en-GB', { hour12: false });
+            const div = document.createElement('div'); div.className = 'log-entry ' + type;
+            div.textContent = '[' + ts + '] ' + msg; log.appendChild(div); log.scrollTop = log.scrollHeight;
+        }
+        function clearLog() {
+            document.getElementById('activity-log').innerHTML = '<div class="log-entry info">[ Log cleared ]</div>';
+            document.getElementById('raw-response').value = '';
+            const s = document.getElementById('result-summary'); s.className = 'border border-dashed border-gray-300 p-6 mb-6 text-center';
+            s.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet</p>';
+        }
+    </script>
+    <script src="../js/main.js"></script>
+</body>
+</html>
