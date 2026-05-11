@@ -263,20 +263,15 @@
             const token = sessionStorage.getItem('bigtool_token');
             if (!token) return;
 
-            fetch(`${API_BASE}/api/auth/session`, {
+            fetch(`${API_BASE}/api/profile/me`, {
                 credentials: 'include',
                 headers: { 'Authorization': 'Bearer ' + token }
             })
             .then(r => r.ok ? r.json() : Promise.reject())
-            .then(s => {
-                if (s.authenticated) {
-                    setAuthed(
-                        s.name  || sessionStorage.getItem('bigtool_name'),
-                        s.email || sessionStorage.getItem('bigtool_email')
-                    );
-                } else {
-                    sessionStorage.removeItem('bigtool_token');
-                }
+            .then(profile => {
+                sessionStorage.setItem('bigtool_name',  profile.name  || '');
+                sessionStorage.setItem('bigtool_email', profile.email || '');
+                setAuthed(profile.name, profile.email);
             })
             .catch(() => sessionStorage.removeItem('bigtool_token'));
         })();

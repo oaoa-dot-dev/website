@@ -194,20 +194,16 @@
         if (!authToken) {
             window.location.href = '../big-tools.html';
         } else {
-            /* Validate token is still alive, then populate UI */
-            fetch(`${API_BASE}/api/auth/session`, {
+            fetch(`${API_BASE}/api/profile/me`, {
                 credentials: 'include',
                 headers: { 'Authorization': 'Bearer ' + authToken }
             })
-            .then(r => r.ok ? r.json() : Promise.reject('session-invalid'))
-            .then(s => {
-                if (!s.authenticated) throw new Error('session-invalid');
-                const name  = s.name  || sessionStorage.getItem('bigtool_name')  || '';
-                const email = s.email || sessionStorage.getItem('bigtool_email') || '';
-                document.getElementById('auth-name-display').textContent  = name;
-                document.getElementById('auth-email-display').textContent = email;
-                document.getElementById('field-from').value = email;
-                appendLog('info', 'Session active — signed in as ' + name);
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(profile => {
+                document.getElementById('auth-name-display').textContent  = profile.name  || '';
+                document.getElementById('auth-email-display').textContent = profile.email || '';
+                document.getElementById('field-from').value = profile.email || '';
+                appendLog('info', 'Session active — signed in as ' + profile.name);
             })
             .catch(() => {
                 sessionStorage.removeItem('bigtool_token');
