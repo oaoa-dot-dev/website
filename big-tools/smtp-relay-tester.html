@@ -170,7 +170,10 @@
             <!-- ══ STEP 3 — RESULTS ══ -->
             <div class="p-8 md:p-12">
                 <div class="flex items-center justify-between mb-6">
-                    <span class="field-label mb-0">Step 3 — Result</span>
+                    <div>
+                        <span class="field-label mb-1">Step 3 — Result</span>
+                        <span id="last-updated" class="text-[9px] text-gray-400 font-medium uppercase tracking-wider"></span>
+                    </div>
                     <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors" onclick="clearLog()">Clear</button>
                 </div>
                 <div id="result-summary" class="border border-dashed border-gray-300 p-6 mb-6 text-center">
@@ -302,6 +305,9 @@
             })
             .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
             .then(data => {
+                document.getElementById('last-updated').textContent =
+                    'Last updated ' + new Date().toLocaleTimeString('en-GB', { hour12: false });
+
                 /* Append only new log lines */
                 if (Array.isArray(data.logs)) {
                     data.logs.slice(seenLogs).forEach(line => {
@@ -354,6 +360,7 @@
         function clearLog() {
             if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
             seenLogs = 0;
+            document.getElementById('last-updated').textContent = '';
             document.getElementById('activity-log').innerHTML = '<div class="log-entry info">[ Log cleared ]</div>';
             document.getElementById('raw-response').value = '';
             document.getElementById('send-btn').disabled = false;
