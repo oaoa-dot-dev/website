@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reverse PTR Lookup | Domain Tools | OAOA.dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .field-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.3em; color:#6b7280; display:block; margin-bottom:6px; }
+        .field-input { width:100%; border:1px solid #000; padding:10px 14px; font-size:.875rem; background:#fff; font-family:inherit; }
+        .field-input:focus { outline:none; box-shadow:3px 3px 0 #000; }
+        .ptr-record { font-family:'Courier New',monospace; font-size:.85rem; font-weight:900; padding:10px 14px; border:1px solid #000; background:#fff; display:block; margin-bottom:4px; }
+        .ptr-record:last-child { margin-bottom:0; }
+        .stat-block { border:1px solid #e5e7eb; padding:16px 20px; }
+        .stat-label { font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:.15em; color:#9ca3af; display:block; margin-bottom:4px; }
+        .stat-value { font-family:'Courier New',monospace; font-size:.95rem; font-weight:900; color:#111; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
+        <a href="../index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+                <a href="../products.html" class="hover:text-gray-500 transition-colors">Products</a>
+                <a href="../tools.html" class="text-black">Tools</a>
+            </div>
+            <a href="../index.html#contact" class="btn-outline hidden md:block px-6 py-2 text-[10px] font-bold uppercase tracking-widest">Get in Touch</a>
+        </div>
+    </nav>
+
+    <header class="max-w-6xl mx-auto px-6 pt-20 pb-12">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+            <a href="../tools.html" class="hover:text-black">Tools</a> <span class="mx-2">/</span>
+            <a href="../domain-tools.html" class="hover:text-black">Domain Tools</a> <span class="mx-2">/</span>
+            <span class="text-black">Reverse PTR Lookup</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter mb-8">
+            Reverse<br>PTR<br>Lookup.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
+            Resolve the hostname associated with an IPv4 or IPv6 address via reverse DNS PTR lookup.
+        </p>
+    </header>
+
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+
+        <div class="border border-black">
+
+            <!-- ══ QUERY ══ -->
+            <div class="p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-1 block">Query</span>
+                <p class="text-sm font-medium text-gray-600 mb-8 max-w-lg">
+                    Enter an IPv4 or IPv6 address to resolve its PTR record.
+                </p>
+                <div class="max-w-xl">
+                    <div class="mb-6">
+                        <label class="field-label">IP Address</label>
+                        <input type="text" class="field-input font-mono" id="field-ip"
+                               placeholder="8.8.8.8" autocomplete="off">
+                    </div>
+                    <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]"
+                            id="query-btn" onclick="runQuery()">
+                        Lookup
+                    </button>
+                </div>
+            </div>
+
+            <!-- ══ RESULT ══ -->
+            <div class="p-8 md:p-12">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <span class="field-label mb-1">Result</span>
+                        <span id="last-updated" class="text-[9px] text-gray-400 font-medium uppercase tracking-wider"></span>
+                    </div>
+                    <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors" onclick="clearResult()">Clear</button>
+                </div>
+
+                <div id="result-summary" class="border border-dashed border-gray-300 p-6 mb-6 text-center">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet</p>
+                </div>
+
+                <div id="result-detail" class="hidden">
+                    <div class="grid grid-cols-2 gap-3 mb-6">
+                        <div class="stat-block">
+                            <span class="stat-label">IP Address</span>
+                            <span class="stat-value" id="stat-ip">—</span>
+                        </div>
+                        <div class="stat-block">
+                            <span class="stat-label">Query Time</span>
+                            <span class="stat-value" id="stat-time">—</span>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="field-label mb-3 block">PTR Records</span>
+                        <div id="ptr-records"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="max-w-6xl mx-auto px-6 py-20 text-center">
+        <div class="mt-12 pt-10 b-light flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            <div class="flex gap-10 mb-6 md:mb-0">
+                <a href="../index.html" class="text-black/80 hover:text-black">Home</a>
+                <a href="../products.html" class="text-black/80 hover:text-black">Products</a>
+                <a href="../tools.html" class="text-black/80 hover:text-black">Tools</a>
+                <a href="../domain-tools.html" class="text-black/80 hover:text-black">Domain Tools</a>
+            </div>
+            <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'https://bigtools.oaoa.dev';
+
+        function runQuery() {
+            const ip = document.getElementById('field-ip').value.trim();
+            if (!ip) { setResultError('IP address is required.'); return; }
+
+            const btn = document.getElementById('query-btn'); btn.disabled = true;
+            document.getElementById('result-detail').classList.add('hidden');
+            setResultPending();
+
+            fetch(`${API_BASE}/api/domain-tools/reverse-ptr/query?ip=${encodeURIComponent(ip)}`)
+            .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
+            .then(data => {
+                document.getElementById('last-updated').textContent =
+                    'Last updated ' + new Date().toLocaleTimeString('en-GB', { hour12: false });
+                renderResult(data);
+            })
+            .catch(err => setResultError(err.message || JSON.stringify(err)))
+            .finally(() => { btn.disabled = false; });
+        }
+
+        document.getElementById('field-ip').addEventListener('keydown', e => {
+            if (e.key === 'Enter') runQuery();
+        });
+
+        function renderResult(data) {
+            if (data.hasError) {
+                setResultError(data.errorMessage || 'Lookup failed.');
+                return;
+            }
+
+            const el = document.getElementById('result-summary');
+            if (data.hasPtr) {
+                el.className = 'border border-black bg-white p-6 mb-6';
+                el.innerHTML = `<span class="text-[9px] font-bold uppercase tracking-widest text-black block mb-2">Found</span>
+                    <p class="text-sm font-medium">${data.ptrRecords.length} PTR record${data.ptrRecords.length !== 1 ? 's' : ''} found for <span class="font-mono">${data.ip}</span>.</p>`;
+            } else {
+                el.className = 'border border-black bg-white p-6 mb-6';
+                el.innerHTML = `<span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block mb-2">No PTR Record</span>
+                    <p class="text-sm font-medium text-gray-600">No reverse DNS record is configured for <span class="font-mono">${data.ip}</span>.</p>`;
+            }
+
+            document.getElementById('stat-ip').textContent   = data.ip || '—';
+            document.getElementById('stat-time').textContent = data.timeTakenMs != null ? data.timeTakenMs + 'ms' : '—';
+
+            const recordsEl = document.getElementById('ptr-records');
+            recordsEl.innerHTML = '';
+            if (data.ptrRecords && data.ptrRecords.length) {
+                data.ptrRecords.forEach(ptr => {
+                    const span = document.createElement('span');
+                    span.className = 'ptr-record';
+                    span.textContent = ptr;
+                    recordsEl.appendChild(span);
+                });
+            } else {
+                recordsEl.innerHTML = '<span class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">No records returned</span>';
+            }
+
+            document.getElementById('result-detail').classList.remove('hidden');
+        }
+
+        function setResultPending() {
+            const el = document.getElementById('result-summary');
+            el.className = 'border border-dashed border-gray-300 p-6 mb-6 text-center';
+            el.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Looking up...</p>';
+        }
+        function setResultError(msg) {
+            document.getElementById('result-detail').classList.add('hidden');
+            const el = document.getElementById('result-summary');
+            el.className = 'border border-red-500 bg-white p-6 mb-6';
+            el.innerHTML = `<span class="text-[9px] font-bold uppercase tracking-widest text-red-600 block mb-2">Error</span>
+                <p class="text-sm font-medium text-red-700">${msg}</p>`;
+        }
+        function clearResult() {
+            document.getElementById('last-updated').textContent = '';
+            document.getElementById('query-btn').disabled = false;
+            document.getElementById('result-detail').classList.add('hidden');
+            const s = document.getElementById('result-summary');
+            s.className = 'border border-dashed border-gray-300 p-6 mb-6 text-center';
+            s.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet</p>';
+        }
+    </script>
+    <script src="../js/main.js"></script>
+</body>
+</html>
