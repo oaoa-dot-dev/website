@@ -194,14 +194,9 @@
             if (e.key === 'Enter') runQuery();
         });
 
-        /* ── Auto-query from URL: ?domain=x, ?x, or #x ── */
+        /* ── Auto-query from URL: ?google.com ── */
         (function autoQuery() {
-            const params = new URLSearchParams(window.location.search);
-            const domain = params.get('domain')                          // ?domain=google.com
-                        || (window.location.search.length > 1 && !window.location.search.includes('=')
-                            ? window.location.search.slice(1) : null)   // ?google.com
-                        || (window.location.hash.length > 1
-                            ? window.location.hash.slice(1) : null);    // #google.com
+            const domain = window.location.search.length > 1 ? window.location.search.slice(1) : null;
             if (domain) {
                 document.getElementById('field-domain').value = domain;
                 runQuery();
