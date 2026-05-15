@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Dig | Domain Tools | OAOA.dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .field-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.3em; color:#6b7280; display:block; margin-bottom:6px; }
+        .field-input { width:100%; border:1px solid #000; padding:10px 14px; font-size:.875rem; background:#fff; font-family:inherit; }
+        .field-input:focus { outline:none; box-shadow:3px 3px 0 #000; }
+        select.field-input { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23000'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; cursor:pointer; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
+        <a href="../index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+                <a href="../products.html" class="hover:text-gray-500 transition-colors">Products</a>
+                <a href="../tools.html" class="text-black">Tools</a>
+            </div>
+            <a href="../index.html#contact" class="btn-outline hidden md:block px-6 py-2 text-[10px] font-bold uppercase tracking-widest">Get in Touch</a>
+        </div>
+    </nav>
+
+    <header class="max-w-6xl mx-auto px-6 pt-20 pb-12">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+            <a href="../tools.html" class="hover:text-black">Tools</a> <span class="mx-2">/</span>
+            <a href="../domain-tools.html" class="hover:text-black">Domain Tools</a> <span class="mx-2">/</span>
+            <span class="text-black">DNS Dig</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter mb-8">
+            DNS<br>Dig.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
+            Query DNS records from the server's network perspective — bypasses local caching and client-side DNS poisoning.
+        </p>
+    </header>
+
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+
+        <div class="border border-black">
+
+            <!-- ══ QUERY ══ -->
+            <div class="p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-1 block">Query</span>
+                <p class="text-sm font-medium text-gray-600 mb-8 max-w-lg">
+                    Enter a domain and select the record type to query from the server.
+                </p>
+                <div class="max-w-xl">
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="col-span-2">
+                            <label class="field-label">Domain</label>
+                            <input type="text" class="field-input font-mono" id="field-domain"
+                                   placeholder="oaoa.dev" autocomplete="off">
+                        </div>
+                        <div>
+                            <label class="field-label">Record Type</label>
+                            <select class="field-input" id="field-type">
+                                <option value="A">A</option>
+                                <option value="AAAA">AAAA</option>
+                                <option value="CNAME">CNAME</option>
+                                <option value="MX">MX</option>
+                                <option value="NS">NS</option>
+                                <option value="SOA">SOA</option>
+                                <option value="TXT">TXT</option>
+                                <option value="ANY">ANY</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]"
+                            id="query-btn" onclick="runQuery()">
+                        Run Query
+                    </button>
+                </div>
+            </div>
+
+            <!-- ══ RESULT ══ -->
+            <div class="p-8 md:p-12">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <span class="field-label mb-1">Result</span>
+                        <span id="last-updated" class="text-[9px] text-gray-400 font-medium uppercase tracking-wider"></span>
+                    </div>
+                    <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors" onclick="clearResult()">Clear</button>
+                </div>
+                <div id="result-summary" class="border border-dashed border-gray-300 p-6 mb-6 text-center">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet</p>
+                </div>
+                <div>
+                    <span class="field-label mb-3 block">Response</span>
+                    <textarea id="raw-response" class="w-full border border-black p-4 bg-gray-50 text-xs font-mono min-h-48 focus:outline-none"
+                              readonly placeholder="DNS query response will appear here..."></textarea>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="max-w-6xl mx-auto px-6 py-20 text-center">
+        <div class="mt-12 pt-10 b-light flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            <div class="flex gap-10 mb-6 md:mb-0">
+                <a href="../index.html" class="text-black/80 hover:text-black">Home</a>
+                <a href="../products.html" class="text-black/80 hover:text-black">Products</a>
+                <a href="../tools.html" class="text-black/80 hover:text-black">Tools</a>
+                <a href="../domain-tools.html" class="text-black/80 hover:text-black">Domain Tools</a>
+            </div>
+            <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = 'https://bigtools.oaoa.dev';
+
+        function runQuery() {
+            const domain = document.getElementById('field-domain').value.trim();
+            const type   = document.getElementById('field-type').value;
+
+            if (!domain) { setResultError('Domain is required.'); return; }
+
+            const btn = document.getElementById('query-btn'); btn.disabled = true;
+            document.getElementById('raw-response').value = '';
+            setResultPending();
+
+            const url = `${API_BASE}/api/domain-tools/dns-dig/query?domain=${encodeURIComponent(domain)}&type=${encodeURIComponent(type)}`;
+
+            fetch(url)
+            .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
+            .then(data => {
+                document.getElementById('last-updated').textContent =
+                    'Last updated ' + new Date().toLocaleTimeString('en-GB', { hour12: false });
+                document.getElementById('raw-response').value = JSON.stringify(data, null, 2);
+                if (data.hasError) {
+                    setResultError(data.errorMessage || 'Query returned an error.');
+                } else {
+                    setResultSuccess(data.answers ? data.answers.length : 0, data.timeTakenMs);
+                }
+            })
+            .catch(err => setResultError(err.message || JSON.stringify(err)))
+            .finally(() => { btn.disabled = false; });
+        }
+
+        document.getElementById('field-domain').addEventListener('keydown', e => {
+            if (e.key === 'Enter') runQuery();
+        });
+
+        function setResultPending() {
+            const el = document.getElementById('result-summary');
+            el.className = 'border border-dashed border-gray-300 p-6 mb-6 text-center';
+            el.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Querying...</p>';
+        }
+        function setResultSuccess(count, ms) {
+            const el = document.getElementById('result-summary');
+            el.className = 'border border-black bg-white p-6 mb-6';
+            el.innerHTML = `<span class="text-[9px] font-bold uppercase tracking-widest text-black block mb-2">OK</span>
+                <p class="text-sm font-medium">${count} record${count !== 1 ? 's' : ''} returned${ms != null ? ' in ' + ms + 'ms' : ''}.</p>`;
+        }
+        function setResultError(msg) {
+            const el = document.getElementById('result-summary');
+            el.className = 'border border-red-500 bg-white p-6 mb-6';
+            el.innerHTML = `<span class="text-[9px] font-bold uppercase tracking-widest text-red-600 block mb-2">Error</span>
+                <p class="text-sm font-medium text-red-700">${msg}</p>`;
+        }
+        function clearResult() {
+            document.getElementById('raw-response').value = '';
+            document.getElementById('last-updated').textContent = '';
+            document.getElementById('query-btn').disabled = false;
+            const s = document.getElementById('result-summary');
+            s.className = 'border border-dashed border-gray-300 p-6 mb-6 text-center';
+            s.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet</p>';
+        }
+    </script>
+    <script src="../js/main.js"></script>
+</body>
+</html>

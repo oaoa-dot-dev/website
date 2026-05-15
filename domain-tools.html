@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Domain Tools | OAOA.dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="antialiased">
+
+    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
+        <a href="index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+                <a href="products.html" class="hover:text-gray-500 transition-colors">Products</a>
+                <a href="tools.html" class="text-black">Tools</a>
+            </div>
+            <a href="index.html#contact"
+               class="btn-outline hidden md:block px-6 py-2 text-[10px] font-bold uppercase tracking-widest">
+                Get in Touch
+            </a>
+        </div>
+    </nav>
+
+    <header class="max-w-6xl mx-auto px-6 pt-20 pb-12">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+            <a href="tools.html" class="hover:text-black">Tools</a>
+            <span class="mx-2">/</span>
+            <span class="text-black">Domain Tools</span>
+        </div>
+        <h1 class="text-5xl md:text-8xl font-black uppercase leading-[0.9] tracking-tighter mb-12">
+            Domain<br>Tools.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
+            DNS and domain intelligence utilities that query from the server — no account required.
+        </p>
+    </header>
+
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-black border border-black">
+
+            <!-- DNS Dig -->
+            <a href="domain-tools/dns-dig.html"
+               class="bg-white p-10 flex flex-col hover:bg-gray-50 transition-colors group">
+                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-4">DNS</span>
+                <h2 class="text-xl font-black uppercase mb-3 group-hover:underline">DNS Dig</h2>
+                <p class="service-text text-sm flex-1 mb-6">
+                    Query DNS records from the server's network perspective. Supports A, AAAA, CNAME, MX, NS, SOA, TXT, and ANY — bypasses local caching and client-side DNS issues.
+                </p>
+                <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Open Tool →</span>
+            </a>
+
+            <!-- WHOIS -->
+            <a href="domain-tools/whois.html"
+               class="bg-white p-10 flex flex-col hover:bg-gray-50 transition-colors group">
+                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-4">WHOIS</span>
+                <h2 class="text-xl font-black uppercase mb-3 group-hover:underline">WHOIS Lookup</h2>
+                <p class="service-text text-sm flex-1 mb-6">
+                    Retrieve registrar, organisation, and expiry information for any domain. Returns both parsed fields and the full raw WHOIS response.
+                </p>
+                <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Open Tool →</span>
+            </a>
+
+            <!-- Placeholder -->
+            <div class="bg-white p-10 flex items-center justify-center">
+                <p class="text-[9px] font-bold text-gray-300 uppercase tracking-widest">More coming soon</p>
+            </div>
+
+        </div>
+    </section>
+
+    <footer class="max-w-6xl mx-auto px-6 py-20 text-center">
+        <div class="mt-12 pt-10 b-light flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            <div class="flex gap-10 mb-6 md:mb-0">
+                <a href="index.html" class="text-black/80 hover:text-black">Home</a>
+                <a href="products.html" class="text-black/80 hover:text-black">Products</a>
+                <a href="tools.html" class="text-black/80 hover:text-black">Tools</a>
+                <a href="mini-tools.html" class="text-black/80 hover:text-black">Mini Tools</a>
+                <a href="big-tools.html" class="text-black/80 hover:text-black">Big Tools</a>
+                <a href="domain-tools.html" class="text-black hover:text-black">Domain Tools</a>
+            </div>
+            <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
