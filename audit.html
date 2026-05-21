@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Audit | OAOA.dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #000000; line-height: 1.4; }
+        .b-light { border-top: 1px solid #eeeeee; }
+        .input-field { border: 1px solid #000000; padding: 12px; width: 100%; outline: none; transition: box-shadow 0.2s; font-size: 0.9rem; }
+        .input-field:focus { box-shadow: 4px 4px 0px #000000; }
+        .btn-black { background: #000000; color: #ffffff; transition: all 0.1s; }
+        .btn-black:hover { background: #333333; transform: translate(-2px, -2px); box-shadow: 4px 4px 0px #000000; }
+        label { font-size: 10px; font-bold; text-transform: uppercase; letter-spacing: 0.1em; display: block; margin-bottom: 8px; }
+    </style>
+</head>
+<body class="antialiased p-6 md:p-20">
+
+    <div class="max-w-3xl mx-auto">
+        <nav class="mb-20">
+            <a href="index.html" class="font-black text-xl tracking-tighter uppercase italic underline">← OAOA.dev</a>
+        </nav>
+
+        <header class="mb-20">
+            <h1 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6 leading-none">Efficiency Audit.</h1>
+            <p class="text-gray-600">Provide the following data points to prepare for our initial consult.</p>
+        </header>
+
+        <form id="auditForm" class="space-y-12">
+            <div>
+                <label for="bottleneck">What is the most repetitive manual task your team performs?</label>
+                <textarea id="bottleneck" class="input-field h-32" placeholder="e.g. Manually entering data from scanned PDFs into our CRM..."></textarea>
+            </div>
+
+            <div>
+                <label for="hours">Estimated staff hours lost per week to this task?</label>
+                <input type="text" id="hours" class="input-field" placeholder="e.g. 15-20 hours">
+            </div>
+
+            <div>
+                <label for="tools">Current tools/software involved in this process?</label>
+                <input type="text" id="tools" class="input-field" placeholder="e.g. Excel, Legacy ERP, Scanner hardware">
+            </div>
+
+            <div>
+                <label for="goal">What is the primary goal for this optimization?</label>
+                <select id="goal" class="input-field appearance-none rounded-none">
+                    <option value="Reduce Waste">Reduce Waste (Lean)</option>
+                    <option value="Increase Staff Utility">Increase Staff Utility</option>
+                    <option value="Data Accuracy">Improve Data Accuracy (AI)</option>
+                    <option value="System Continuity">System Continuity / Stability</option>
+                </select>
+            </div>
+
+            <button type="button" onclick="sendAudit()" class="btn-black w-full py-6 font-black uppercase text-xs tracking-widest">
+                Generate Audit Report & Send
+            </button>
+        </form>
+
+        <footer class="mt-32 pt-10 b-light text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            © 2026 OAOA.DEV | Confidential Process Audit
+        </footer>
+    </div>
+
+    <script>
+        function sendAudit() {
+            const bottleneck = document.getElementById('bottleneck').value;
+            const hours = document.getElementById('hours').value;
+            const tools = document.getElementById('tools').value;
+            const goal = document.getElementById('goal').value;
+
+            const subject = encodeURIComponent("Process Audit - OAOA.dev");
+            const body = encodeURIComponent(
+                "PROCESS AUDIT DATA\n" +
+                "------------------\n" +
+                "PRIMARY BOTTLENECK: " + bottleneck + "\n" +
+                "HOURS LOST/WEEK: " + hours + "\n" +
+                "CURRENT TOOLSTACK: " + tools + "\n" +
+                "OPTIMIZATION GOAL: " + goal + "\n\n" +
+                "Please reach out to schedule the consult."
+            );
+
+            window.location.href = "mailto:hello@oaoa.dev?subject=" + subject + "&body=" + body;
+        }
+    </script>
+
+</body>
+</html>
