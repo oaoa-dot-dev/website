@@ -104,6 +104,33 @@
                     </div>
                 </div>
 
+                <!-- RDAP Visual Section — hidden unless RDAP response -->
+                <div id="rdap-visual-section" class="hidden mb-6">
+                    <span class="field-label mb-3 block">RDAP Details</span>
+                    <div class="border border-black bg-white p-6 grid md:grid-cols-2 gap-x-8 gap-y-0">
+                        <div class="parsed-row">
+                            <span class="parsed-key">Registrar</span>
+                            <span class="parsed-val" id="rv-registrar">—</span>
+                        </div>
+                        <div class="parsed-row">
+                            <span class="parsed-key">Registrant</span>
+                            <span class="parsed-val" id="rv-registrant">—</span>
+                        </div>
+                        <div class="parsed-row">
+                            <span class="parsed-key">Registered</span>
+                            <span class="parsed-val" id="rv-created">—</span>
+                        </div>
+                        <div class="parsed-row">
+                            <span class="parsed-key">Expires</span>
+                            <span class="parsed-val" id="rv-expires">—</span>
+                        </div>
+                        <div class="parsed-row col-span-full border-bottom-0 pb-0 pt-4 mt-2 border-t border-gray-200">
+                            <span class="parsed-key">Nameservers</span>
+                            <span class="parsed-val" id="rv-nameservers">—</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div>
                     <span class="field-label mb-3 block">Raw WHOIS Response</span>
                     <textarea id="raw-response" class="w-full border border-black p-4 bg-gray-50 text-xs font-mono min-h-64 focus:outline-none"
@@ -156,6 +183,10 @@
                     data.timeTakenMs != null ? data.timeTakenMs + 'ms' : '—';
 
                 document.getElementById('parsed-section').classList.remove('hidden');
+                
+                // Try to parse and render RDAP
+                parseAndRenderRdap(data.rawText);
+                
                 setResultSuccess(data.domain);
             })
             .catch(err => setResultError(err.message || JSON.stringify(err)))
@@ -188,9 +219,71 @@
             document.getElementById('last-updated').textContent = '';
             document.getElementById('query-btn').disabled = false;
             document.getElementById('parsed-section').classList.add('hidden');
+            document.getElementById('rdap-visual-section').classList.add('hidden');
             const s = document.getElementById('result-summary');
             s.className = 'border border-dashed border-gray-300 p-6 mb-6 text-center';
             s.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet</p>';
+        }
+
+        function parseAndRenderRdap(rawText) {
+            if (!rawText || !rawText.includes('===== RDAP RESPONSE')) {
+                document.getElementById('rdap-visual-section').classList.add('hidden');
+                return;
+            }
+            
+            try {
+                const jsonStr = rawText.split('\n\n').slice(1).join('\n\n');
+                const rdap = JSON.parse(jsonStr);
+                
+                let registrar = '—';
+                let registrant = '—';
+                let created = '—';
+                let expires = '—';
+                let nameservers = [];
+
+                if (rdap.events) {
+                    rdap.events.forEach(ev => {
+                        if (ev.eventAction === 'registration') created = new Date(ev.eventDate).toLocaleString();
+                        if (ev.eventAction === 'expiration') expires = new Date(ev.eventDate).toLocaleString();
+                    });
+                }
+                
+                if (rdap.entities) {
+                    rdap.entities.forEach(ent => {
+                        if (ent.roles) {
+                            if (ent.roles.includes('registrar')) registrar = extractVcardName(ent.vcardArray);
+                            if (ent.roles.includes('registrant')) registrant = extractVcardName(ent.vcardArray);
+                        }
+                    });
+                }
+                
+                if (rdap.nameservers) {
+                    nameservers = rdap.nameservers.map(ns => ns.ldhName);
+                }
+
+                document.getElementById('rv-registrar').textContent = registrar;
+                document.getElementById('rv-registrant').textContent = registrant;
+                document.getElementById('rv-created').textContent = created;
+                document.getElementById('rv-expires').textContent = expires;
+                document.getElementById('rv-nameservers').innerHTML = nameservers.length > 0 ? nameservers.join('<br>') : '—';
+                
+                document.getElementById('rdap-visual-section').classList.remove('hidden');
+            } catch (e) {
+                console.error("Failed to parse RDAP for visualization", e);
+                document.getElementById('rdap-visual-section').classList.add('hidden');
+            }
+        }
+
+        function extractVcardName(vcardArray) {
+            if (!vcardArray || vcardArray.length < 2) return '—';
+            const props = vcardArray[1];
+            let name = '';
+            let org = '';
+            props.forEach(p => {
+                if (p[0] === 'fn') name = p[3];
+                if (p[0] === 'org') org = p[3];
+            });
+            return org || name || '—';
         }
     </script>
     <script src="../js/main.js"></script>
