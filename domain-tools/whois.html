@@ -107,13 +107,13 @@
                 <!-- RDAP Visual Section — hidden unless RDAP response -->
                 <div id="rdap-visual-section" class="hidden mb-6">
                     <span class="field-label mb-3 block">RDAP Details</span>
-                    <div class="border border-black bg-white p-6 grid md:grid-cols-2 gap-x-8 gap-y-0">
+                    <div class="border border-black bg-white p-6 mb-6 grid md:grid-cols-2 gap-x-8 gap-y-0">
                         <div class="parsed-row">
                             <span class="parsed-key">Registrar</span>
                             <span class="parsed-val" id="rv-registrar">—</span>
                         </div>
                         <div class="parsed-row">
-                            <span class="parsed-key">Registrant</span>
+                            <span class="parsed-key">Registrant Org</span>
                             <span class="parsed-val" id="rv-registrant">—</span>
                         </div>
                         <div class="parsed-row">
@@ -127,6 +127,43 @@
                         <div class="parsed-row col-span-full border-bottom-0 pb-0 pt-4 mt-2 border-t border-gray-200">
                             <span class="parsed-key">Nameservers</span>
                             <span class="parsed-val" id="rv-nameservers">—</span>
+                        </div>
+                    </div>
+                    
+                    <span class="field-label mb-3 block">Contacts</span>
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <!-- Registrant -->
+                        <div class="border border-black bg-white p-6">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Registrant</span>
+                            <div class="space-y-1.5 text-xs font-mono">
+                                <div class="font-bold text-black text-[13px]" id="rv-reg-name">—</div>
+                                <div class="text-gray-500" id="rv-reg-org">—</div>
+                                <div class="text-gray-600" id="rv-reg-phone">—</div>
+                                <div class="text-gray-600 break-all" id="rv-reg-email">—</div>
+                                <div class="text-gray-600 text-[11px] mt-1 pt-1 border-t border-gray-100" id="rv-reg-addr">—</div>
+                            </div>
+                        </div>
+                        <!-- Admin -->
+                        <div class="border border-black bg-white p-6">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Administrative</span>
+                            <div class="space-y-1.5 text-xs font-mono">
+                                <div class="font-bold text-black text-[13px]" id="rv-adm-name">—</div>
+                                <div class="text-gray-500" id="rv-adm-org">—</div>
+                                <div class="text-gray-600" id="rv-adm-phone">—</div>
+                                <div class="text-gray-600 break-all" id="rv-adm-email">—</div>
+                                <div class="text-gray-600 text-[11px] mt-1 pt-1 border-t border-gray-100" id="rv-adm-addr">—</div>
+                            </div>
+                        </div>
+                        <!-- Tech -->
+                        <div class="border border-black bg-white p-6">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-3">Technical</span>
+                            <div class="space-y-1.5 text-xs font-mono">
+                                <div class="font-bold text-black text-[13px]" id="rv-tec-name">—</div>
+                                <div class="text-gray-500" id="rv-tec-org">—</div>
+                                <div class="text-gray-600" id="rv-tec-phone">—</div>
+                                <div class="text-gray-600 break-all" id="rv-tec-email">—</div>
+                                <div class="text-gray-600 text-[11px] mt-1 pt-1 border-t border-gray-100" id="rv-tec-addr">—</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -241,6 +278,10 @@
                 let expires = '—';
                 let nameservers = [];
 
+                let regInfo = { name: '—', org: '—', phone: '—', email: '—', addr: '—' };
+                let admInfo = { name: '—', org: '—', phone: '—', email: '—', addr: '—' };
+                let tecInfo = { name: '—', org: '—', phone: '—', email: '—', addr: '—' };
+
                 if (rdap.events) {
                     rdap.events.forEach(ev => {
                         if (ev.eventAction === 'registration') created = new Date(ev.eventDate).toLocaleString();
@@ -252,7 +293,16 @@
                     rdap.entities.forEach(ent => {
                         if (ent.roles) {
                             if (ent.roles.includes('registrar')) registrar = extractVcardName(ent.vcardArray);
-                            if (ent.roles.includes('registrant')) registrant = extractVcardName(ent.vcardArray);
+                            if (ent.roles.includes('registrant')) {
+                                registrant = extractVcardName(ent.vcardArray);
+                                regInfo = extractContactInfo(ent.vcardArray);
+                            }
+                            if (ent.roles.includes('administrative')) {
+                                admInfo = extractContactInfo(ent.vcardArray);
+                            }
+                            if (ent.roles.includes('technical')) {
+                                tecInfo = extractContactInfo(ent.vcardArray);
+                            }
                         }
                     });
                 }
@@ -266,6 +316,25 @@
                 document.getElementById('rv-created').textContent = created;
                 document.getElementById('rv-expires').textContent = expires;
                 document.getElementById('rv-nameservers').innerHTML = nameservers.length > 0 ? nameservers.join('<br>') : '—';
+
+                // Populate Contact Cards
+                document.getElementById('rv-reg-name').textContent = regInfo.name;
+                document.getElementById('rv-reg-org').textContent = regInfo.org;
+                document.getElementById('rv-reg-phone').textContent = regInfo.phone;
+                document.getElementById('rv-reg-email').textContent = regInfo.email;
+                document.getElementById('rv-reg-addr').textContent = regInfo.addr;
+
+                document.getElementById('rv-adm-name').textContent = admInfo.name;
+                document.getElementById('rv-adm-org').textContent = admInfo.org;
+                document.getElementById('rv-adm-phone').textContent = admInfo.phone;
+                document.getElementById('rv-adm-email').textContent = admInfo.email;
+                document.getElementById('rv-adm-addr').textContent = admInfo.addr;
+
+                document.getElementById('rv-tec-name').textContent = tecInfo.name;
+                document.getElementById('rv-tec-org').textContent = tecInfo.org;
+                document.getElementById('rv-tec-phone').textContent = tecInfo.phone;
+                document.getElementById('rv-tec-email').textContent = tecInfo.email;
+                document.getElementById('rv-tec-addr').textContent = tecInfo.addr;
                 
                 document.getElementById('rdap-visual-section').classList.remove('hidden');
             } catch (e) {
@@ -284,6 +353,32 @@
                 if (p[0] === 'org') org = p[3];
             });
             return org || name || '—';
+        }
+
+        function extractContactInfo(vcardArray) {
+            const info = { name: '—', org: '—', phone: '—', email: '—', addr: '—' };
+            if (!vcardArray || vcardArray.length < 2) return info;
+            const props = vcardArray[1];
+            props.forEach(p => {
+                if (p[0] === 'fn') info.name = p[3] || '—';
+                if (p[0] === 'org') info.org = p[3] || '—';
+                if (p[0] === 'tel') {
+                    let telVal = p[3];
+                    if (typeof telVal === 'string' && telVal.startsWith('tel:')) {
+                        telVal = telVal.substring(4);
+                    }
+                    info.phone = telVal || '—';
+                }
+                if (p[0] === 'email') info.email = p[3] || '—';
+                if (p[0] === 'adr') {
+                    if (Array.isArray(p[3])) {
+                        info.addr = p[3].filter(Boolean).join(', ') || '—';
+                    } else if (p[3]) {
+                        info.addr = p[3];
+                    }
+                }
+            });
+            return info;
         }
     </script>
     <script src="../js/main.js"></script>
