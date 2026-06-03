@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerShell Console TUI Toolkit | OAOA.dev</title>
+    <meta name="description" content="A premium suite of modern console Text User Interface (TUI) utilities replicating classic Windows administration tools. Built entirely in PowerShell with raw ANSI escape sequences.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .font-mono-jb {
+            font-family: 'JetBrains Mono', 'Courier New', Courier, monospace;
+        }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.25} }
+        .pulse { animation: pulse-dot 1.2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- NAVIGATION -->
+    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
+        <a href="index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+                <a href="products.html" class="text-black">Products</a>
+                <a href="tools.html" class="hover:text-gray-500 transition-colors">Tools</a>
+            </div>
+            <a href="index.html#contact"
+               class="btn-outline hidden md:block px-6 py-2 text-[10px] font-bold uppercase tracking-widest">
+                Get in Touch
+            </a>
+        </div>
+    </nav>
+
+    <!-- HEADER -->
+    <header class="max-w-6xl mx-auto px-6 pt-20 pb-16">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+            <a href="products.html" class="hover:text-black">Products</a>
+            <span class="mx-2">/</span>
+            <span class="text-black">PowerShell Console TUI Toolkit</span>
+        </div>
+        <h1 class="text-5xl md:text-8xl font-black uppercase leading-[0.9] tracking-tighter mb-12">
+            PowerShell<br>TUI Tools.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-3xl text-black leading-snug mb-8">
+            A premium suite of modern console Text User Interface (TUI) utilities replicating classic Windows administration tools. Built entirely in PowerShell with raw ANSI escape sequences, these utilities provide rich visual aesthetics, custom color palettes, smooth scrollable lists, dialog confirmations, and responsive layouts.
+        </p>
+        <div class="flex flex-wrap gap-4">
+            <a href="https://github.com/oaoa-dot-dev/psgallery-tui" target="_blank" class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-2">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                View on GitHub
+            </a>
+            <a href="https://www.powershellgallery.com/profiles/oaoa-dev" target="_blank" class="btn-outline px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]">
+                PowerShell Gallery Profile
+            </a>
+        </div>
+    </header>
+
+    <!-- CORE ATTRIBUTES SECTION -->
+    <section class="max-w-6xl mx-auto px-6 py-12 border-t border-black bg-gray-50">
+        <div class="grid md:grid-cols-3 gap-8">
+            <div>
+                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Architectural Cleanliness</span>
+                <h3 class="text-lg font-black uppercase mb-3">Zero Dependencies</h3>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    Built entirely using native PowerShell scripting and standard ANSI escape sequences. No external DLLs, frameworks, or wrappers required—ideal for headless server environments.
+                </p>
+            </div>
+            <div>
+                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">DevOps Integration</span>
+                <h3 class="text-lg font-black uppercase mb-3">DevOps Build Pipeline</h3>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    Includes a compilation pipeline script (<code class="text-xs font-mono">build.ps1</code>) that automatically bundles driver scripts and library components into single, standalone TUI execution scripts.
+                </p>
+            </div>
+            <div>
+                <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Deployment</span>
+                <h3 class="text-lg font-black uppercase mb-3">PSGallery Registered</h3>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    All scripts are published as standalone scripts in the public PowerShell Gallery, making deployment as simple as running a single <code class="text-xs font-mono">Install-Script</code> command on target servers.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- INSTALLATION QUICKSTART -->
+    <section class="max-w-6xl mx-auto px-6 py-12 border-t border-black">
+        <div class="bg-black text-white p-8 md:p-12 relative overflow-hidden">
+            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-4">Quick Start</span>
+            <h2 class="text-2xl md:text-3xl font-black uppercase mb-6">Install the Full Suite</h2>
+            <p class="text-sm text-gray-300 max-w-2xl mb-8 leading-relaxed">
+                Run the following command in an administrative PowerShell terminal to download and install all 7 TUI utilities to your system path.
+            </p>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between bg-zinc-900 border border-zinc-800 px-6 py-4 font-mono text-xs md:text-sm text-gray-300 gap-4 mb-6">
+                <code class="text-green-400 overflow-x-auto whitespace-nowrap py-1">Install-Script -Name EventViewerTUI, RecMonTUI, DeviceManagerTUI, DevicesPrintersTUI, ProgramsFeaturesTUI, ServicesTUI, MSInfo32TUI -Scope CurrentUser -Force</code>
+                <button id="copy-all" onclick="copyCommand('Install-Script -Name EventViewerTUI, RecMonTUI, DeviceManagerTUI, DevicesPrintersTUI, ProgramsFeaturesTUI, ServicesTUI, MSInfo32TUI -Scope CurrentUser -Force', 'copy-all')" class="border border-zinc-700 px-4 py-2 text-[10px] font-bold uppercase tracking-wider bg-zinc-800 hover:bg-zinc-700 transition-colors flex items-center justify-center gap-1.5 text-white shrink-0">
+                    Copy Command
+                </button>
+            </div>
+            <p class="text-[10px] text-gray-400">
+                Note: Standard PowerShell gallery security prompts will appear unless <code class="text-xs font-mono">-Force</code> is passed. Once installed, simply type any tool name (e.g. <code class="text-xs font-mono">EventViewerTUI</code>) to launch.
+            </p>
+        </div>
+    </section>
+
+    <!-- THE 7 TOOLS SHOWCASE -->
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+        
+        <h2 class="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-16 mt-8">The 7 Administrative Utilities</h2>
+
+        <div class="space-y-24">
+
+            <!-- 1. Event Viewer -->
+            <div class="border-t border-black pt-16 grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">01 // Event Viewer TUI</span>
+                    <h3 class="text-2xl md:text-3xl font-black uppercase">EventViewerTUI</h3>
+                    <p class="service-text">
+                        Browse and query local Windows Event Logs inside the terminal. Replicates the core tree and list workflow of <code class="text-xs font-mono">eventvwr.msc</code>.
+                    </p>
+                    <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                        <li>Dynamic tree grouping (Windows Logs vs Application and Services Logs).</li>
+                        <li>Advanced Filter Window (<kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">Ctrl+F</kbd> or <kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">Ctrl+1</kbd>) supporting severity toggles.</li>
+                        <li>Full search text and Event ID filtering on remote sessions.</li>
+                    </ul>
+                    <div class="pt-4 space-y-3">
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-4 py-3 font-mono text-xs">
+                            <code class="text-black">Install-Script -Name EventViewerTUI</code>
+                            <button id="copy-ev" onclick="copyCommand('Install-Script -Name EventViewerTUI', 'copy-ev')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
+                                Copy
+                            </button>
+                        </div>
+                        <a href="https://www.powershellgallery.com/packages/EventViewerTUI/" target="_blank" class="inline-block text-xs font-bold uppercase tracking-wider hover:underline text-black">
+                            View on PowerShell Gallery →
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <!-- Terminal Mockup (Event Viewer) -->
+                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative aspect-video flex flex-col font-mono-jb text-[10px] leading-relaxed text-gray-300 p-4 select-none">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-4 py-2 flex items-center justify-between border-b border-zinc-800">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></span>
+                            </div>
+                            <span class="text-[9px] text-gray-500">PowerShell - EventViewerTUI</span>
+                            <div class="w-12"></div>
+                        </div>
+                        <div class="mt-6 flex-1 flex flex-col justify-between">
+                            <div class="overflow-x-auto whitespace-pre font-mono-jb text-gray-400">
+┌─ Logs Tree ──────────────┐┌─ Event Log Grid (System) ────────────────────────┐
+│ ▼ Windows Logs           ││ Level │ Date/Time       │ Source       │ Event ID│
+│   Application            ││ <span class="text-red-500 font-bold">Error</span> │ 06/04 09:42:10  │ NTFS         │ 55      │
+│   Security               ││ <span class="text-yellow-500 font-bold">Warn</span>  │ 06/04 09:41:05  │ LSA          │ 4096    │
+│ ▷ System                 ││ <span class="text-green-500">Info</span>  │ 06/04 09:39:15  │ Winlogon     │ 7001    │
+└──────────────────────────┘└──────────────────────────────────────────────────┘
+ [F] Filter Events   [Enter] View Event Details   [Esc] Exit TUI</div>
+                            <div class="text-center py-6 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60">
+                                <span class="text-zinc-500 font-sans font-semibold text-xs">Screenshot Placeholder</span>
+                                <span class="text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with EventViewerTUI.png</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Resource Monitor -->
+            <div class="border-t border-black pt-16 grid md:grid-cols-2 gap-12 items-center">
+                <div class="md:order-2 space-y-6">
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">02 // Resource Monitor TUI</span>
+                    <h3 class="text-2xl md:text-3xl font-black uppercase">RecMonTUI</h3>
+                    <p class="service-text">
+                        Real-time CPU, Memory, Disk, and Network system telemetry in your shell window. Mimics <code class="text-xs font-mono">resmon.exe</code>.
+                    </p>
+                    <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                        <li>Tab-based navigation to separate resource graphs and tables.</li>
+                        <li>High-performance, rolling block-character charts graphing live usage statistics.</li>
+                        <li>Interactive processes list sorting and killing capability.</li>
+                    </ul>
+                    <div class="pt-4 space-y-3">
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-4 py-3 font-mono text-xs">
+                            <code class="text-black">Install-Script -Name RecMonTUI</code>
+                            <button id="copy-rm" onclick="copyCommand('Install-Script -Name RecMonTUI', 'copy-rm')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
+                                Copy
+                            </button>
+                        </div>
+                        <a href="https://www.powershellgallery.com/packages/RecMonTUI/" target="_blank" class="inline-block text-xs font-bold uppercase tracking-wider hover:underline text-black">
+                            View on PowerShell Gallery →
+                        </a>
+                    </div>
+                </div>
+                <div class="md:order-1">
+                    <!-- Terminal Mockup (Resource Monitor) -->
+                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative aspect-video flex flex-col font-mono-jb text-[10px] leading-relaxed text-gray-300 p-4 select-none">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-4 py-2 flex items-center justify-between border-b border-zinc-800">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></span>
+                            </div>
+                            <span class="text-[9px] text-gray-500">PowerShell - RecMonTUI</span>
+                            <div class="w-12"></div>
+                        </div>
+                        <div class="mt-6 flex-1 flex flex-col justify-between">
+                            <div class="overflow-x-auto whitespace-pre font-mono-jb text-gray-400">
+┌─ CPU Telemetry ── [9%] ──┐┌─ System Charts ──────────────────────────────────┐
+│ ID  │ Process    │ CPU%  ││ CPU [█████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 9%                  │
+│ 844 │ System     │ 1.2%  ││ RAM [████████████▒▒▒▒▒▒▒▒▒▒] 48%                 │
+│ 102 │ pwsh       │ 0.8%  ││ Dsk [█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 1%                  │
+│ 955 │ explorer   │ 0.5%  ││ Net [█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0.2 Mbps            │
+└──────────────────────────┘└──────────────────────────────────────────────────┘
+ [Tab] Switch Section   [K] Kill Process   [Esc] Exit</div>
+                            <div class="text-center py-6 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60">
+                                <span class="text-zinc-500 font-sans font-semibold text-xs">Screenshot Placeholder</span>
+                                <span class="text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with RecMonTUI.png</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Device Manager -->
+            <div class="border-t border-black pt-16 grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">03 // Device Manager TUI</span>
+                    <h3 class="text-2xl md:text-3xl font-black uppercase">DeviceManagerTUI</h3>
+                    <p class="service-text">
+                        A full-featured terminal manager for connected system hardware. Integrates the operational capabilities of <code class="text-xs font-mono">devmgmt.msc</code>.
+                    </p>
+                    <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                        <li>View devices grouped by type or by connected bus hierarchy.</li>
+                        <li>Actions: Scan for changes, Update driver, Enable/Disable, and Uninstall devices.</li>
+                        <li>Disabled devices are colored red, hidden devices are shown in gray.</li>
+                    </ul>
+                    <div class="pt-4 space-y-3">
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-4 py-3 font-mono text-xs">
+                            <code class="text-black">Install-Script -Name DeviceManagerTUI</code>
+                            <button id="copy-dm" onclick="copyCommand('Install-Script -Name DeviceManagerTUI', 'copy-dm')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
+                                Copy
+                            </button>
+                        </div>
+                        <a href="https://www.powershellgallery.com/packages/DeviceManagerTUI/" target="_blank" class="inline-block text-xs font-bold uppercase tracking-wider hover:underline text-black">
+                            View on PowerShell Gallery →
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <!-- Terminal Mockup (Device Manager) -->
+                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative aspect-video flex flex-col font-mono-jb text-[10px] leading-relaxed text-gray-300 p-4 select-none">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-4 py-2 flex items-center justify-between border-b border-zinc-800">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></span>
+                            </div>
+                            <span class="text-[9px] text-gray-500">PowerShell - DeviceManagerTUI</span>
+                            <div class="w-12"></div>
+                        </div>
+                        <div class="mt-6 flex-1 flex flex-col justify-between">
+                            <div class="overflow-x-auto whitespace-pre font-mono-jb text-gray-400">
+┌─ Devices Hierarchy ──────────────────────────────────────────────────────────┐
+│ ▼ DESKTOP-ADMIN                                                              │
+│   ► Audio inputs and outputs                                                 │
+│   ▼ Disk drives                                                              │
+│       Crucial CT2000T500SSD8                                                 │
+│   ▼ Network adapters                                                         │
+│       Intel(R) Ethernet Connection I219-V                                    │
+│       <span class="text-red-500">[x] Realtek PCIe GbE Family Controller [Disabled]</span>                      │
+└──────────────────────────────────────────────────────────────────────────────┘
+ [E] Enable Device   [D] Disable Device   [U] Uninstall   [Scan] Scan Changes  </div>
+                            <div class="text-center py-6 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60">
+                                <span class="text-zinc-500 font-sans font-semibold text-xs">Screenshot Placeholder</span>
+                                <span class="text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with DeviceManagerTUI.png</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Devices and Printers -->
+            <div class="border-t border-black pt-16 grid md:grid-cols-2 gap-12 items-center">
+                <div class="md:order-2 space-y-6">
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">04 // Devices & Printers TUI</span>
+                    <h3 class="text-2xl md:text-3xl font-black uppercase">DevicesPrintersTUI</h3>
+                    <p class="service-text">
+                        A centralized TUI control panel for printer queues, printer ports, and active hardware devices. Replicates the classic Windows Control Panel applet.
+                    </p>
+                    <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                        <li>Scans and manages local and user-session mapped printers.</li>
+                        <li>Parses HKEY_USERS SID registry hives to view profiles across other logged-in users.</li>
+                        <li>Actions: Set defaults, add TCP/IP ports, delete device queues.</li>
+                    </ul>
+                    <div class="pt-4 space-y-3">
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-4 py-3 font-mono text-xs">
+                            <code class="text-black">Install-Script -Name DevicesPrintersTUI</code>
+                            <button id="copy-dp" onclick="copyCommand('Install-Script -Name DevicesPrintersTUI', 'copy-dp')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
+                                Copy
+                            </button>
+                        </div>
+                        <a href="https://www.powershellgallery.com/packages/DevicesPrintersTUI/" target="_blank" class="inline-block text-xs font-bold uppercase tracking-wider hover:underline text-black">
+                            View on PowerShell Gallery →
+                        </a>
+                    </div>
+                </div>
+                <div class="md:order-1">
+                    <!-- Terminal Mockup (Devices & Printers) -->
+                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative aspect-video flex flex-col font-mono-jb text-[10px] leading-relaxed text-gray-300 p-4 select-none">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-4 py-2 flex items-center justify-between border-b border-zinc-800">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></span>
+                            </div>
+                            <span class="text-[9px] text-gray-500">PowerShell - DevicesPrintersTUI</span>
+                            <div class="w-12"></div>
+                        </div>
+                        <div class="mt-6 flex-1 flex flex-col justify-between">
+                            <div class="overflow-x-auto whitespace-pre font-mono-jb text-gray-400">
+┌─ System Devices & Printers ──────────────────────────────────────────────────┐
+│ Name                      │ Type         │ Port         │ Default            │
+│ Microsoft Print to PDF    │ Printer      │ PORTPROMPT:  │ <span class="text-green-500">Yes</span>                │
+│ HP LaserJet Pro M402      │ Printer      │ 192.168.1.50 │ No                 │
+│ USB Input Device          │ Device       │ USB001       │ -                  │
+│ Standard PS/2 Keyboard    │ Device       │ PS2          │ -                  │
+└──────────────────────────────────────────────────────────────────────────────┘
+ [D] Set Default Printer   [P] Add Port   [Delete] Remove Device   [Esc] Exit  </div>
+                            <div class="text-center py-6 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60">
+                                <span class="text-zinc-500 font-sans font-semibold text-xs">Screenshot Placeholder</span>
+                                <span class="text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with DevicesPrintersTUI.png</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. Programs and Features -->
+            <div class="border-t border-black pt-16 grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">05 // Programs & Features TUI</span>
+                    <h3 class="text-2xl md:text-3xl font-black uppercase">ProgramsFeaturesTUI</h3>
+                    <p class="service-text">
+                        Audit installed applications, versions, installation dates, and sizes. The command-line companion to <code class="text-xs font-mono">appwiz.cpl</code>.
+                    </p>
+                    <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                        <li>Fuzzy search filter (<kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">S</kbd> key) displaying search matches in real-time.</li>
+                        <li>Safe double-prompt confirmation before executing Uninstall or Modify commands.</li>
+                        <li>Deep registry auditing scanning both 32-bit and 64-bit application paths.</li>
+                    </ul>
+                    <div class="pt-4 space-y-3">
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-4 py-3 font-mono text-xs">
+                            <code class="text-black">Install-Script -Name ProgramsFeaturesTUI</code>
+                            <button id="copy-pf" onclick="copyCommand('Install-Script -Name ProgramsFeaturesTUI', 'copy-pf')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
+                                Copy
+                            </button>
+                        </div>
+                        <a href="https://www.powershellgallery.com/packages/ProgramsFeaturesTUI/" target="_blank" class="inline-block text-xs font-bold uppercase tracking-wider hover:underline text-black">
+                            View on PowerShell Gallery →
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <!-- Terminal Mockup (Programs & Features) -->
+                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative aspect-video flex flex-col font-mono-jb text-[10px] leading-relaxed text-gray-300 p-4 select-none">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-4 py-2 flex items-center justify-between border-b border-zinc-800">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></span>
+                            </div>
+                            <span class="text-[9px] text-gray-500">PowerShell - ProgramsFeaturesTUI</span>
+                            <div class="w-12"></div>
+                        </div>
+                        <div class="mt-6 flex-1 flex flex-col justify-between">
+                            <div class="overflow-x-auto whitespace-pre font-mono-jb text-gray-400">
+┌─ Installed Software Audit ──────── Filter: [<span class="text-green-400">               </span>] ──────────────┐
+│ Name                      │ Publisher    │ Version      │ Size               │
+│ Google Chrome             │ Google LLC   │ 125.0.6422   │ 482 MB             │
+│ Microsoft Edge            │ Microsoft    │ 125.0.2535   │ 512 MB             │
+│ Git version 2.45.1        │ Git          │ 2.45.1       │ 240 MB             │
+│ PowerShell 7.4.2          │ Microsoft    │ 7.4.2.0      │ 180 MB             │
+└───────────────────────────┴──────────────┴──────────────┴────────────────────┘
+ [S] Search/Filter   [U] Uninstall   [M] Modify   [Esc] Exit                   </div>
+                            <div class="text-center py-6 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60">
+                                <span class="text-zinc-500 font-sans font-semibold text-xs">Screenshot Placeholder</span>
+                                <span class="text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with ProgramsFeaturesTUI.png</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Services Manager -->
+            <div class="border-t border-black pt-16 grid md:grid-cols-2 gap-12 items-center">
+                <div class="md:order-2 space-y-6">
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">06 // Services Manager TUI</span>
+                    <h3 class="text-2xl md:text-3xl font-black uppercase">ServicesTUI</h3>
+                    <p class="service-text">
+                        A full Explorer-style console TUI for inspecting and operating Windows background services. Replaces <code class="text-xs font-mono">services.msc</code>.
+                    </p>
+                    <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                        <li>Split-pane layout: category grouping trees on the left, service status grids on the right.</li>
+                        <li>Operations: Start, Stop, Pause, Restart, and change startup state (Auto, Manual, Disabled).</li>
+                        <li>Built-in details panel view (<kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">I</kbd> key) displaying WMI properties.</li>
+                    </ul>
+                    <div class="pt-4 space-y-3">
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-4 py-3 font-mono text-xs">
+                            <code class="text-black">Install-Script -Name ServicesTUI</code>
+                            <button id="copy-sv" onclick="copyCommand('Install-Script -Name ServicesTUI', 'copy-sv')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
+                                Copy
+                            </button>
+                        </div>
+                        <a href="https://www.powershellgallery.com/packages/ServicesTUI/" target="_blank" class="inline-block text-xs font-bold uppercase tracking-wider hover:underline text-black">
+                            View on PowerShell Gallery →
+                        </a>
+                    </div>
+                </div>
+                <div class="md:order-1">
+                    <!-- Terminal Mockup (Services Manager) -->
+                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative aspect-video flex flex-col font-mono-jb text-[10px] leading-relaxed text-gray-300 p-4 select-none">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-4 py-2 flex items-center justify-between border-b border-zinc-800">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></span>
+                            </div>
+                            <span class="text-[9px] text-gray-500">PowerShell - ServicesTUI</span>
+                            <div class="w-12"></div>
+                        </div>
+                        <div class="mt-6 flex-1 flex flex-col justify-between">
+                            <div class="overflow-x-auto whitespace-pre font-mono-jb text-gray-400">
+┌─ Service Categories ─────┐┌─ Services Grid ──────────────────────────────────┐
+│ ▼ Running                ││ Name       │ Status  │ Startup Type │ Description│
+│   wuauserv               ││ Winmgmt    │ Running │ Automatic    │ WMI Service│
+│   Winmgmt                ││ wuauserv   │ Running │ Manual       │ Windows Upd│
+│ ▷ Stopped                ││ Spooler    │ Stopped │ Automatic    │ Print Spool│
+└──────────────────────────┘└──────────────────────────────────────────────────┘
+ [1] Start   [2] Stop   [3] Pause   [4] Restart   [Startup] Change Type        </div>
+                            <div class="text-center py-6 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60">
+                                <span class="text-zinc-500 font-sans font-semibold text-xs">Screenshot Placeholder</span>
+                                <span class="text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with ServicesTUI.png</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7. System Information -->
+            <div class="border-t border-black pt-16 grid md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">07 // System Information TUI</span>
+                    <h3 class="text-2xl md:text-3xl font-black uppercase">MSInfo32TUI</h3>
+                    <p class="service-text">
+                        A hierarchical category tree interface auditing hardware and system configurations. The CLI equivalent of <code class="text-xs font-mono">msinfo32.exe</code>.
+                    </p>
+                    <ul class="text-sm text-gray-600 space-y-2 list-disc list-inside">
+                        <li>Dynamic WMI/CIM queries loading categories on-demand to limit memory footprint.</li>
+                        <li>Comprehensive tree coverage: Hardware Resources (IRQs, DMA), Components, and Software.</li>
+                        <li>Bottom status bar summarizing active category data.</li>
+                    </ul>
+                    <div class="pt-4 space-y-3">
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-4 py-3 font-mono text-xs">
+                            <code class="text-black">Install-Script -Name MSInfo32TUI</code>
+                            <button id="copy-mi" onclick="copyCommand('Install-Script -Name MSInfo32TUI', 'copy-mi')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
+                                Copy
+                            </button>
+                        </div>
+                        <a href="https://www.powershellgallery.com/packages/MSInfo32TUI/" target="_blank" class="inline-block text-xs font-bold uppercase tracking-wider hover:underline text-black">
+                            View on PowerShell Gallery →
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <!-- Terminal Mockup (System Information) -->
+                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative aspect-video flex flex-col font-mono-jb text-[10px] leading-relaxed text-gray-300 p-4 select-none">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-4 py-2 flex items-center justify-between border-b border-zinc-800">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></span>
+                            </div>
+                            <span class="text-[9px] text-gray-500">PowerShell - MSInfo32TUI</span>
+                            <div class="w-12"></div>
+                        </div>
+                        <div class="mt-6 flex-1 flex flex-col justify-between">
+                            <div class="overflow-x-auto whitespace-pre font-mono-jb text-gray-400">
+┌─ Category Tree ──────────┐┌─ System Summary ─────────────────────────────────┐
+│ ▼ System Summary         ││ Item                │ Value                      │
+│ ▷ Hardware Resources     ││ OS Name             │ Microsoft Windows 11 Pro   │
+│ ▷ Components             ││ System Type         │ x64-based PC               │
+│ ▷ Software Environment   ││ Processor           │ Intel Core i7-12700K       │
+└──────────────────────────┘└──────────────────────────────────────────────────┘
+ [Enter] Expand Category   [S] Save Report   [Esc] Exit                        </div>
+                            <div class="text-center py-6 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60">
+                                <span class="text-zinc-500 font-sans font-semibold text-xs">Screenshot Placeholder</span>
+                                <span class="text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with MSInfo32TUI.png</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="max-w-6xl mx-auto px-6 py-20 text-center border-t border-black">
+        <div class="mt-12 pt-10 flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            <div class="flex gap-10 mb-6 md:mb-0">
+                <a href="index.html" class="text-black/80 hover:text-black">Home</a>
+                <a href="products.html" class="text-black/80 hover:text-black">Products</a>
+                <a href="tools.html" class="text-black/80 hover:text-black">Tools</a>
+            </div>
+            <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE SCRIPT -->
+    <script>
+        function copyCommand(text, btnId) {
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById(btnId);
+                const originalText = btn.innerHTML;
+                
+                btn.innerHTML = `<span class="text-green-600 flex items-center gap-1">✓ Copied</span>`;
+                btn.classList.add('border-green-600');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('border-green-600');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
