@@ -140,8 +140,8 @@
                 </div>
                 <div>
                     <!-- Terminal Mockup (Event Viewer) -->
-                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
-                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
+                    <div class="w-full max-w-full min-w-0 bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800 shrink-0">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
                                 <span class="w-2 h-2 rounded-full bg-[#ffbd2e]"></span>
@@ -150,8 +150,9 @@
                             <span class="text-[8px] sm:text-[9px] text-gray-500">PowerShell - EventViewerTUI</span>
                             <div class="w-8"></div>
                         </div>
-                        <div class="mt-6 flex-1 flex flex-col justify-between overflow-x-auto">
-                            <div class="whitespace-pre font-mono-jb text-gray-400">
+                        <div class="mt-6 flex-1 flex flex-col justify-between min-w-0">
+                            <div class="overflow-x-auto min-w-0 scrollbar-thin py-1">
+                                <div class="whitespace-pre font-mono-jb text-gray-400">
 ┌─ Logs Tree ──────────────┐┌─ Event Log Grid (System) ────────────────────────┐
 │ ▼ Windows Logs           ││ Level │ Date/Time       │ Source       │ Event ID│
 │   Application            ││ <span class="text-red-500 font-bold">Error</span> │ 06/04 09:42:10  │ NTFS         │ 55      │
@@ -159,7 +160,8 @@
 │ ▷ System                 ││ <span class="text-green-500">Info</span>  │ 06/04 09:39:15  │ Winlogon     │ 7001    │
 └──────────────────────────┘└──────────────────────────────────────────────────┘
  [F] Filter Events   [Enter] View Event Details   [Esc] Exit TUI</div>
-                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4">
+                            </div>
+                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4 shrink-0">
                                 <span class="text-zinc-500 font-sans font-semibold text-[10px] sm:text-xs">Screenshot Placeholder</span>
                                 <span class="text-[8px] sm:text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with EventViewerTUI.png</span>
                             </div>
@@ -195,8 +197,8 @@
                 </div>
                 <div class="md:order-1">
                     <!-- Terminal Mockup (Resource Monitor) -->
-                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
-                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
+                    <div class="w-full max-w-full min-w-0 bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800 shrink-0">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
                                 <span class="w-2 h-2 rounded-full bg-[#ffbd2e]"></span>
@@ -205,8 +207,9 @@
                             <span class="text-[8px] sm:text-[9px] text-gray-500">PowerShell - RecMonTUI</span>
                             <div class="w-8"></div>
                         </div>
-                        <div class="mt-6 flex-1 flex flex-col justify-between overflow-x-auto">
-                            <div class="whitespace-pre font-mono-jb text-gray-400">
+                        <div class="mt-6 flex-1 flex flex-col justify-between min-w-0">
+                            <div class="overflow-x-auto min-w-0 scrollbar-thin py-1">
+                                <div class="whitespace-pre font-mono-jb text-gray-400">
 ┌─ CPU Telemetry ── [9%] ──┐┌─ System Charts ──────────────────────────────────┐
 │ ID  │ Process    │ CPU%  ││ CPU [█████▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 9%                  │
 │ 844 │ System     │ 1.2%  ││ RAM [████████████▒▒▒▒▒▒▒▒▒▒] 48%                 │
@@ -214,7 +217,8 @@
 │ 955 │ explorer   │ 0.5%  ││ Net [█▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒] 0.2 Mbps            │
 └──────────────────────────┘└──────────────────────────────────────────────────┘
  [Tab] Switch Section   [K] Kill Process   [Esc] Exit</div>
-                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4">
+                            </div>
+                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4 shrink-0">
                                 <span class="text-zinc-500 font-sans font-semibold text-[10px] sm:text-xs">Screenshot Placeholder</span>
                                 <span class="text-[8px] sm:text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with RecMonTUI.png</span>
                             </div>
@@ -250,8 +254,8 @@
                 </div>
                 <div>
                     <!-- Terminal Mockup (Device Manager) -->
-                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
-                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
+                    <div class="w-full max-w-full min-w-0 bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800 shrink-0">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
                                 <span class="w-2 h-2 rounded-full bg-[#ffbd2e]"></span>
@@ -260,8 +264,9 @@
                             <span class="text-[8px] sm:text-[9px] text-gray-500">PowerShell - DeviceManagerTUI</span>
                             <div class="w-8"></div>
                         </div>
-                        <div class="mt-6 flex-1 flex flex-col justify-between overflow-x-auto">
-                            <div class="whitespace-pre font-mono-jb text-gray-400">
+                        <div class="mt-6 flex-1 flex flex-col justify-between min-w-0">
+                            <div class="overflow-x-auto min-w-0 scrollbar-thin py-1">
+                                <div class="whitespace-pre font-mono-jb text-gray-400">
 ┌─ Devices Hierarchy ──────────────────────────────────────────────────────────┐
 │ ▼ DESKTOP-ADMIN                                                              │
 │   ► Audio inputs and outputs                                                 │
@@ -272,7 +277,8 @@
 │       <span class="text-red-500">[x] Realtek PCIe GbE Family Controller [Disabled]</span>                      │
 └──────────────────────────────────────────────────────────────────────────────┘
  [E] Enable Device   [D] Disable Device   [U] Uninstall   [Scan] Scan Changes  </div>
-                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4">
+                            </div>
+                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4 shrink-0">
                                 <span class="text-zinc-500 font-sans font-semibold text-[10px] sm:text-xs">Screenshot Placeholder</span>
                                 <span class="text-[8px] sm:text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with DeviceManagerTUI.png</span>
                             </div>
@@ -308,8 +314,8 @@
                 </div>
                 <div class="md:order-1">
                     <!-- Terminal Mockup (Devices & Printers) -->
-                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
-                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
+                    <div class="w-full max-w-full min-w-0 bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800 shrink-0">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
                                 <span class="w-2 h-2 rounded-full bg-[#ffbd2e]"></span>
@@ -318,8 +324,9 @@
                             <span class="text-[8px] sm:text-[9px] text-gray-500">PowerShell - DevicesPrintersTUI</span>
                             <div class="w-8"></div>
                         </div>
-                        <div class="mt-6 flex-1 flex flex-col justify-between overflow-x-auto">
-                            <div class="whitespace-pre font-mono-jb text-gray-400">
+                        <div class="mt-6 flex-1 flex flex-col justify-between min-w-0">
+                            <div class="overflow-x-auto min-w-0 scrollbar-thin py-1">
+                                <div class="whitespace-pre font-mono-jb text-gray-400">
 ┌─ System Devices & Printers ──────────────────────────────────────────────────┐
 │ Name                      │ Type         │ Port         │ Default            │
 │ Microsoft Print to PDF    │ Printer      │ PORTPROMPT:  │ <span class="text-green-500">Yes</span>                │
@@ -328,7 +335,8 @@
 │ Standard PS/2 Keyboard    │ Device       │ PS2          │ -                  │
 └──────────────────────────────────────────────────────────────────────────────┘
  [D] Set Default Printer   [P] Add Port   [Delete] Remove Device   [Esc] Exit  </div>
-                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4">
+                            </div>
+                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4 shrink-0">
                                 <span class="text-zinc-500 font-sans font-semibold text-[10px] sm:text-xs">Screenshot Placeholder</span>
                                 <span class="text-[8px] sm:text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with DevicesPrintersTUI.png</span>
                             </div>
@@ -364,8 +372,8 @@
                 </div>
                 <div>
                     <!-- Terminal Mockup (Programs & Features) -->
-                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
-                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
+                    <div class="w-full max-w-full min-w-0 bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800 shrink-0">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
                                 <span class="w-2 h-2 rounded-full bg-[#ffbd2e]"></span>
@@ -374,8 +382,9 @@
                             <span class="text-[8px] sm:text-[9px] text-gray-500">PowerShell - ProgramsFeaturesTUI</span>
                             <div class="w-8"></div>
                         </div>
-                        <div class="mt-6 flex-1 flex flex-col justify-between overflow-x-auto">
-                            <div class="whitespace-pre font-mono-jb text-gray-400">
+                        <div class="mt-6 flex-1 flex flex-col justify-between min-w-0">
+                            <div class="overflow-x-auto min-w-0 scrollbar-thin py-1">
+                                <div class="whitespace-pre font-mono-jb text-gray-400">
 ┌─ Installed Software Audit ──────── Filter: [<span class="text-green-400">               </span>] ──────────────┐
 │ Name                      │ Publisher    │ Version      │ Size               │
 │ Google Chrome             │ Google LLC   │ 125.0.6422   │ 482 MB             │
@@ -384,7 +393,8 @@
 │ PowerShell 7.4.2          │ Microsoft    │ 7.4.2.0      │ 180 MB             │
 └───────────────────────────┴──────────────┴──────────────┴────────────────────┘
  [S] Search/Filter   [U] Uninstall   [M] Modify   [Esc] Exit                   </div>
-                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4">
+                            </div>
+                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4 shrink-0">
                                 <span class="text-zinc-500 font-sans font-semibold text-[10px] sm:text-xs">Screenshot Placeholder</span>
                                 <span class="text-[8px] sm:text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with ProgramsFeaturesTUI.png</span>
                             </div>
@@ -420,8 +430,8 @@
                 </div>
                 <div class="md:order-1">
                     <!-- Terminal Mockup (Services Manager) -->
-                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
-                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
+                    <div class="w-full max-w-full min-w-0 bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800 shrink-0">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
                                 <span class="w-2 h-2 rounded-full bg-[#ffbd2e]"></span>
@@ -430,8 +440,9 @@
                             <span class="text-[8px] sm:text-[9px] text-gray-500">PowerShell - ServicesTUI</span>
                             <div class="w-8"></div>
                         </div>
-                        <div class="mt-6 flex-1 flex flex-col justify-between overflow-x-auto">
-                            <div class="whitespace-pre font-mono-jb text-gray-400">
+                        <div class="mt-6 flex-1 flex flex-col justify-between min-w-0">
+                            <div class="overflow-x-auto min-w-0 scrollbar-thin py-1">
+                                <div class="whitespace-pre font-mono-jb text-gray-400">
 ┌─ Service Categories ─────┐┌─ Services Grid ──────────────────────────────────┐
 │ ▼ Running                ││ Name       │ Status  │ Startup Type │ Description│
 │   wuauserv               ││ Winmgmt    │ Running │ Automatic    │ WMI Service│
@@ -439,7 +450,8 @@
 │ ▷ Stopped                ││ Spooler    │ Stopped │ Automatic    │ Print Spool│
 └──────────────────────────┘└──────────────────────────────────────────────────┘
  [1] Start   [2] Stop   [3] Pause   [4] Restart   [Startup] Change Type        </div>
-                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4">
+                            </div>
+                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4 shrink-0">
                                 <span class="text-zinc-500 font-sans font-semibold text-[10px] sm:text-xs">Screenshot Placeholder</span>
                                 <span class="text-[8px] sm:text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with ServicesTUI.png</span>
                             </div>
@@ -475,8 +487,8 @@
                 </div>
                 <div>
                     <!-- Terminal Mockup (System Information) -->
-                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
-                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
+                    <div class="w-full max-w-full min-w-0 bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                        <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800 shrink-0">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
                                 <span class="w-2 h-2 rounded-full bg-[#ffbd2e]"></span>
@@ -485,8 +497,9 @@
                             <span class="text-[8px] sm:text-[9px] text-gray-500">PowerShell - MSInfo32TUI</span>
                             <div class="w-8"></div>
                         </div>
-                        <div class="mt-6 flex-1 flex flex-col justify-between overflow-x-auto">
-                            <div class="whitespace-pre font-mono-jb text-gray-400">
+                        <div class="mt-6 flex-1 flex flex-col justify-between min-w-0">
+                            <div class="overflow-x-auto min-w-0 scrollbar-thin py-1">
+                                <div class="whitespace-pre font-mono-jb text-gray-400">
 ┌─ Category Tree ──────────┐┌─ System Summary ─────────────────────────────────┐
 │ ▼ System Summary         ││ Item                │ Value                      │
 │ ▷ Hardware Resources     ││ OS Name             │ Microsoft Windows 11 Pro   │
@@ -494,7 +507,8 @@
 │ ▷ Software Environment   ││ Processor           │ Intel Core i7-12700K       │
 └──────────────────────────┘└──────────────────────────────────────────────────┘
  [Enter] Expand Category   [S] Save Report   [Esc] Exit                        </div>
-                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4">
+                            </div>
+                            <div class="text-center py-4 flex flex-col items-center justify-center border border-dashed border-zinc-800 rounded bg-zinc-950/60 mt-4 shrink-0">
                                 <span class="text-zinc-500 font-sans font-semibold text-[10px] sm:text-xs">Screenshot Placeholder</span>
                                 <span class="text-[8px] sm:text-[9px] text-zinc-600 font-sans mt-0.5">Click-to-zoom / Replace with MSInfo32TUI.png</span>
                             </div>
@@ -509,7 +523,7 @@
 
     <!-- FOOTER -->
     <footer class="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center border-t border-black">
-        <div class="mt-12 pt-10 flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+        <div class="mt-12 pt-10 flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.4em] text-gray-400">
             <div class="flex gap-10 mb-6 md:mb-0">
                 <a href="index.html" class="text-black/80 hover:text-black">Home</a>
                 <a href="products.html" class="text-black/80 hover:text-black">Products</a>
