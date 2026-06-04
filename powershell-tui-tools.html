@@ -16,10 +16,10 @@
         .pulse { animation: pulse-dot 1.2s ease-in-out infinite; }
     </style>
 </head>
-<body class="antialiased">
+<body class="antialiased overflow-x-hidden w-full">
 
     <!-- NAVIGATION -->
-    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
+    <nav class="max-w-6xl mx-auto px-4 sm:px-6 py-10 flex justify-between items-center">
         <a href="index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
         <div class="flex items-center gap-8">
             <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
@@ -34,7 +34,7 @@
     </nav>
 
     <!-- HEADER -->
-    <header class="max-w-6xl mx-auto px-6 pt-20 pb-16">
+    <header class="max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-16">
         <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
             <a href="products.html" class="hover:text-black">Products</a>
             <span class="mx-2">/</span>
@@ -58,7 +58,7 @@
     </header>
 
     <!-- CORE ATTRIBUTES SECTION -->
-    <section class="max-w-6xl mx-auto px-6 py-12 border-t border-black bg-gray-50">
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 py-12 border-t border-black bg-gray-50">
         <div class="grid md:grid-cols-3 gap-8">
             <div>
                 <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Architectural Cleanliness</span>
@@ -85,15 +85,17 @@
     </section>
 
     <!-- INSTALLATION QUICKSTART -->
-    <section class="max-w-6xl mx-auto px-6 py-12 border-t border-black">
-        <div class="bg-black text-white p-8 md:p-12 relative overflow-hidden">
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 py-12 border-t border-black">
+        <div class="bg-black text-white p-6 sm:p-8 md:p-12 relative overflow-hidden">
             <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-4">Quick Start</span>
             <h2 class="text-2xl md:text-3xl font-black uppercase mb-6">Install the Full Suite</h2>
             <p class="text-sm text-gray-300 max-w-2xl mb-8 leading-relaxed">
                 Run the following command in an administrative PowerShell terminal to download and install all 7 TUI utilities to your system path.
             </p>
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between bg-zinc-900 border border-zinc-800 px-6 py-4 font-mono text-xs md:text-sm text-gray-300 gap-4 mb-6">
-                <code class="text-green-400 overflow-x-auto whitespace-nowrap py-1">Install-Script -Name EventViewerTUI, RecMonTUI, DeviceManagerTUI, DevicesPrintersTUI, ProgramsFeaturesTUI, ServicesTUI, MSInfo32TUI -Scope CurrentUser -Force</code>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between bg-zinc-900 border border-zinc-800 p-4 sm:px-6 sm:py-4 font-mono text-xs md:text-sm text-gray-300 gap-4 mb-6 overflow-hidden max-w-full">
+                <div class="min-w-0 flex-1 overflow-x-auto scrollbar-thin">
+                    <code class="text-green-400 whitespace-nowrap block py-1">Install-Script -Name EventViewerTUI, RecMonTUI, DeviceManagerTUI, DevicesPrintersTUI, ProgramsFeaturesTUI, ServicesTUI, MSInfo32TUI -Scope CurrentUser -Force</code>
+                </div>
                 <button id="copy-all" onclick="copyCommand('Install-Script -Name EventViewerTUI, RecMonTUI, DeviceManagerTUI, DevicesPrintersTUI, ProgramsFeaturesTUI, ServicesTUI, MSInfo32TUI -Scope CurrentUser -Force', 'copy-all')" class="border border-zinc-700 px-4 py-2 text-[10px] font-bold uppercase tracking-wider bg-zinc-800 hover:bg-zinc-700 transition-colors flex items-center justify-center gap-1.5 text-white shrink-0">
                     Copy Command
                 </button>
@@ -105,7 +107,7 @@
     </section>
 
     <!-- THE 7 TOOLS SHOWCASE -->
-    <section class="max-w-6xl mx-auto px-6 pb-24">
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
         
         <h2 class="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-16 mt-8">The 7 Administrative Utilities</h2>
 
@@ -125,8 +127,8 @@
                         <li>Full search text and Event ID filtering on remote sessions.</li>
                     </ul>
                     <div class="pt-4 space-y-3">
-                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs">
-                            <code class="text-black truncate mr-2">Install-Script -Name EventViewerTUI</code>
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs overflow-hidden">
+                            <code class="text-black truncate mr-2 min-w-0">Install-Script -Name EventViewerTUI</code>
                             <button id="copy-ev" onclick="copyCommand('Install-Script -Name EventViewerTUI', 'copy-ev')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
                                 Copy
                             </button>
@@ -138,7 +140,7 @@
                 </div>
                 <div>
                     <!-- Terminal Mockup (Event Viewer) -->
-                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
                         <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
@@ -180,8 +182,8 @@
                         <li>Interactive processes list sorting and killing capability.</li>
                     </ul>
                     <div class="pt-4 space-y-3">
-                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs">
-                            <code class="text-black truncate mr-2">Install-Script -Name RecMonTUI</code>
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs overflow-hidden">
+                            <code class="text-black truncate mr-2 min-w-0">Install-Script -Name RecMonTUI</code>
                             <button id="copy-rm" onclick="copyCommand('Install-Script -Name RecMonTUI', 'copy-rm')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
                                 Copy
                             </button>
@@ -193,7 +195,7 @@
                 </div>
                 <div class="md:order-1">
                     <!-- Terminal Mockup (Resource Monitor) -->
-                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
                         <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
@@ -235,8 +237,8 @@
                         <li>Disabled devices are colored red, hidden devices are shown in gray.</li>
                     </ul>
                     <div class="pt-4 space-y-3">
-                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs">
-                            <code class="text-black truncate mr-2">Install-Script -Name DeviceManagerTUI</code>
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs overflow-hidden">
+                            <code class="text-black truncate mr-2 min-w-0">Install-Script -Name DeviceManagerTUI</code>
                             <button id="copy-dm" onclick="copyCommand('Install-Script -Name DeviceManagerTUI', 'copy-dm')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
                                 Copy
                             </button>
@@ -248,7 +250,7 @@
                 </div>
                 <div>
                     <!-- Terminal Mockup (Device Manager) -->
-                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
                         <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
@@ -293,8 +295,8 @@
                         <li>Actions: Set defaults, add TCP/IP ports, delete device queues.</li>
                     </ul>
                     <div class="pt-4 space-y-3">
-                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs">
-                            <code class="text-black truncate mr-2">Install-Script -Name DevicesPrintersTUI</code>
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs overflow-hidden">
+                            <code class="text-black truncate mr-2 min-w-0">Install-Script -Name DevicesPrintersTUI</code>
                             <button id="copy-dp" onclick="copyCommand('Install-Script -Name DevicesPrintersTUI', 'copy-dp')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
                                 Copy
                             </button>
@@ -306,7 +308,7 @@
                 </div>
                 <div class="md:order-1">
                     <!-- Terminal Mockup (Devices & Printers) -->
-                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
                         <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
@@ -349,8 +351,8 @@
                         <li>Deep registry auditing scanning both 32-bit and 64-bit application paths.</li>
                     </ul>
                     <div class="pt-4 space-y-3">
-                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs">
-                            <code class="text-black truncate mr-2">Install-Script -Name ProgramsFeaturesTUI</code>
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs overflow-hidden">
+                            <code class="text-black truncate mr-2 min-w-0">Install-Script -Name ProgramsFeaturesTUI</code>
                             <button id="copy-pf" onclick="copyCommand('Install-Script -Name ProgramsFeaturesTUI', 'copy-pf')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
                                 Copy
                             </button>
@@ -362,7 +364,7 @@
                 </div>
                 <div>
                     <!-- Terminal Mockup (Programs & Features) -->
-                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
                         <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
@@ -405,8 +407,8 @@
                         <li>Built-in details panel view (<kbd class="px-1.5 py-0.5 bg-gray-100 border border-gray-300 rounded text-xs">I</kbd> key) displaying WMI properties.</li>
                     </ul>
                     <div class="pt-4 space-y-3">
-                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs">
-                            <code class="text-black truncate mr-2">Install-Script -Name ServicesTUI</code>
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs overflow-hidden">
+                            <code class="text-black truncate mr-2 min-w-0">Install-Script -Name ServicesTUI</code>
                             <button id="copy-sv" onclick="copyCommand('Install-Script -Name ServicesTUI', 'copy-sv')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
                                 Copy
                             </button>
@@ -418,7 +420,7 @@
                 </div>
                 <div class="md:order-1">
                     <!-- Terminal Mockup (Services Manager) -->
-                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
                         <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
@@ -460,8 +462,8 @@
                         <li>Bottom status bar summarizing active category data.</li>
                     </ul>
                     <div class="pt-4 space-y-3">
-                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs">
-                            <code class="text-black truncate mr-2">Install-Script -Name MSInfo32TUI</code>
+                        <div class="flex items-center justify-between bg-gray-50 border border-black px-3 py-2.5 sm:px-4 sm:py-3 font-mono text-[10px] sm:text-xs overflow-hidden">
+                            <code class="text-black truncate mr-2 min-w-0">Install-Script -Name MSInfo32TUI</code>
                             <button id="copy-mi" onclick="copyCommand('Install-Script -Name MSInfo32TUI', 'copy-mi')" class="border border-black px-3 py-1 text-[10px] font-bold uppercase tracking-wider bg-white hover:bg-gray-100 transition-colors shrink-0">
                                 Copy
                             </button>
@@ -473,7 +475,7 @@
                 </div>
                 <div>
                     <!-- Terminal Mockup (System Information) -->
-                    <div class="bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
+                    <div class="w-full max-w-full bg-black rounded-lg overflow-hidden border border-gray-800 shadow-2xl relative flex flex-col font-mono-jb text-[5.5px] min-[360px]:text-[6.5px] min-[400px]:text-[8px] sm:text-[9px] md:text-[10px] leading-normal text-gray-300 p-2 sm:p-4 select-none min-h-[160px] sm:min-h-[220px]">
                         <div class="absolute top-0 left-0 right-0 bg-zinc-900 px-2 sm:px-4 py-1 sm:py-2 flex items-center justify-between border-b border-zinc-800">
                             <div class="flex items-center gap-1.5">
                                 <span class="w-2 h-2 rounded-full bg-[#ff5f56]"></span>
@@ -506,7 +508,7 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="max-w-6xl mx-auto px-6 py-20 text-center border-t border-black">
+    <footer class="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center border-t border-black">
         <div class="mt-12 pt-10 flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
             <div class="flex gap-10 mb-6 md:mb-0">
                 <a href="index.html" class="text-black/80 hover:text-black">Home</a>
@@ -516,6 +518,8 @@
             <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
         </div>
     </footer>
+
+    <script src="js/main.js"></script>
 
     <!-- INTERACTIVE SCRIPT -->
     <script>
