@@ -7,6 +7,74 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .provider-btn {
+            padding: 6px 14px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.15s ease-in-out;
+        }
+
+        .provider-btn.active {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .provider-btn:not(.active) {
+            background: transparent;
+            color: #666666;
+        }
+
+        .provider-btn:not(.active):hover {
+            color: #000000;
+            background: #e5e7eb;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #000000;
+            color: #ffffff;
+            border: 1px solid #000000;
+            padding: 12px 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            box-shadow: 4px 4px 0px #000000;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast-error {
+            background: #ef4444;
+            color: #ffffff;
+        }
+
+        .loader {
+            display: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body class="antialiased">
 
@@ -152,6 +220,116 @@
             </a>
         </div>
 
+        <!-- Translation Preprocessor Demo -->
+        <div id="translation-preprocessor" class="border-l-4 border-black pl-8 mb-20 scroll-mt-10">
+            <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
+                <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block">05 // Signal Preprocessing</span>
+                <div id="service-status" class="border border-black px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 bg-gray-50">
+                    <span class="status-dot w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                    <span id="status-text">Checking Service...</span>
+                </div>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-black uppercase mb-4">Translation Preprocessor Demo</h2>
+            <p class="service-text mb-8 max-w-3xl">
+                High-performance segmenter &amp; text-joining microservice demo. Bypasses English content and translates non-English blocks in parallel.
+            </p>
+
+            <div class="bg-gray-50 border border-black p-6 md:p-8 flex flex-col gap-8">
+                <!-- Demo Presets -->
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500 block mb-3">Select Demo Scenario:</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                        <button onclick="loadPreset(0)" class="border border-black p-3 bg-white hover:bg-black hover:text-white text-left transition-colors group">
+                            <span class="text-[9px] font-bold text-gray-400 group-hover:text-gray-300 uppercase block mb-1">Spanish + English</span>
+                            <span class="text-xs font-semibold line-clamp-1">"Hola, could you verify this report?"</span>
+                        </button>
+                        <button onclick="loadPreset(1)" class="border border-black p-3 bg-white hover:bg-black hover:text-white text-left transition-colors group">
+                            <span class="text-[9px] font-bold text-gray-400 group-hover:text-gray-300 uppercase block mb-1">Russian + English</span>
+                            <span class="text-xs font-semibold line-clamp-1">"Please review: Этот сервер работает..."</span>
+                        </button>
+                        <button onclick="loadPreset(2)" class="border border-black p-3 bg-white hover:bg-black hover:text-white text-left transition-colors group">
+                            <span class="text-[9px] font-bold text-gray-400 group-hover:text-gray-300 uppercase block mb-1">Chinese + English</span>
+                            <span class="text-xs font-semibold line-clamp-1">"Notice: 我们的翻译服务已经准备好了..."</span>
+                        </button>
+                        <button onclick="loadPreset(3)" class="border border-black p-3 bg-white hover:bg-black hover:text-white text-left transition-colors group">
+                            <span class="text-[9px] font-bold text-gray-400 group-hover:text-gray-300 uppercase block mb-1">French + English</span>
+                            <span class="text-xs font-semibold line-clamp-1">"Send reminder. C'est très important..."</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Translation Panels -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Input Panel -->
+                    <div class="border-2 border-black bg-white p-6 flex flex-col justify-between gap-6 shadow-[6px_6px_0px_#000000]">
+                        <div>
+                            <div class="flex justify-between items-center border-b border-black pb-4 mb-4">
+                                <span class="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-black inline-block"></span>
+                                    Mixed Source Text
+                                </span>
+                                <span id="input-counter" class="text-[10px] font-bold uppercase tracking-widest text-gray-500">0 characters</span>
+                            </div>
+
+                            <div class="relative min-h-[220px] flex flex-col">
+                                <textarea id="input-text" oninput="updateCounter()" placeholder="Type or paste mixed-language text here..."
+                                          class="w-full h-full flex-grow bg-gray-50 border border-black p-4 text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-black resize-none leading-relaxed"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-2 border-t border-gray-200">
+                            <div class="border border-black p-1 bg-gray-100 flex gap-1 self-start sm:self-auto">
+                                <button id="provider-lt" onclick="setProvider('libretranslate')" class="provider-btn active">LibreTranslate</button>
+                                <button id="provider-gemma" onclick="setProvider('translategemma')" class="provider-btn">TranslateGemma</button>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button onclick="clearInput()" class="btn-outline px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest">Clear</button>
+                                <button id="btn-translate" onclick="performTranslation()" class="btn-black px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+                                    <span id="translate-loader" class="loader"></span>
+                                    <span>Translate</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Output Panel -->
+                    <div class="border-2 border-black bg-white p-6 flex flex-col justify-between gap-6 shadow-[6px_6px_0px_#000000]">
+                        <div>
+                            <div class="flex justify-between items-center border-b border-black pb-4 mb-4">
+                                <span class="text-xs font-black uppercase tracking-widest flex items-center gap-2">
+                                    <span class="w-2 h-2 bg-black inline-block"></span>
+                                    English Output
+                                </span>
+                                <span id="translation-stats" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 bg-gray-100 border border-gray-300 px-2 py-0.5" style="display: none;">Took 0ms</span>
+                            </div>
+
+                            <div class="min-h-[220px] flex flex-col">
+                                <div id="output-text" class="w-full h-full flex-grow bg-gray-50 border border-black p-4 text-sm font-medium text-black leading-relaxed overflow-y-auto whitespace-pre-wrap empty:italic empty:text-gray-400">
+                                    Translated content will appear here...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end pt-2 border-t border-gray-200">
+                            <button id="btn-copy" onclick="copyTranslation()" disabled class="btn-outline px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                Copy Output
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="mt-6 flex justify-between items-center flex-wrap gap-4">
+                <a href="translation-helper.html" class="btn-outline inline-block px-6 py-3 text-xs font-bold uppercase tracking-[0.2em]">
+                    View Product Details &amp; Architecture &rarr;
+                </a>
+            </div>
+        </div>
+
     </section>
 
     <footer class="max-w-6xl mx-auto px-6 py-20 text-center">
@@ -169,6 +347,200 @@
         </div>
     </footer>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <span id="toast-message"></span>
+    </div>
+
     <script src="js/main.js"></script>
+    <script>
+        window.TRANSLATION_API_URL = 'https://bigtools.oaoa.dev/libre-translator';
+
+        const PRESETS = [
+            "Hola, how are you? I hope you are doing well. Le escribo para confirmar que recibimos su transferencia. Please send the receipt when you have a moment. Muchas gracias!",
+            "Urgent update from database supervisor: Этот сервер работает отлично, но нам нужно настроить бэкап баз данных. Please schedule this backup daily at 2:00 AM UTC. Спасибо!",
+            "Notice of shipment: 我们的翻译服务已经准备好了. We have shipped your parcel today. Please check the tracking number. 再见!",
+            "Regarding our project plans for tomorrow: Send a reminder to the development team. C'est très important de finir la tâche avant vendredi midi. Thank you very much!"
+        ];
+
+        const getApiUrl = () => {
+            if (window.TRANSLATION_API_URL) {
+                return window.TRANSLATION_API_URL;
+            }
+            if (window.location.protocol === 'file:') {
+                return 'http://localhost:5001';
+            }
+            return window.location.origin;
+        };
+
+        let currentProvider = 'libretranslate';
+
+        function setProvider(provider) {
+            currentProvider = provider;
+            
+            const btnLt = document.getElementById('provider-lt');
+            const btnGemma = document.getElementById('provider-gemma');
+            
+            if (btnLt && btnGemma) {
+                if (provider === 'libretranslate') {
+                    btnLt.classList.add('active');
+                    btnGemma.classList.remove('active');
+                } else {
+                    btnLt.classList.remove('active');
+                    btnGemma.classList.add('active');
+                }
+            }
+            
+            showToast(`Provider: ${provider === 'libretranslate' ? 'LibreTranslate' : 'TranslateGemma'}`, 'success');
+        }
+
+        const inputText = document.getElementById('input-text');
+        const inputCounter = document.getElementById('input-counter');
+        const outputText = document.getElementById('output-text');
+        const btnTranslate = document.getElementById('btn-translate');
+        const translateLoader = document.getElementById('translate-loader');
+        const btnCopy = document.getElementById('btn-copy');
+        const serviceStatus = document.getElementById('service-status');
+        const statusText = document.getElementById('status-text');
+
+        async function checkHealth() {
+            if (!serviceStatus || !statusText) return;
+            try {
+                const response = await fetch(`${getApiUrl()}/info`);
+                if (response.ok) {
+                    serviceStatus.className = 'border border-black px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 bg-emerald-50';
+                    const dot = serviceStatus.querySelector('.status-dot');
+                    if (dot) dot.className = 'status-dot w-2 h-2 rounded-full bg-emerald-500 inline-block';
+                    statusText.textContent = 'Proxy Active';
+                } else {
+                    throw new Error('Service offline');
+                }
+            } catch (err) {
+                serviceStatus.className = 'border border-red-500 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 bg-red-50 text-red-600';
+                const dot = serviceStatus.querySelector('.status-dot');
+                if (dot) dot.className = 'status-dot w-2 h-2 rounded-full bg-red-500 inline-block';
+                statusText.textContent = 'Proxy Offline';
+            }
+        }
+
+        if (serviceStatus) {
+            checkHealth();
+            setInterval(checkHealth, 10000);
+        }
+
+        function updateCounter() {
+            if (!inputText || !inputCounter) return;
+            const count = inputText.value.length;
+            inputCounter.textContent = `${count} character${count === 1 ? '' : 's'}`;
+        }
+
+        function loadPreset(index) {
+            if (!inputText) return;
+            inputText.value = PRESETS[index];
+            updateCounter();
+            inputText.focus();
+        }
+
+        function clearInput() {
+            if (!inputText || !outputText) return;
+            inputText.value = '';
+            updateCounter();
+            outputText.innerHTML = 'Translated content will appear here...';
+            outputText.classList.add('empty');
+            if (btnCopy) btnCopy.disabled = true;
+            const stats = document.getElementById('translation-stats');
+            if (stats) stats.style.display = 'none';
+            showToast('Input cleared', 'success');
+        }
+
+        async function performTranslation() {
+            if (!inputText) return;
+            const text = inputText.value.trim();
+            if (!text) {
+                showToast('Please enter text to translate', 'error');
+                return;
+            }
+
+            if (btnTranslate) btnTranslate.disabled = true;
+            if (translateLoader) translateLoader.style.display = 'inline-block';
+            if (outputText) {
+                outputText.innerHTML = 'Analyzing and translating segments...';
+                outputText.classList.remove('empty');
+            }
+            if (btnCopy) btnCopy.disabled = true;
+            
+            const statsDiv = document.getElementById('translation-stats');
+            if (statsDiv) statsDiv.style.display = 'none';
+
+            const startTime = performance.now();
+
+            try {
+                const response = await fetch(`${getApiUrl()}/translate-mixed`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        Text: text,
+                        TargetLang: 'en',
+                        Provider: currentProvider
+                    })
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.detail || `Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                const endTime = performance.now();
+                const duration = Math.round(endTime - startTime);
+                
+                if (statsDiv) {
+                    statsDiv.textContent = `Took ${duration}ms`;
+                    statsDiv.style.display = 'inline-block';
+                }
+                
+                if (outputText) outputText.textContent = data.translatedText;
+                if (btnCopy) btnCopy.disabled = false;
+                showToast('Translation completed!', 'success');
+            } catch (err) {
+                console.error("Translation error:", err);
+                if (outputText) outputText.innerHTML = `<span style="color: #ef4444; font-weight: 700;">Translation failed:</span><br>${err.message}`;
+                showToast('Failed to translate', 'error');
+            } finally {
+                if (btnTranslate) btnTranslate.disabled = false;
+                if (translateLoader) translateLoader.style.display = 'none';
+            }
+        }
+
+        async function copyTranslation() {
+            if (!outputText || outputText.classList.contains('empty')) return;
+            
+            try {
+                await navigator.clipboard.writeText(outputText.textContent);
+                showToast('Copied to clipboard!', 'success');
+            } catch (err) {
+                showToast('Failed to copy text', 'error');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const msgSpan = document.getElementById('toast-message');
+            if (!toast || !msgSpan) return;
+            
+            msgSpan.textContent = message;
+            toast.className = 'toast show';
+            if (type === 'error') {
+                toast.classList.add('toast-error');
+            }
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
