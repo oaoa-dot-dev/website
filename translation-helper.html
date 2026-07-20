@@ -3,88 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Translation Preprocessor | OAOA.dev</title>
+    <title>Translation Preprocessor | Products | OAOA.dev</title>
     <!-- Tailwind CSS, Google Fonts & Site CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
-    <style>
-        .provider-btn {
-            padding: 6px 14px;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            transition: all 0.15s ease-in-out;
-        }
-
-        .provider-btn.active {
-            background: #000000;
-            color: #ffffff;
-        }
-
-        .provider-btn:not(.active) {
-            background: transparent;
-            color: #666666;
-        }
-
-        .provider-btn:not(.active):hover {
-            color: #000000;
-            background: #e5e7eb;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: #000000;
-            color: #ffffff;
-            border: 1px solid #000000;
-            padding: 12px 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            box-shadow: 4px 4px 0px #000000;
-            z-index: 1000;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast-error {
-            background: #ef4444;
-            color: #ffffff;
-        }
-
-        .loader {
-            display: none;
-            width: 14px;
-            height: 14px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-    </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen">
+<body class="antialiased flex flex-col min-h-screen bg-white">
 
     <!-- Navigation Header -->
     <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center w-full">
         <a href="index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
         <div class="flex items-center gap-8">
             <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
-                <a href="products.html" class="text-black">Products</a>
+                <a href="products.html" class="text-black font-extrabold">Products</a>
                 <a href="tools.html" class="hover:text-gray-500 transition-colors">Tools</a>
             </div>
             <a href="index.html#contact"
@@ -95,156 +27,411 @@
     </nav>
 
     <!-- Header Section -->
-    <header class="max-w-6xl mx-auto w-full px-6 pt-12 pb-8">
+    <header class="max-w-6xl mx-auto w-full px-6 pt-12 pb-12 border-b border-black">
         <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6 flex items-center justify-between flex-wrap gap-4">
             <div>
                 <a href="products.html" class="hover:text-black">Products</a>
                 <span class="mx-2">/</span>
-                <span class="text-black">Translation Preprocessor</span>
+                <span class="text-black font-bold">Translation Preprocessor</span>
             </div>
-            <div id="service-status" class="border border-black px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 bg-gray-50">
-                <span class="status-dot w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
-                <span id="status-text">Checking Service...</span>
-            </div>
+            <a href="big-tools/translation-helper.html" class="btn-black px-4 py-2 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+                Launch Live Demo &rarr;
+            </a>
         </div>
 
         <h1 class="text-4xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter mb-6">
-            Translation <br> Preprocessor.
+            Translation <br> Preprocessor Service.
         </h1>
-        <p class="text-lg md:text-xl font-medium max-w-2xl text-black leading-tight">
-            High-performance segmenter & text-joining microservice. Bypasses English content and translates non-English blocks in parallel.
+        <p class="text-lg md:text-2xl font-medium max-w-3xl text-black leading-snug">
+            High-performance self-hosted preprocessor &amp; segmenter for mixed-language text, signal intelligence, and OSINT message streams.
         </p>
     </header>
 
-    <!-- Main Workspace -->
-    <main class="max-w-6xl mx-auto w-full px-6 py-6 flex-grow flex flex-col gap-10">
+    <!-- Main Product Documentation -->
+    <main class="max-w-6xl mx-auto w-full px-6 py-12 flex flex-col gap-16">
 
-        <!-- Demo Presets -->
-        <div>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500 block mb-3">Select Demo Scenario:</span>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                <button onclick="loadPreset(0)" class="border border-black p-3 bg-white hover:bg-black hover:text-white text-left transition-colors group">
-                    <span class="text-[9px] font-bold text-gray-400 group-hover:text-gray-300 uppercase block mb-1">Spanish + English</span>
-                    <span class="text-xs font-semibold line-clamp-1">"Hola, could you verify this report?"</span>
-                </button>
-                <button onclick="loadPreset(1)" class="border border-black p-3 bg-white hover:bg-black hover:text-white text-left transition-colors group">
-                    <span class="text-[9px] font-bold text-gray-400 group-hover:text-gray-300 uppercase block mb-1">Russian + English</span>
-                    <span class="text-xs font-semibold line-clamp-1">"Please review: Этот сервер работает..."</span>
-                </button>
-                <button onclick="loadPreset(2)" class="border border-black p-3 bg-white hover:bg-black hover:text-white text-left transition-colors group">
-                    <span class="text-[9px] font-bold text-gray-400 group-hover:text-gray-300 uppercase block mb-1">Chinese + English</span>
-                    <span class="text-xs font-semibold line-clamp-1">"Notice: 我们的翻译服务已经准备好了..."</span>
-                </button>
-                <button onclick="loadPreset(3)" class="border border-black p-3 bg-white hover:bg-black hover:text-white text-left transition-colors group">
-                    <span class="text-[9px] font-bold text-gray-400 group-hover:text-gray-300 uppercase block mb-1">French + English</span>
-                    <span class="text-xs font-semibold line-clamp-1">"Send reminder. C'est très important..."</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Translation Panels -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-            <!-- Input Panel -->
-            <div class="border-2 border-black bg-white p-6 flex flex-col justify-between gap-6 shadow-[6px_6px_0px_#000000]">
-                <div>
-                    <div class="flex justify-between items-center border-b border-black pb-4 mb-4">
-                        <span class="text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                            <span class="w-2 h-2 bg-black inline-block"></span>
-                            Mixed Source Text
-                        </span>
-                        <span id="input-counter" class="text-[10px] font-bold uppercase tracking-widest text-gray-500">0 characters</span>
-                    </div>
-
-                    <div class="relative min-h-[260px] flex flex-col">
-                        <textarea id="input-text" oninput="updateCounter()" placeholder="Type or paste mixed-language text here..."
-                                  class="w-full h-full flex-grow bg-gray-50 border border-black p-4 text-sm font-medium text-black focus:outline-none focus:ring-2 focus:ring-black resize-none leading-relaxed"></textarea>
-                    </div>
-                </div>
-
-                <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 pt-2 border-t border-gray-200">
-                    <div class="border border-black p-1 bg-gray-100 flex gap-1 self-start sm:self-auto">
-                        <button id="provider-lt" onclick="setProvider('libretranslate')" class="provider-btn active">LibreTranslate</button>
-                        <button id="provider-gemma" onclick="setProvider('translategemma')" class="provider-btn">TranslateGemma</button>
-                    </div>
-
-                    <div class="flex gap-3">
-                        <button onclick="clearInput()" class="btn-outline px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest">Clear</button>
-                        <button id="btn-translate" onclick="performTranslation()" class="btn-black px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
-                            <span id="translate-loader" class="loader"></span>
-                            <span>Translate</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Output Panel -->
-            <div class="border-2 border-black bg-white p-6 flex flex-col justify-between gap-6 shadow-[6px_6px_0px_#000000]">
-                <div>
-                    <div class="flex justify-between items-center border-b border-black pb-4 mb-4">
-                        <span class="text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                            <span class="w-2 h-2 bg-black inline-block"></span>
-                            English Output
-                        </span>
-                        <span id="translation-stats" class="text-[10px] font-bold uppercase tracking-widest text-gray-500 bg-gray-100 border border-gray-300 px-2 py-0.5" style="display: none;">Took 0ms</span>
-                    </div>
-
-                    <div class="min-h-[260px] flex flex-col">
-                        <div id="output-text" class="w-full h-full flex-grow bg-gray-50 border border-black p-4 text-sm font-medium text-black leading-relaxed overflow-y-auto whitespace-pre-wrap empty:italic empty:text-gray-400">
-                            Translated content will appear here...
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-end pt-2 border-t border-gray-200">
-                    <button id="btn-copy" onclick="copyTranslation()" disabled class="btn-outline px-5 py-2.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        Copy Output
-                    </button>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- Explainer & Purpose Section -->
-        <div class="border-2 border-black p-8 bg-gray-50 mt-4 flex flex-col gap-8">
-            <div class="border-l-4 border-black pl-6">
-                <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-1">01 // PURPOSE & BACKGROUND</span>
-                <h2 class="text-xl font-black uppercase tracking-tight mb-2">Why did we build this?</h2>
-                <p class="text-sm font-medium text-gray-800 leading-relaxed max-w-3xl">
-                    We needed a self hosted translator for translation of incoming signals (messages, filenames etc...) from OSINT Tools like TeleGather.
+        <!-- 01 // PRODUCT OVERVIEW -->
+        <section class="border-l-4 border-black pl-6 md:pl-8">
+            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">01 // PRODUCT OVERVIEW</span>
+            <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tight mb-6">What is the Translation Preprocessor?</h2>
+            
+            <div class="prose max-w-4xl text-gray-800 text-sm md:text-base leading-relaxed space-y-6">
+                <p>
+                    The <strong>OAOA.dev Translation Preprocessor</strong> is an ASP.NET Core microservice designed to process incoming mixed-language text streams (such as chat messages, filenames, and documents) from OSINT signal collection platforms like <strong>TeleGather</strong>.
+                </p>
+                <p>
+                    Instead of naively sending large text payloads to external translation APIs or local LLMs—which causes high latency, token waste, and potential distortion of specialized English terms—this microservice intelligently segments incoming text, verifies existing English content against an embedded 73k-word dictionary, and dispatches only the non-English segments for parallel translation.
                 </p>
             </div>
 
-            <div>
-                <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">02 // ARCHITECTURE</span>
-                <h2 class="text-2xl font-black uppercase tracking-tight mb-6">How It Works Under The Hood</h2>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="border border-black bg-white p-6">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Step 01</span>
-                        <h3 class="text-sm font-black uppercase mb-2">Tokenization & Segmentation</h3>
-                        <p class="text-xs text-gray-600 leading-relaxed">
-                            The .NET backend parses text using the Catalyst NLP engine to split sentences and words while preserving whitespace.
-                        </p>
+            <!-- Why We Built This -->
+            <div class="mt-8 bg-gray-50 border border-black p-6 md:p-8">
+                <h3 class="text-lg font-black uppercase mb-4">Why We Built This</h3>
+                <p class="text-xs md:text-sm text-gray-600 mb-6">
+                    Incoming intelligence streams often contain mixed languages (e.g. English technical terminology mixed with Russian, Spanish, French, or Chinese text). Translating entire messages through LLMs or NMT models introduces unnecessary overhead.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="border border-black bg-white p-5">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Benefit 01</span>
+                        <h4 class="text-sm font-black uppercase mb-1">Reduces Payload Size</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed">Bypasses 60–90% of already-English text segments automatically.</p>
                     </div>
-                    <div class="border border-black bg-white p-6">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Step 02</span>
-                        <h3 class="text-sm font-black uppercase mb-2">Dictionary Bypass</h3>
-                        <p class="text-xs text-gray-600 leading-relaxed">
-                            Each token is checked against a 73k-word English dictionary. Verified English segments bypass translation completely.
-                        </p>
+                    <div class="border border-black bg-white p-5">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Benefit 02</span>
+                        <h4 class="text-sm font-black uppercase mb-1">Preserves Original Context</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed">Keeps English technical terms, code snippets, and proper nouns untouched.</p>
                     </div>
-                    <div class="border border-black bg-white p-6">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Step 03</span>
-                        <h3 class="text-sm font-black uppercase mb-2">Smart Batching</h3>
-                        <p class="text-xs text-gray-600 leading-relaxed">
-                            Non-English segments are grouped by script and translated via LibreTranslate or TranslateGemma (Ollama).
-                        </p>
+                    <div class="border border-black bg-white p-5">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Benefit 03</span>
+                        <h4 class="text-sm font-black uppercase mb-1">Accelerates Throughput</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed">Translates non-English segments concurrently in parallel batches.</p>
+                    </div>
+                    <div class="border border-black bg-white p-5">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Benefit 04</span>
+                        <h4 class="text-sm font-black uppercase mb-1">Multi-Engine Routing</h4>
+                        <p class="text-xs text-gray-600 leading-relaxed">Supports seamless toggling between <strong>LibreTranslate</strong> (fast NMT) and <strong>TranslateGemma</strong> via Ollama.</p>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- 02 // ARCHITECTURE & HOW IT WORKS -->
+        <section class="border-l-4 border-black pl-6 md:pl-8">
+            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">02 // ARCHITECTURE &amp; HOW IT WORKS</span>
+            <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tight mb-6">Under The Hood Pipeline</h2>
+
+            <!-- Diagram -->
+            <div class="bg-black text-emerald-400 p-6 font-mono text-xs overflow-x-auto border border-black mb-10 leading-snug">
+<pre>
+                        +----------------------------+
+                        |  Incoming Mixed Text Stream|
+                        +--------------+-------------+
+                                       |
+                                       v
+                        +--------------+-------------+
+                        | Catalyst NLP Tokenizer     |
+                        +--------------+-------------+
+                                       |
+                                       v
+                        +--------------+-------------+
+                        |  73k English Dictionary    |
+                        |      Bypass Evaluator      |
+                        +------+---------------+-----+
+                               |               |
+                [English Segment]             [Non-English Segment]
+                               |               |
+                               v               v
+                        +------+---+     +-----+----------------------+
+                        | Preserve |     | Script Batching &amp; Dispatch |
+                        | As-Is    |     +-------------+--------------+
+                        +------+---+                   |
+                               |                       v
+                               |         +-------------+--------------+
+                               |         |  LibreTranslate / Ollama   |
+                               |         |     (Parallel Execution)   |
+                               |         +-------------+--------------+
+                               |                       |
+                               +-------+---------------+
+                                       |
+                                       v
+                        +--------------+-------------+
+                        | Text Reconstructor &amp; Joiner |
+                        +----------------------------+
+</pre>
+            </div>
+
+            <!-- Steps -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="border border-black p-6 bg-white">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Stage 01</span>
+                    <h3 class="text-base font-black uppercase mb-2">1. Tokenization &amp; Sentence Parsing</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Incoming text is tokenized into sentences and words using the C# <strong>Catalyst NLP engine</strong>, preserving whitespace and structural formatting.
+                    </p>
+                </div>
+                <div class="border border-black p-6 bg-white">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Stage 02</span>
+                    <h3 class="text-base font-black uppercase mb-2">2. English Dictionary Bypass</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Each token is cross-referenced against an embedded 73,000-word English lexicon. Sentences and clauses evaluated as predominantly English bypass translation entirely.
+                    </p>
+                </div>
+                <div class="border border-black p-6 bg-white">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Stage 03</span>
+                    <h3 class="text-base font-black uppercase mb-2">3. Script Grouping &amp; Batching</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Non-English segments are grouped by script (Latin, Cyrillic, CJK, Arabic, etc.) and dispatched concurrently via asynchronous HTTP requests (<code class="bg-gray-100 px-1 py-0.5 border text-[11px]">Task.WhenAll</code>).
+                    </p>
+                </div>
+                <div class="border border-black p-6 bg-white">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Stage 04</span>
+                    <h3 class="text-base font-black uppercase mb-2">4. Text Assembly</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Translated segments are spliced back into their exact original locations, preserving all line breaks, spaces, and punctuation.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 03 // SUPPORTED TRANSLATION PROVIDERS -->
+        <section class="border-l-4 border-black pl-6 md:pl-8">
+            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">03 // TRANSLATION ENGINES</span>
+            <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tight mb-6">Supported Translation Providers</h2>
+
+            <div class="border border-black overflow-x-auto bg-white">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="bg-gray-50 border-b border-black text-[10px] font-bold uppercase tracking-widest text-gray-500">
+                            <th class="p-4 border-r border-black">Provider</th>
+                            <th class="p-4 border-r border-black">Engine Type</th>
+                            <th class="p-4 border-r border-black">Typical Latency</th>
+                            <th class="p-4">Best For</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-black text-xs">
+                        <tr>
+                            <td class="p-4 font-mono font-bold border-r border-black">libretranslate</td>
+                            <td class="p-4 border-r border-black">Neural Machine Translation (NMT)</td>
+                            <td class="p-4 border-r border-black font-bold text-emerald-700">~20ms – 50ms</td>
+                            <td class="p-4 text-gray-600">High-throughput, real-time message stream processing.</td>
+                        </tr>
+                        <tr class="bg-gray-50">
+                            <td class="p-4 font-mono font-bold border-r border-black">translategemma</td>
+                            <td class="p-4 border-r border-black">Large Language Model (Ollama)</td>
+                            <td class="p-4 border-r border-black font-bold text-amber-700">~3s – 5s</td>
+                            <td class="p-4 text-gray-600">High-nuance contextual translations via local LLM (<code class="bg-gray-200 px-1 font-mono">translategemma:4b</code>).</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- 04 // API REFERENCE -->
+        <section class="border-l-4 border-black pl-6 md:pl-8">
+            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">04 // API REFERENCE</span>
+            <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tight mb-6">Minimal API Specification</h2>
+
+            <div class="flex flex-col gap-10">
+
+                <!-- Endpoint 1 -->
+                <div class="border border-black p-6 bg-white">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="bg-black text-white px-3 py-1 text-xs font-mono font-bold uppercase">POST</span>
+                        <code class="text-sm font-mono font-bold text-black">/translate-mixed</code>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-6">Process and translate mixed-language input text.</p>
+
+                    <h4 class="text-xs font-black uppercase tracking-widest mb-2 text-gray-400">Request Body Example</h4>
+                    <div class="bg-black text-gray-100 p-4 font-mono text-xs border border-black mb-6">
+<pre>{
+  "Text": "Urgent update: Этот сервер работает отлично, но нам нужно настроить бэкап баз данных. Please schedule this backup daily at 2:00 AM UTC.",
+  "TargetLang": "en",
+  "Provider": "libretranslate"
+}</pre>
+                    </div>
+
+                    <h4 class="text-xs font-black uppercase tracking-widest mb-2 text-gray-400">Request Parameters</h4>
+                    <div class="border border-black overflow-x-auto mb-6">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-gray-100 border-b border-black font-bold uppercase text-[9px] text-gray-500">
+                                <tr>
+                                    <th class="p-3 border-r border-black">Parameter</th>
+                                    <th class="p-3 border-r border-black">Type</th>
+                                    <th class="p-3 border-r border-black">Required</th>
+                                    <th class="p-3 border-r border-black">Default</th>
+                                    <th class="p-3">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-black font-mono">
+                                <tr>
+                                    <td class="p-3 font-bold border-r border-black">Text</td>
+                                    <td class="p-3 border-r border-black">string</td>
+                                    <td class="p-3 border-r border-black text-red-600 font-bold">Yes</td>
+                                    <td class="p-3 border-r border-black text-gray-400">—</td>
+                                    <td class="p-3 font-sans text-gray-600">Mixed-language input text to process and translate.</td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="p-3 font-bold border-r border-black">TargetLang</td>
+                                    <td class="p-3 border-r border-black">string</td>
+                                    <td class="p-3 border-r border-black">No</td>
+                                    <td class="p-3 border-r border-black">"en"</td>
+                                    <td class="p-3 font-sans text-gray-600">Target language code (currently supports "en").</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 font-bold border-r border-black">Provider</td>
+                                    <td class="p-3 border-r border-black">string</td>
+                                    <td class="p-3 border-r border-black">No</td>
+                                    <td class="p-3 border-r border-black">"libretranslate"</td>
+                                    <td class="p-3 font-sans text-gray-600">Translation provider: "libretranslate" or "translategemma".</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h4 class="text-xs font-black uppercase tracking-widest mb-2 text-gray-400">Response Body (200 OK)</h4>
+                    <div class="bg-black text-emerald-400 p-4 font-mono text-xs border border-black">
+<pre>{
+  "translatedText": "Urgent update: This server works great, but we need to set up a database backup. Please schedule this backup daily at 2:00 AM UTC."
+}</pre>
+                    </div>
+                </div>
+
+                <!-- Endpoint 2 -->
+                <div class="border border-black p-6 bg-white">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="bg-emerald-600 text-white px-3 py-1 text-xs font-mono font-bold uppercase">GET</span>
+                        <code class="text-sm font-mono font-bold text-black">/info</code>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-4">Service health check and capabilities endpoint.</p>
+
+                    <h4 class="text-xs font-black uppercase tracking-widest mb-2 text-gray-400">Response Body (200 OK)</h4>
+                    <div class="bg-black text-emerald-400 p-4 font-mono text-xs border border-black">
+<pre>{
+  "status": "healthy",
+  "service": "Translation Proxy"
+}</pre>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 05 // INTEGRATION EXAMPLES -->
+        <section class="border-l-4 border-black pl-6 md:pl-8">
+            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">05 // INTEGRATION EXAMPLES</span>
+            <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tight mb-6">Code Snippets &amp; Client Usage</h2>
+
+            <div class="flex flex-col gap-8">
+
+                <!-- cURL -->
+                <div class="border border-black p-6 bg-white">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Command Line</span>
+                    <h3 class="text-sm font-black uppercase mb-3">cURL</h3>
+                    <div class="bg-black text-gray-100 p-4 font-mono text-xs border border-black overflow-x-auto">
+<pre>curl -s -X POST \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Text": "C'\''est très important de finir la tâche avant vendredi midi. Thank you very much!",
+    "TargetLang": "en",
+    "Provider": "libretranslate"
+  }' \
+  http://localhost:5001/translate-mixed</pre>
+                    </div>
+                </div>
+
+                <!-- C# -->
+                <div class="border border-black p-6 bg-white">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">.NET 8 / C#</span>
+                    <h3 class="text-sm font-black uppercase mb-3">HttpClient Service</h3>
+                    <div class="bg-black text-gray-100 p-4 font-mono text-xs border border-black overflow-x-auto">
+<pre>using System.Net.Http.Json;
+
+public class TranslationService
+{
+    private readonly HttpClient _httpClient;
+
+    public TranslationService(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri("http://translation-proxy:8080/");
+    }
+
+    public async Task&lt;string&gt; ProcessSignalAsync(string rawText, string provider = "libretranslate")
+    {
+        var payload = new { Text = rawText, TargetLang = "en", Provider = provider };
+        var response = await _httpClient.PostAsJsonAsync("translate-mixed", payload);
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync&lt;TranslationResponse&gt;();
+        return result?.TranslatedText ?? rawText;
+    }
+}
+
+public record TranslationResponse(string TranslatedText);</pre>
+                    </div>
+                </div>
+
+                <!-- JavaScript -->
+                <div class="border border-black p-6 bg-white">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Browser / Node.js</span>
+                    <h3 class="text-sm font-black uppercase mb-3">JavaScript fetch</h3>
+                    <div class="bg-black text-gray-100 p-4 font-mono text-xs border border-black overflow-x-auto">
+<pre>async function translateSignal(text, provider = 'libretranslate') {
+    const response = await fetch('http://localhost:5001/translate-mixed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Text: text, TargetLang: 'en', Provider: provider })
+    });
+    
+    const data = await response.json();
+    return data.translatedText;
+}</pre>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 06 // DEPLOYMENT & SETUP -->
+        <section class="border-l-4 border-black pl-6 md:pl-8">
+            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest block mb-2">06 // DEPLOYMENT &amp; SETUP</span>
+            <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tight mb-6">Docker Compose Setup</h2>
+
+            <div class="border border-black p-6 bg-white mb-6">
+                <p class="text-xs text-gray-600 mb-4">
+                    The microservice runs alongside LibreTranslate inside <code class="bg-gray-100 px-1 border font-mono">docker-compose</code>:
+                </p>
+                <div class="bg-black text-gray-100 p-4 font-mono text-xs border border-black overflow-x-auto mb-6">
+<pre>version: '3.8'
+
+services:
+  libretranslate:
+    image: libretranslate/libretranslate:latest
+    container_name: libretranslate
+    ports:
+      - "5000:5000"
+    environment:
+      - LT_UPDATE_MODELS=true
+      - LT_LOAD_ONLY=en,es,ru,zh,fr,de,it,pt,ar
+    volumes:
+      - libretranslate_data:/home/libretranslate/.local
+
+  translation-proxy:
+    build:
+      context: ./translation-helper
+      dockerfile: Dockerfile
+    container_name: translation-proxy
+    ports:
+      - "5001:8080"
+    environment:
+      - LibreTranslate__BaseUrl=http://libretranslate:5000
+      - Ollama__BaseUrl=http://192.168.100.225:11434
+    depends_on:
+      libretranslate:
+        condition: service_healthy
+
+volumes:
+  libretranslate_data:</pre>
+                </div>
+
+                <h4 class="text-xs font-black uppercase tracking-widest mb-2 text-gray-400">Bring Up The Service Stack</h4>
+                <div class="bg-black text-emerald-400 p-4 font-mono text-xs border border-black">
+                    <code>docker compose up -d --build</code>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom CTA -->
+        <section class="border-2 border-black bg-gray-50 p-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+                <h3 class="text-xl font-black uppercase mb-1">Ready to Test the Preprocessor?</h3>
+                <p class="text-xs text-gray-600">Try out the interactive segmenting and translation demo directly in your browser.</p>
+            </div>
+            <a href="big-tools/translation-helper.html" class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] whitespace-nowrap">
+                Launch Live Demo &rarr;
+            </a>
+        </section>
 
     </main>
 
@@ -252,189 +439,9 @@
     <footer class="border-t border-black bg-white py-8 mt-12">
         <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-gray-500">
             <div>OAOA.dev Translation Preprocessor Service</div>
-            <div>Built with ASP.NET Core & Catalyst</div>
+            <div>Built with ASP.NET Core &amp; Catalyst NLP</div>
         </div>
     </footer>
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast">
-        <span id="toast-message"></span>
-    </div>
-
-    <!-- JavaScript Logic -->
-    <script>
-        window.TRANSLATION_API_URL = 'https://bigtools.oaoa.dev/libre-translator';
-
-        const PRESETS = [
-            "Hola, how are you? I hope you are doing well. Le escribo para confirmar que recibimos su transferencia. Please send the receipt when you have a moment. Muchas gracias!",
-            "Urgent update from database supervisor: Этот сервер работает отлично, но нам нужно настроить бэкап баз данных. Please schedule this backup daily at 2:00 AM UTC. Спасибо!",
-            "Notice of shipment: 我们的翻译服务已经准备好了. We have shipped your parcel today. Please check the tracking number. 再见!",
-            "Regarding our project plans for tomorrow: Send a reminder to the development team. C'est très important de finir la tâche avant vendredi midi. Thank you very much!"
-        ];
-
-        // Custom API Endpoint Configuration for standalone site deployment
-        // Change window.TRANSLATION_API_URL if hosted separately from backend microservice
-        const getApiUrl = () => {
-            if (window.TRANSLATION_API_URL) {
-                return window.TRANSLATION_API_URL;
-            }
-            if (window.location.protocol === 'file:') {
-                return 'http://localhost:5001';
-            }
-            return window.location.origin;
-        };
-
-        let currentProvider = 'libretranslate';
-
-        function setProvider(provider) {
-            currentProvider = provider;
-            
-            const btnLt = document.getElementById('provider-lt');
-            const btnGemma = document.getElementById('provider-gemma');
-            
-            if (provider === 'libretranslate') {
-                btnLt.classList.add('active');
-                btnGemma.classList.remove('active');
-            } else {
-                btnLt.classList.remove('active');
-                btnGemma.classList.add('active');
-            }
-            
-            showToast(`Provider: ${provider === 'libretranslate' ? 'LibreTranslate' : 'TranslateGemma'}`, 'success');
-        }
-
-        const inputText = document.getElementById('input-text');
-        const inputCounter = document.getElementById('input-counter');
-        const outputText = document.getElementById('output-text');
-        const btnTranslate = document.getElementById('btn-translate');
-        const translateLoader = document.getElementById('translate-loader');
-        const btnCopy = document.getElementById('btn-copy');
-        const serviceStatus = document.getElementById('service-status');
-        const statusText = document.getElementById('status-text');
-
-        async function checkHealth() {
-            try {
-                const response = await fetch(`${getApiUrl()}/info`);
-                if (response.ok) {
-                    serviceStatus.className = 'border border-black px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 bg-emerald-50';
-                    document.querySelector('.status-dot').className = 'status-dot w-2 h-2 rounded-full bg-emerald-500 inline-block';
-                    statusText.textContent = 'Proxy Active';
-                } else {
-                    throw new Error('Service offline');
-                }
-            } catch (err) {
-                serviceStatus.className = 'border border-red-500 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 bg-red-50 text-red-600';
-                document.querySelector('.status-dot').className = 'status-dot w-2 h-2 rounded-full bg-red-500 inline-block';
-                statusText.textContent = 'Proxy Offline';
-            }
-        }
-
-        checkHealth();
-        setInterval(checkHealth, 10000);
-
-        function updateCounter() {
-            const count = inputText.value.length;
-            inputCounter.textContent = `${count} character${count === 1 ? '' : 's'}`;
-        }
-
-        function loadPreset(index) {
-            inputText.value = PRESETS[index];
-            updateCounter();
-            inputText.focus();
-        }
-
-        function clearInput() {
-            inputText.value = '';
-            updateCounter();
-            outputText.innerHTML = 'Translated content will appear here...';
-            outputText.classList.add('empty');
-            btnCopy.disabled = true;
-            document.getElementById('translation-stats').style.display = 'none';
-            showToast('Input cleared', 'success');
-        }
-
-        async function performTranslation() {
-            const text = inputText.value.trim();
-            if (!text) {
-                showToast('Please enter text to translate', 'error');
-                return;
-            }
-
-            btnTranslate.disabled = true;
-            translateLoader.style.display = 'inline-block';
-            outputText.innerHTML = 'Analyzing and translating segments...';
-            outputText.classList.remove('empty');
-            btnCopy.disabled = true;
-            
-            const statsDiv = document.getElementById('translation-stats');
-            statsDiv.style.display = 'none';
-
-            const startTime = performance.now();
-
-            try {
-                const response = await fetch(`${getApiUrl()}/translate-mixed`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        Text: text,
-                        TargetLang: 'en',
-                        Provider: currentProvider
-                    })
-                });
-
-                if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData.detail || `Server error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                
-                const endTime = performance.now();
-                const duration = Math.round(endTime - startTime);
-                
-                statsDiv.textContent = `Took ${duration}ms`;
-                statsDiv.style.display = 'inline-block';
-                
-                outputText.textContent = data.translatedText;
-                btnCopy.disabled = false;
-                showToast('Translation completed!', 'success');
-            } catch (err) {
-                console.error("Translation error:", err);
-                outputText.innerHTML = `<span style="color: #ef4444; font-weight: 700;">Translation failed:</span><br>${err.message}`;
-                showToast('Failed to translate', 'error');
-            } finally {
-                btnTranslate.disabled = false;
-                translateLoader.style.display = 'none';
-            }
-        }
-
-        async function copyTranslation() {
-            if (outputText.classList.contains('empty')) return;
-            
-            try {
-                await navigator.clipboard.writeText(outputText.textContent);
-                showToast('Copied to clipboard!', 'success');
-            } catch (err) {
-                showToast('Failed to copy text', 'error');
-            }
-        }
-
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const msgSpan = document.getElementById('toast-message');
-            
-            msgSpan.textContent = message;
-            toast.className = 'toast show';
-            if (type === 'error') {
-                toast.classList.add('toast-error');
-            }
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
-        }
-    </script>
 </body>
 </html>
