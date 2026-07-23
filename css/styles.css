@@ -1,41 +1,479 @@
-body {
-    font-family: 'Inter', sans-serif;
-    background-color: #ffffff;
-    color: #000000;
-    line-height: 1.4;
+/* ==========================================================================
+   OAOA.DEV - BRUTALIST DESIGN SYSTEM & STYLESHEET
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   01. DESIGN TOKENS & CSS VARIABLES
+   -------------------------------------------------------------------------- */
+:root {
+    --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+
+    /* Color Tokens */
+    --color-black: #000000;
+    --color-white: #ffffff;
+    --color-gray-50: #f9fafb;
+    --color-gray-100: #f3f4f6;
+    --color-gray-200: #e5e7eb;
+    --color-gray-300: #d1d5db;
+    --color-gray-400: #9ca3af;
+    --color-gray-500: #6b7280;
+    --color-gray-600: #4b5563;
+    --color-gray-800: #1f2937;
+    --color-gray-900: #111827;
+
+    /* Accent & Status Colors */
+    --color-red: #dc2626;
+    --color-red-dark: #991b1b;
+    --color-red-light: #fef2f2;
+
+    --color-green: #16a34a;
+    --color-green-dark: #15803d;
+    --color-green-light: #f0fdf4;
+
+    --color-yellow: #ca8a04;
+    --color-yellow-dark: #a16207;
+    --color-yellow-light: #fefce8;
+
+    /* Brutalist Shadows & Effects */
+    --shadow-brutalist: 4px 4px 0px #000000;
+    --shadow-brutalist-sm: 2px 2px 0px #000000;
+    --shadow-brutalist-lg: 6px 6px 0px #000000;
+}
+
+/* --------------------------------------------------------------------------
+   02. BASE RESETS & LAYOUT
+   -------------------------------------------------------------------------- */
+html {
     scroll-behavior: smooth;
+    box-sizing: border-box;
 }
 
-.b-light {
-    border-top: 1px solid #eeeeee;
+*, *:before, *:after {
+    box-sizing: inherit;
 }
 
-.btn-black {
-    background: #000000;
-    color: #ffffff;
-    transition: all 0.1s ease-in-out;
+body {
+    font-family: var(--font-sans);
+    background-color: var(--color-white);
+    color: var(--color-black);
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.btn-black:hover {
-    background: #333333;
-    transform: translate(-2px, -2px);
-    box-shadow: 4px 4px 0px #000000;
+/* --------------------------------------------------------------------------
+   03. TYPOGRAPHY SYSTEM
+   -------------------------------------------------------------------------- */
+.h1-hero, h1.h1-hero {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 0.9;
+    letter-spacing: -0.05em;
+    margin-bottom: 2rem;
 }
 
-.btn-outline {
-    border: 1px solid #000000;
-    transition: all 0.1s ease-in-out;
+.h2-section, h2.h2-section {
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    margin-bottom: 1.5rem;
 }
 
-.btn-outline:hover {
-    background: #fcfcfc;
-    transform: translate(-2px, -2px);
-    box-shadow: 4px 4px 0px #000000;
+.h3-card, h3.h3-card {
+    font-size: 1.25rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
 }
 
-/* Increased readability for service descriptions */
+.h4-sub, h4.h4-sub {
+    font-size: 0.875rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.text-lead {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--color-black);
+    margin-bottom: 2rem;
+}
+
 .service-text {
     color: #1a1a1a;
     font-size: 1.05rem;
     line-height: 1.6;
+}
+
+.text-overline {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--color-gray-500);
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.field-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    color: var(--color-gray-500);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.font-mono {
+    font-family: var(--font-mono);
+}
+
+.code-block {
+    background: var(--color-gray-50);
+    border: 1px solid var(--color-black);
+    padding: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* --------------------------------------------------------------------------
+   04. BUTTONS & ACTIONS
+   -------------------------------------------------------------------------- */
+.btn-black {
+    background: var(--color-black);
+    color: var(--color-white);
+    border: 1px solid var(--color-black);
+    padding: 0.75rem 1.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-black:hover:not(:disabled) {
+    background: #333333;
+    color: var(--color-white);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-brutalist);
+}
+
+.btn-outline {
+    background: var(--color-white);
+    color: var(--color-black);
+    border: 1px solid var(--color-black);
+    padding: 0.75rem 1.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-outline:hover:not(:disabled) {
+    background: #fcfcfc;
+    color: var(--color-black);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-brutalist);
+}
+
+.btn-danger {
+    background: var(--color-red);
+    color: var(--color-white);
+    border: 1px solid var(--color-black);
+    padding: 0.75rem 1.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.1s ease-in-out;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #b91c1c;
+    color: var(--color-white);
+    transform: translate(-2px, -2px);
+    box-shadow: var(--shadow-brutalist);
+}
+
+.btn-sm {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+}
+
+.btn-lg {
+    padding: 1rem 2.5rem;
+    font-size: 0.8125rem;
+    letter-spacing: 0.25em;
+}
+
+button:disabled, .btn-disabled {
+    opacity: 0.4;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   05. FORM CONTROLS & INPUTS
+   -------------------------------------------------------------------------- */
+.field-group {
+    margin-bottom: 1.5rem;
+}
+
+.field-input {
+    width: 100%;
+    border: 1px solid var(--color-black);
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    background: var(--color-white);
+    font-family: inherit;
+    color: var(--color-black);
+    transition: box-shadow 0.1s ease;
+}
+
+.field-input:focus {
+    outline: none;
+    box-shadow: 3px 3px 0 var(--color-black);
+}
+
+.field-select {
+    width: 100%;
+    border: 1px solid var(--color-black);
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    background: var(--color-white);
+    font-family: inherit;
+    color: var(--color-black);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='black'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+.field-select:focus {
+    outline: none;
+    box-shadow: 3px 3px 0 var(--color-black);
+}
+
+.field-textarea {
+    width: 100%;
+    border: 1px solid var(--color-black);
+    padding: 12px 14px;
+    font-size: 0.875rem;
+    background: var(--color-white);
+    font-family: inherit;
+    color: var(--color-black);
+    min-height: 120px;
+    resize: vertical;
+}
+
+.field-textarea:focus {
+    outline: none;
+    box-shadow: 3px 3px 0 var(--color-black);
+}
+
+.field-checkbox, .field-radio {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--color-black);
+    accent-color: var(--color-black);
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+.field-help {
+    font-size: 0.75rem;
+    color: var(--color-gray-500);
+    margin-top: 4px;
+    display: block;
+}
+
+.field-error-text {
+    font-size: 0.75rem;
+    color: var(--color-red);
+    margin-top: 4px;
+    font-weight: 600;
+    display: block;
+}
+
+/* --------------------------------------------------------------------------
+   06. CARDS, GRIDS & PARSED DATA
+   -------------------------------------------------------------------------- */
+.brutalist-card {
+    border: 1px solid var(--color-black);
+    background: var(--color-white);
+    padding: 1.5rem;
+}
+
+.brutalist-grid {
+    display: grid;
+    gap: 1px;
+    background-color: var(--color-black);
+    border: 1px solid var(--color-black);
+}
+
+.brutalist-grid > * {
+    background-color: var(--color-white);
+}
+
+.parsed-row {
+    display: flex;
+    gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-gray-200);
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.parsed-row:last-child {
+    border-bottom: none;
+}
+
+.parsed-key {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-gray-500);
+    font-size: 0.7rem;
+    flex: 0 0 140px;
+    padding-top: 1px;
+}
+
+.parsed-val {
+    font-family: var(--font-mono);
+    color: #111;
+    word-break: break-all;
+    flex: 1 1 0%;
+}
+
+/* --------------------------------------------------------------------------
+   07. BADGES & HEALTH DOTS
+   -------------------------------------------------------------------------- */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: 1px solid var(--color-black);
+}
+
+.badge-ok {
+    background: var(--color-green-light);
+    color: var(--color-green-dark);
+    border-color: var(--color-green);
+}
+
+.badge-warn {
+    background: var(--color-yellow-light);
+    color: var(--color-yellow-dark);
+    border-color: var(--color-yellow);
+}
+
+.badge-bad {
+    background: var(--color-red-light);
+    color: var(--color-red-dark);
+    border-color: var(--color-red);
+}
+
+.badge-neutral {
+    background: var(--color-gray-100);
+    color: var(--color-gray-600);
+    border-color: var(--color-gray-300);
+}
+
+.health-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    display: inline-block;
+}
+
+.health-dot-ok {
+    background-color: var(--color-green);
+}
+
+.health-dot-warn {
+    background-color: var(--color-yellow);
+}
+
+.health-dot-bad {
+    background-color: var(--color-red);
+}
+
+/* --------------------------------------------------------------------------
+   08. RESULT BANNERS & ALERTS
+   -------------------------------------------------------------------------- */
+.result-box-empty {
+    border: 1px dashed var(--color-gray-300);
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--color-gray-400);
+}
+
+.result-box-pending {
+    border: 1px dashed var(--color-gray-400);
+    padding: 1.5rem;
+    text-align: center;
+    color: var(--color-gray-600);
+}
+
+.result-box-success {
+    border: 1px solid var(--color-black);
+    background-color: var(--color-white);
+    padding: 1.5rem;
+}
+
+.result-box-error {
+    border: 1px solid var(--color-red);
+    background-color: var(--color-white);
+    padding: 1.5rem;
+    color: var(--color-red-dark);
+}
+
+/* --------------------------------------------------------------------------
+   09. BORDER & DIVIDER UTILITIES
+   -------------------------------------------------------------------------- */
+.b-light {
+    border-top: 1px solid #eeeeee;
+}
+
+.b-black {
+    border: 1px solid var(--color-black);
+}
+
+.bg-pattern {
+    background-image: radial-gradient(var(--color-gray-200) 1px, transparent 1px);
+    background-size: 16px 16px;
 }

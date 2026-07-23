@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Guide & Design System | OAOA.dev</title>
+    <meta name="description" content="Official brutalist design system, component guidelines, color tokens, typography, and HTML templates for OAOA.dev applications.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="antialiased bg-white text-black">
+
+    <!-- ══ NAVIGATION ══ -->
+    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center border-b border-gray-100">
+        <a href="index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+                <a href="products.html" class="hover:text-gray-500 transition-colors">Products</a>
+                <a href="tools.html" class="hover:text-gray-500 transition-colors">Tools</a>
+                <a href="style-guide.html" class="text-black font-black">Style Guide</a>
+            </div>
+            <a href="index.html#contact" class="btn-outline hidden md:block px-6 py-2 text-[10px] font-bold uppercase tracking-widest">
+                Get in Touch
+            </a>
+        </div>
+    </nav>
+
+    <!-- ══ HEADER ══ -->
+    <header class="max-w-6xl mx-auto px-6 pt-16 pb-12">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+            <a href="index.html" class="hover:text-black">OAOA.dev</a> <span class="mx-2">/</span>
+            <a href="tools.html" class="hover:text-black">Framework</a> <span class="mx-2">/</span>
+            <span class="text-black">Style Guide</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter mb-8">
+            Style Guide &amp;<br>Design System.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-3xl text-black leading-tight mb-8">
+            The definitive brutalist design tokens, UI component library, and code standards for building consistent, high-performance web tools on OAOA.dev.
+        </p>
+
+        <!-- Quick Jump Bar -->
+        <div class="flex flex-wrap gap-2 pt-4 border-t border-black text-[10px] font-bold uppercase tracking-widest">
+            <a href="#typography" class="btn-outline py-2 px-4 text-[9px]">01 // Typography</a>
+            <a href="#colors" class="btn-outline py-2 px-4 text-[9px]">02 // Color Tokens</a>
+            <a href="#buttons" class="btn-outline py-2 px-4 text-[9px]">03 // Buttons</a>
+            <a href="#forms" class="btn-outline py-2 px-4 text-[9px]">04 // Form Controls</a>
+            <a href="#cards-grids" class="btn-outline py-2 px-4 text-[9px]">05 // Cards &amp; Grids</a>
+            <a href="#badges-alerts" class="btn-outline py-2 px-4 text-[9px]">06 // Badges &amp; Alerts</a>
+            <a href="#boilerplate" class="btn-black py-2 px-4 text-[9px]">07 // HTML Starter Template</a>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 pb-32">
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             01. TYPOGRAPHY & HIERARCHY
+             ══════════════════════════════════════════════════════════════════ -->
+        <section id="typography" class="py-16 border-t-4 border-black">
+            <span class="text-overline mb-2">01 // Foundation</span>
+            <h2 class="text-3xl md:text-5xl font-black uppercase mb-4">Typography &amp; Hierarchy</h2>
+            <p class="service-text mb-12 max-w-2xl">
+                We use Google Font <span class="font-mono text-sm bg-gray-100 px-2 py-1 border border-black">Inter</span> for primary UI typography and monospace system fonts for code or raw data payloads.
+            </p>
+
+            <div class="space-y-12">
+                <!-- H1 Hero -->
+                <div class="border border-black p-8 bg-white">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-4">H1 Hero Title (.text-5xl md:text-7xl font-black uppercase)</span>
+                    <h1 class="text-4xl md:text-6xl font-black uppercase leading-[0.9] tracking-tighter mb-4">
+                        High Contrast.<br>Zero Waste.
+                    </h1>
+                    <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                        <span class="text-xs font-mono text-gray-500">Class: .h1-hero or text-5xl md:text-7xl font-black uppercase</span>
+                        <button onclick="copySnippet('code-h1')" class="btn-outline btn-sm">Copy Code</button>
+                    </div>
+                    <textarea id="code-h1" class="hidden">&lt;h1 class="text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter mb-8"&gt;
+    Page Title&lt;br&gt;Subtitle.
+&lt;/h1&gt;</textarea>
+                </div>
+
+                <!-- H2 Section -->
+                <div class="border border-black p-8 bg-white">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-4">H2 Section Header (.text-3xl md:text-4xl font-black uppercase)</span>
+                    <h2 class="text-2xl md:text-4xl font-black uppercase mb-3">Domain Intelligence</h2>
+                    <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                        <span class="text-xs font-mono text-gray-500">Class: .h2-section or text-3xl md:text-4xl font-black uppercase</span>
+                        <button onclick="copySnippet('code-h2')" class="btn-outline btn-sm">Copy Code</button>
+                    </div>
+                    <textarea id="code-h2" class="hidden">&lt;h2 class="text-3xl md:text-4xl font-black uppercase mb-6"&gt;Section Title&lt;/h2&gt;</textarea>
+                </div>
+
+                <!-- H3 Card -->
+                <div class="border border-black p-8 bg-white">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-4">H3 Card Header (.text-xl font-black uppercase)</span>
+                    <h3 class="text-xl font-black uppercase mb-2">Port Checker Tool</h3>
+                    <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                        <span class="text-xs font-mono text-gray-500">Class: .h3-card or text-xl font-black uppercase</span>
+                        <button onclick="copySnippet('code-h3')" class="btn-outline btn-sm">Copy Code</button>
+                    </div>
+                    <textarea id="code-h3" class="hidden">&lt;h3 class="text-xl font-black uppercase mb-4"&gt;Card Title&lt;/h3&gt;</textarea>
+                </div>
+
+                <!-- Paragraph & Lead Text -->
+                <div class="border border-black p-8 bg-white grid md:grid-cols-2 gap-8">
+                    <div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-3">Lead Subtitle (.text-xl font-medium text-black)</span>
+                        <p class="text-xl font-medium text-black leading-tight mb-4">
+                            Discover the ASN, Owner, Geolocation, and threat status of any IP address.
+                        </p>
+                    </div>
+                    <div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-3">Service Body Text (.service-text)</span>
+                        <p class="service-text mb-4">
+                            Small, focused utilities that run entirely in your browser. No data leaves your device — no tracking, no accounts required.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Labels & Monospace -->
+                <div class="border border-black p-8 bg-white grid md:grid-cols-2 gap-8">
+                    <div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-3">Field Label (.field-label)</span>
+                        <label class="field-label mb-2">Target IP Address</label>
+                        <span class="text-xs font-mono text-gray-500">Used above all inputs and data field groups</span>
+                    </div>
+                    <div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-3">Monospace Payload (.font-mono)</span>
+                        <div class="code-block text-xs">192.168.1.1 -> PTR -> router.oaoa.dev</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             02. COLOR TOKENS & AESTHETICS
+             ══════════════════════════════════════════════════════════════════ -->
+        <section id="colors" class="py-16 border-t-4 border-black">
+            <span class="text-overline mb-2">02 // Color Palette</span>
+            <h2 class="text-3xl md:text-5xl font-black uppercase mb-4">Color Tokens &amp; Shadows</h2>
+            <p class="service-text mb-12 max-w-2xl">
+                OAOA.dev uses a high-contrast black-and-white color palette with functional accent hues for diagnostic statuses (success green, error red, warning yellow).
+            </p>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                <!-- Pure Black -->
+                <div class="border border-black p-4 bg-black text-white">
+                    <div class="h-16 mb-4 bg-black border border-white/20"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest block">Pure Black</span>
+                    <span class="text-xs font-mono opacity-70">#000000</span>
+                </div>
+
+                <!-- Pure White -->
+                <div class="border border-black p-4 bg-white text-black">
+                    <div class="h-16 mb-4 bg-white border border-black"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest block">Pure White</span>
+                    <span class="text-xs font-mono text-gray-500">#ffffff</span>
+                </div>
+
+                <!-- Neutral Gray -->
+                <div class="border border-black p-4 bg-gray-100 text-black">
+                    <div class="h-16 mb-4 bg-gray-500 border border-black"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest block">Gray 500</span>
+                    <span class="text-xs font-mono text-gray-600">#6b7280</span>
+                </div>
+
+                <!-- Dark Gray -->
+                <div class="border border-black p-4 bg-gray-900 text-white">
+                    <div class="h-16 mb-4 bg-gray-900 border border-gray-700"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest block">Gray 900</span>
+                    <span class="text-xs font-mono opacity-70">#111827</span>
+                </div>
+
+                <!-- Red Error -->
+                <div class="border border-black p-4 bg-red-50 text-red-900">
+                    <div class="h-16 mb-4 bg-red-600 border border-black"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest block">Red (Error)</span>
+                    <span class="text-xs font-mono">#dc2626</span>
+                </div>
+
+                <!-- Green Success -->
+                <div class="border border-black p-4 bg-green-50 text-green-900">
+                    <div class="h-16 mb-4 bg-green-600 border border-black"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest block">Green (Success)</span>
+                    <span class="text-xs font-mono">#16a34a</span>
+                </div>
+
+                <!-- Yellow Warning -->
+                <div class="border border-black p-4 bg-yellow-50 text-yellow-900">
+                    <div class="h-16 mb-4 bg-yellow-600 border border-black"></div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest block">Yellow (Warning)</span>
+                    <span class="text-xs font-mono">#ca8a04</span>
+                </div>
+
+                <!-- Brutalist Shadow -->
+                <div class="border border-black p-4 bg-white flex flex-col justify-between">
+                    <div class="p-3 bg-white border border-black shadow-[4px_4px_0px_#000000] text-center font-bold text-xs uppercase mb-2">
+                        Brutalist Shadow
+                    </div>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500">4px 4px 0px #000</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             03. BUTTONS & ACTIONS
+             ══════════════════════════════════════════════════════════════════ -->
+        <section id="buttons" class="py-16 border-t-4 border-black">
+            <span class="text-overline mb-2">03 // Interactive Elements</span>
+            <h2 class="text-3xl md:text-5xl font-black uppercase mb-4">Buttons &amp; Actions</h2>
+            <p class="service-text mb-12 max-w-2xl">
+                Buttons feature sharp 1px borders and micro-interactions on hover (<code class="font-mono text-xs">translate(-2px, -2px)</code> with a solid 4px black shadow).
+            </p>
+
+            <div class="border border-black p-8 bg-white mb-8">
+                <div class="flex flex-wrap items-center gap-6 mb-8">
+                    <div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Primary Black (.btn-black)</span>
+                        <button class="btn-black">Primary Action</button>
+                    </div>
+
+                    <div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Outline (.btn-outline)</span>
+                        <button class="btn-outline">Secondary Action</button>
+                    </div>
+
+                    <div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Danger Red (.btn-danger)</span>
+                        <button class="btn-danger">Destructive</button>
+                    </div>
+
+                    <div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Small (.btn-sm)</span>
+                        <button class="btn-outline btn-sm">Copy Raw</button>
+                    </div>
+
+                    <div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-2">Disabled State</span>
+                        <button class="btn-black" disabled>Processing...</button>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                    <span class="text-xs font-mono text-gray-500">HTML Snippet</span>
+                    <button onclick="copySnippet('code-btns')" class="btn-outline btn-sm">Copy Code</button>
+                </div>
+                <textarea id="code-btns" class="hidden">&lt;!-- Primary Action --&gt;
+&lt;button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]"&gt;
+    Lookup
+&lt;/button&gt;
+
+&lt;!-- Outline Button --&gt;
+&lt;a href="#" class="btn-outline px-6 py-3 text-xs font-bold uppercase tracking-[0.2em]"&gt;
+    View Details
+&lt;/a&gt;
+
+&lt;!-- Danger Action --&gt;
+&lt;button class="btn-danger px-6 py-3 text-xs font-bold uppercase tracking-[0.2em]"&gt;
+    Delete Record
+&lt;/button&gt;</textarea>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             04. FORM CONTROLS & INPUTS
+             ══════════════════════════════════════════════════════════════════ -->
+        <section id="forms" class="py-16 border-t-4 border-black">
+            <span class="text-overline mb-2">04 // User Input</span>
+            <h2 class="text-3xl md:text-5xl font-black uppercase mb-4">Form Controls &amp; Fields</h2>
+            <p class="service-text mb-12 max-w-2xl">
+                Form inputs feature crisp 1px borders, custom monospace font support for queries, and distinct brutalist focus states.
+            </p>
+
+            <div class="border border-black p-8 bg-white mb-8">
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+
+                    <!-- Text Input -->
+                    <div>
+                        <label class="field-label">Domain Name / Host (.field-input)</label>
+                        <input type="text" class="field-input font-mono mb-2" placeholder="oaoa.dev" value="example.org">
+                        <span class="field-help">Enter any FQDN or IP address.</span>
+                    </div>
+
+                    <!-- Select Input -->
+                    <div>
+                        <label class="field-label">DNS Record Type (.field-select)</label>
+                        <select class="field-select">
+                            <option>A - IPv4 Address</option>
+                            <option>MX - Mail Exchange</option>
+                            <option>TXT - Text / SPF Record</option>
+                            <option>PTR - Reverse DNS</option>
+                        </select>
+                        <span class="field-help">Select query record type.</span>
+                    </div>
+
+                    <!-- Textarea -->
+                    <div class="md:col-span-2">
+                        <label class="field-label">Raw Output / Input Payload (.field-textarea)</label>
+                        <textarea class="field-textarea font-mono" placeholder="Paste data here..."></textarea>
+                    </div>
+
+                    <!-- Checkboxes & Radios -->
+                    <div class="flex items-center gap-6">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" class="field-checkbox" checked>
+                            <span class="text-xs font-bold uppercase tracking-wider">Include Subdomains</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="radio" name="mode" class="field-radio" checked>
+                            <span class="text-xs font-bold uppercase tracking-wider">Fast Mode</span>
+                        </label>
+                    </div>
+
+                    <!-- Validation Error State -->
+                    <div>
+                        <label class="field-label">Port Number (Validation Error)</label>
+                        <input type="text" class="field-input font-mono border-red-500" value="99999">
+                        <span class="field-error-text">Port must be between 1 and 65535.</span>
+                    </div>
+
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                    <span class="text-xs font-mono text-gray-500">HTML Form Controls Snippet</span>
+                    <button onclick="copySnippet('code-forms')" class="btn-outline btn-sm">Copy Code</button>
+                </div>
+                <textarea id="code-forms" class="hidden">&lt;div class="mb-6"&gt;
+    &lt;label class="field-label"&gt;Domain Name&lt;/label&gt;
+    &lt;input type="text" class="field-input font-mono" id="field-domain" placeholder="oaoa.dev" autocomplete="off"&gt;
+    &lt;span class="field-help"&gt;Enter domain name to query.&lt;/span&gt;
+&lt;/div&gt;</textarea>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             05. CARDS & GRIDS
+             ══════════════════════════════════════════════════════════════════ -->
+        <section id="cards-grids" class="py-16 border-t-4 border-black">
+            <span class="text-overline mb-2">05 // Structural Layout</span>
+            <h2 class="text-3xl md:text-5xl font-black uppercase mb-4">Cards, Grids &amp; Data Displays</h2>
+            <p class="service-text mb-12 max-w-2xl">
+                Multi-card sections use a 1px black inner border grid layout (<code class="font-mono text-xs">.brutalist-grid</code>). Parsed key-value results use <code class="font-mono text-xs">.parsed-row</code>.
+            </p>
+
+            <!-- 1px Brutalist Grid -->
+            <div class="mb-12">
+                <span class="field-label mb-3 block">1px Inner Border Grid (.brutalist-grid)</span>
+                <div class="brutalist-grid grid md:grid-cols-3">
+                    <div class="p-8">
+                        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-3">01 // DNS</span>
+                        <h3 class="text-lg font-black uppercase mb-2">DNS Dig</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">Query A, MX, TXT, and NS records directly from server level.</p>
+                    </div>
+                    <div class="p-8">
+                        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-3">02 // WHOIS</span>
+                        <h3 class="text-lg font-black uppercase mb-2">WHOIS &amp; RDAP</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">Retrieve registrar, expiry, and owner contact information.</p>
+                    </div>
+                    <div class="p-8">
+                        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-3">03 // NETWORK</span>
+                        <h3 class="text-lg font-black uppercase mb-2">IP Info</h3>
+                        <p class="text-xs text-gray-600 leading-relaxed">Identify ASN owner, geolocation, and VPN/Tor status.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parsed Data Rows -->
+            <div>
+                <span class="field-label mb-3 block">Parsed Key-Value Rows (.parsed-row)</span>
+                <div class="border border-black bg-white p-6">
+                    <div class="parsed-row">
+                        <span class="parsed-key">Resolved Host</span>
+                        <span class="parsed-val">api.oaoa.dev</span>
+                    </div>
+                    <div class="parsed-row">
+                        <span class="parsed-key">IP Address</span>
+                        <span class="parsed-val">104.21.80.1</span>
+                    </div>
+                    <div class="parsed-row">
+                        <span class="parsed-key">ASN / Owner</span>
+                        <span class="parsed-val">AS13335 (Cloudflare, Inc.)</span>
+                    </div>
+                    <div class="parsed-row">
+                        <span class="parsed-key">Response Time</span>
+                        <span class="parsed-val">14ms</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             06. BADGES, HEALTH DOTS & RESULTS
+             ══════════════════════════════════════════════════════════════════ -->
+        <section id="badges-alerts" class="py-16 border-t-4 border-black">
+            <span class="text-overline mb-2">06 // Status Feedback</span>
+            <h2 class="text-3xl md:text-5xl font-black uppercase mb-4">Badges &amp; Result Banners</h2>
+            <p class="service-text mb-12 max-w-2xl">
+                Diagnostic tools utilize standardized health indicators, badges, and result containers to communicate state clearly.
+            </p>
+
+            <!-- Badges & Dots -->
+            <div class="border border-black p-8 bg-white mb-8">
+                <span class="field-label mb-4 block">Status Badges (.badge) &amp; Health Dots (.health-dot)</span>
+                <div class="flex flex-wrap items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <span class="health-dot health-dot-ok"></span>
+                        <span class="badge badge-ok">PASS / OK</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="health-dot health-dot-warn"></span>
+                        <span class="badge badge-warn">WARNING</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="health-dot health-dot-bad"></span>
+                        <span class="badge badge-bad">FAILED</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="badge badge-neutral">NEUTRAL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Boxes -->
+            <div class="space-y-6">
+                <!-- Empty State -->
+                <div class="result-box-empty">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">No result yet — enter query above</p>
+                </div>
+
+                <!-- Success Banner -->
+                <div class="result-box-success">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-black block mb-1">Success</span>
+                    <p class="text-sm font-medium">Port 443 (HTTPS) is <span class="font-bold text-green-600">OPEN</span> on host <span class="font-mono">oaoa.dev</span>.</p>
+                </div>
+
+                <!-- Error Banner -->
+                <div class="result-box-error">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-red-600 block mb-1">Error</span>
+                    <p class="text-sm font-medium">Domain parameter is required.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             07. STARTER BOILERPLATE TEMPLATE
+             ══════════════════════════════════════════════════════════════════ -->
+        <section id="boilerplate" class="py-16 border-t-4 border-black">
+            <span class="text-overline mb-2">07 // Developer Quick-Start</span>
+            <h2 class="text-3xl md:text-5xl font-black uppercase mb-4">HTML Starter Template</h2>
+            <p class="service-text mb-8 max-w-2xl">
+                Use this clean boilerplate template to create any new tool or application page on OAOA.dev. It includes standard navigation, hero header, query form, result container, and footer.
+            </p>
+
+            <div class="border border-black bg-gray-50 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-mono font-bold uppercase">template.html</span>
+                    <button onclick="copySnippet('starter-template')" class="btn-black btn-sm">Copy Starter Template</button>
+                </div>
+                <textarea id="starter-template" class="w-full bg-white border border-black p-4 font-mono text-xs h-96 focus:outline-none" readonly><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tool Name | OAOA.dev</title>
+    <meta name="description" content="Utility description here.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body class="antialiased bg-white text-black">
+
+    <!-- ══ NAVIGATION ══ -->
+    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
+        <a href="../index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+                <a href="../products.html" class="hover:text-gray-500 transition-colors">Products</a>
+                <a href="../tools.html" class="text-black font-black">Tools</a>
+            </div>
+            <a href="../index.html#contact" class="btn-outline hidden md:block px-6 py-2 text-[10px] font-bold uppercase tracking-widest">
+                Get in Touch
+            </a>
+        </div>
+    </nav>
+
+    <!-- ══ HEADER ══ -->
+    <header class="max-w-6xl mx-auto px-6 pt-20 pb-12">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+            <a href="../tools.html" class="hover:text-black">Tools</a> <span class="mx-2">/</span>
+            <span class="text-black">New Tool Name</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter mb-8">
+            Tool Title.<br>Subtitle.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
+            Brief description of what this tool does.
+        </p>
+    </header>
+
+    <!-- ══ MAIN QUERY SECTION ══ -->
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+        <div class="border border-black">
+            <!-- Form Input Area -->
+            <div class="p-8 md:p-12 border-b border-black">
+                <span class="field-label mb-1 block">Query</span>
+                <p class="text-sm font-medium text-gray-600 mb-8 max-w-lg">
+                    Enter details below to perform query.
+                </p>
+                <div class="max-w-xl">
+                    <div class="mb-6">
+                        <label class="field-label">Target Field</label>
+                        <input type="text" class="field-input font-mono" id="field-query" placeholder="example.com">
+                    </div>
+                    <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em]" id="query-btn" onclick="runQuery()">
+                        Execute
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Display Area -->
+            <div class="p-8 md:p-12">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <span class="field-label mb-1">Result</span>
+                        <span id="last-updated" class="text-[9px] text-gray-400 font-medium uppercase tracking-wider"></span>
+                    </div>
+                    <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black" onclick="clearResult()">Clear</button>
+                </div>
+
+                <div id="result-summary" class="result-box-empty">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-300">No result yet</p>
+                </div>
+
+                <!-- Parsed Results -->
+                <div id="parsed-section" class="hidden mb-6">
+                    <span class="field-label mb-3 block">Parsed Data</span>
+                    <div class="border border-black bg-white p-6">
+                        <div class="parsed-row">
+                            <span class="parsed-key">Status</span>
+                            <span class="parsed-val" id="p-status">—</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ══ FOOTER ══ -->
+    <footer class="max-w-6xl mx-auto px-6 py-20 text-center">
+        <div class="mt-12 pt-10 b-light flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            <div class="flex gap-10 mb-6 md:mb-0">
+                <a href="../index.html" class="text-black/80 hover:text-black">Home</a>
+                <a href="../tools.html" class="text-black/80 hover:text-black">Tools</a>
+            </div>
+            <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
+        </div>
+    </footer>
+
+    <script>
+        function runQuery() {
+            // Implementation logic here
+        }
+        function clearResult() {
+            // Clear logic here
+        }
+    </script>
+</body>
+</html></textarea>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ══ FOOTER ══ -->
+    <footer class="max-w-6xl mx-auto px-6 py-20 text-center border-t border-gray-200">
+        <div class="flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            <div class="flex gap-10 mb-6 md:mb-0">
+                <a href="index.html" class="text-black/80 hover:text-black">Home</a>
+                <a href="tools.html" class="text-black/80 hover:text-black">Tools</a>
+                <a href="style-guide.html" class="text-black font-black">Style Guide</a>
+            </div>
+            <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
+        </div>
+    </footer>
+
+    <!-- Copy Helper Script -->
+    <script>
+        function copySnippet(elementId) {
+            const textarea = document.getElementById(elementId);
+            if (!textarea) return;
+            navigator.clipboard.writeText(textarea.value).then(() => {
+                const btn = event.target;
+                const origText = btn.textContent;
+                btn.textContent = 'COPIED!';
+                btn.classList.add('bg-black', 'text-white');
+                setTimeout(() => {
+                    btn.textContent = origText;
+                    btn.classList.remove('bg-black', 'text-white');
+                }, 2000);
+            });
+        }
+    </script>
+    <script src="js/main.js"></script>
+</body>
+</html>
