@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects | OAOA.dev</title>
+    <meta name="description" content="Explore OAOA.dev engineering projects including L0 Agent, UTRACS helpdesk platform, and Telegather Telegram intelligence console.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="antialiased bg-white text-black">
+
+    <!-- ══ NAVIGATION ══ -->
+    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
+        <a href="index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+                <a href="projects.html" class="text-black font-black">Projects</a>
+                <a href="products.html" class="hover:text-gray-500 transition-colors">Products</a>
+                <a href="tools.html" class="hover:text-gray-500 transition-colors">Tools</a>
+            </div>
+            <a href="index.html#contact" class="btn-outline hidden md:block px-6 py-2 text-[10px] font-bold uppercase tracking-widest">
+                Book Free Initial Consult
+            </a>
+        </div>
+    </nav>
+
+    <!-- ══ HEADER ══ -->
+    <header class="max-w-6xl mx-auto px-6 pt-16 pb-20">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+            <a href="index.html" class="hover:text-black">OAOA.dev</a> <span class="mx-2">/</span>
+            <span class="text-black">Projects</span>
+        </div>
+        <h1 class="text-5xl md:text-8xl font-black uppercase leading-[0.9] tracking-tighter mb-8">
+            Projects.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-3xl text-black leading-tight">
+            Helpdesk orchestration platforms, pre-L1 AI support runtimes, and self-hosted intelligence tools engineered for auditability and operational control.
+        </p>
+    </header>
+
+    <!-- ══ PROJECTS LISTING ══ -->
+    <section class="max-w-6xl mx-auto px-6 pb-32">
+        <div class="space-y-24">
+
+            <!-- 01 // L0 Agent -->
+            <article id="l0-agent" class="border-l-4 border-black pl-6 md:pl-10">
+                <div class="flex flex-wrap items-center gap-3 mb-4">
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">01 // AI Support Runtime</span>
+                    <span class="badge badge-ok">Active Platform</span>
+                </div>
+
+                <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4">
+                    L0 Agent
+                </h2>
+                <p class="text-lg md:text-xl font-medium text-gray-900 mb-8 max-w-3xl">
+                    A pre-L1 AI support runtime for MSPs that ingests external ticket queues, executes sandboxed automations, and posts human-gated resolutions back to PSAs.
+                </p>
+
+                <div class="border border-black bg-white p-8 md:p-12 mb-8">
+                    <div class="space-y-6 service-text text-black max-w-4xl">
+                        <p>
+                            <strong>L0 Agent</strong> is a pre-L1 AI support runtime for MSPs. It watches an external ticketing system (starting with UTRACS), pulls new work into a local ticket queue, and runs an agent workflow: classify the request, match skills and scripts, execute automations in sandboxed containers, then draft and post replies back to the PSA.
+                        </p>
+                        <p>
+                            Operators keep control in the UI—approve script runs when needed, inspect analysis and session history, and bind platform actions to pluggable system scripts so the core agent stays PSA-agnostic. Credentials live on those scripts; L0 stores the local ticket state, agent decisions, and execution trail so every action is auditable end to end.
+                        </p>
+                    </div>
+
+                    <!-- Capability Tags Grid -->
+                    <div class="mt-8 pt-8 border-t border-gray-200 grid sm:grid-cols-2 md:grid-cols-4 gap-px bg-black border border-black -m-px">
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Ingestion</span>
+                            <span class="text-xs font-bold uppercase block text-black">UTRACS &amp; PSA Queue Watcher</span>
+                        </div>
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Execution</span>
+                            <span class="text-xs font-bold uppercase block text-black">Sandboxed Container Runtime</span>
+                        </div>
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Governance</span>
+                            <span class="text-xs font-bold uppercase block text-black">Human-in-the-Loop Approvals</span>
+                        </div>
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Auditability</span>
+                            <span class="text-xs font-bold uppercase block text-black">Full Execution &amp; State Trail</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 02 // UTRACS -->
+            <article id="utracs" class="border-l-4 border-black pl-6 md:pl-10">
+                <div class="flex flex-wrap items-center gap-3 mb-4">
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">02 // Unified Helpdesk &amp; Vault</span>
+                    <span class="badge badge-ok">Core MSP Stack</span>
+                </div>
+
+                <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-1">
+                    UTRACS
+                </h2>
+                <div class="text-sm md:text-base font-bold uppercase tracking-wider text-gray-500 mb-6">
+                    Unified Ticket Resolution &amp; Coordination System
+                </div>
+
+                <p class="text-lg md:text-xl font-medium text-gray-900 mb-8 max-w-3xl">
+                    An MSP-focused helpdesk platform for managing client tickets, company records, and secure credentials in one place.
+                </p>
+
+                <div class="border border-black bg-white p-8 md:p-12 mb-8">
+                    <div class="space-y-6 service-text text-black max-w-4xl">
+                        <p>
+                            <strong>UTRACS</strong> (Unified Ticket Resolution &amp; Coordination System) is an MSP-focused helpdesk platform for managing client tickets, company records, and secure credentials in one place. Agents work tickets with threaded email correspondence (Microsoft 365 shared mailboxes via Graph API), company vault secrets (including certificate authentication for remote PowerShell), and SLA-aware dispatch boards.
+                        </p>
+                        <p>
+                            AI agents can join the same workflow over a documented HTTP API—listing tickets and companies, replying, updating status, and requesting approved vault access—so automation stays audited and human-gated where it matters.
+                        </p>
+                    </div>
+
+                    <!-- Feature Matrix -->
+                    <div class="mt-8 pt-8 border-t border-gray-200 grid sm:grid-cols-2 md:grid-cols-4 gap-px bg-black border border-black -m-px">
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Correspondence</span>
+                            <span class="text-xs font-bold uppercase block text-black">M365 Graph Shared Mailboxes</span>
+                        </div>
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Secrets Vault</span>
+                            <span class="text-xs font-bold uppercase block text-black">Cert Auth &amp; Remote PowerShell</span>
+                        </div>
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">SLA &amp; Boards</span>
+                            <span class="text-xs font-bold uppercase block text-black">SLA-Aware Helpdesk Boards</span>
+                        </div>
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">AI Agent Integration</span>
+                            <span class="text-xs font-bold uppercase block text-black">Audited &amp; Human-Gated API</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- 03 // Telegather -->
+            <article id="telegather" class="border-l-4 border-black pl-6 md:pl-10">
+                <div class="flex flex-wrap items-center gap-3 mb-4">
+                    <span class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">03 // Intelligence Console</span>
+                    <span class="badge badge-ok">Self-Hosted</span>
+                </div>
+
+                <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-4">
+                    Telegather
+                </h2>
+                <p class="text-lg md:text-xl font-medium text-gray-900 mb-8 max-w-3xl">
+                    A self-hosted Telegram intelligence console that continuously scrapes live traffic, translates messages, and categorizes channels using local LLMs.
+                </p>
+
+                <div class="border border-black bg-white p-8 md:p-12 mb-8">
+                    <div class="space-y-6 service-text text-black max-w-4xl">
+                        <p>
+                            <strong>Telegather</strong> is a self-hosted Telegram intelligence console. It connects one or more Telegram user sessions, joins channels you care about, and continuously scrapes live traffic plus optional full history into a searchable archive.
+                        </p>
+                        <p>
+                            Incoming messages are translated (native ONNX and/or external providers), categorized with local LLMs (Ollama), and enriched with links, attachments, and relevance signals. A web UI lets you browse channel chat history, filter messages, preview media, track unique <code class="font-mono text-xs bg-gray-100 px-1 py-0.5 border border-gray-300">t.me</code> channel links you've seen, and manage sessions, workers, and download policy—without relying on Telegram's own client as your research workspace.
+                        </p>
+                        <div class="bg-gray-50 border-l-4 border-black p-6 font-medium italic text-black">
+                            In short: monitor Telegram at scale, keep a durable local copy, and turn noisy channel traffic into something you can search, triage, and act on.
+                        </div>
+                    </div>
+
+                    <!-- Tech Matrix -->
+                    <div class="mt-8 pt-8 border-t border-gray-200 grid sm:grid-cols-2 md:grid-cols-4 gap-px bg-black border border-black -m-px">
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Scraper Engine</span>
+                            <span class="text-xs font-bold uppercase block text-black">Multi-Session Live &amp; Full History</span>
+                        </div>
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">AI Processing</span>
+                            <span class="text-xs font-bold uppercase block text-black">ONNX Translate &amp; Ollama LLMs</span>
+                        </div>
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Web Console</span>
+                            <span class="text-xs font-bold uppercase block text-black">Media Previews &amp; t.me Discovery</span>
+                        </div>
+                        <div class="bg-white p-5">
+                            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-2">Data Control</span>
+                            <span class="text-xs font-bold uppercase block text-black">Durable Local Searchable Archive</span>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+        </div>
+    </section>
+
+    <!-- ══ FOOTER ══ -->
+    <footer class="max-w-6xl mx-auto px-6 py-20 text-center border-t border-gray-200">
+        <div class="flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            <div class="flex flex-wrap gap-6 md:gap-10 mb-6 md:mb-0 justify-center">
+                <a href="index.html" class="text-black/80 hover:text-black">Home</a>
+                <a href="projects.html" class="text-black font-black hover:text-black">Projects</a>
+                <a href="products.html" class="text-black/80 hover:text-black">Products</a>
+                <a href="tools.html" class="text-black/80 hover:text-black">Tools</a>
+                <a href="style-guide.html" class="text-black/80 hover:text-black">Style Guide</a>
+            </div>
+            <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
