@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teams SpeedDial Manager | Big Tools | OAOA.dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .field-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .3em; color: #6b7280; display: block; margin-bottom: 6px; }
+        .field-input { width: 100%; border: 1px solid #000; padding: 10px 14px; font-size: .875rem; background: #fff; font-family: inherit; }
+        .field-input:focus { outline: none; box-shadow: 3px 3px 0 #000; }
+        .field-input:disabled { background: #f9f9f9; color: #aaa; border-color: #ddd; cursor: not-allowed; }
+
+        /* Teams Auth Stages */
+        .teams-stage { display: none; }
+        [data-teams-stage="checking"]    .teams-stage-checking    { display: block; }
+        [data-teams-stage="unconnected"] .teams-stage-unconnected { display: block; }
+        [data-teams-stage="connected"]   .teams-stage-connected   { display: block; }
+
+        /* Device code text */
+        .device-code-display { font-family: 'Courier New', monospace; font-size: 2.25rem; font-weight: 900; letter-spacing: .3em; }
+
+        /* Activity Log */
+        .log-entry { font-family: 'Courier New', monospace; font-size: .75rem; padding: 6px 0; border-bottom: 1px solid #eee; }
+        .log-entry:last-child { border-bottom: none; }
+        .log-entry.info    { color: #555; }
+        .log-entry.success { color: #15803d; }
+        .log-entry.error   { color: #dc2626; }
+        .log-entry.pending { color: #d97706; }
+
+        @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+        .pulse { animation: pulse-dot 1.2s ease-in-out infinite; }
+
+        /* Drag & Drop Visuals */
+        .speed-dial-row {
+            transition: background-color 0.15s ease, transform 0.15s ease;
+            user-select: none;
+        }
+        .speed-dial-row.is-dragging {
+            opacity: 0.35;
+            background-color: #f3f4f6;
+            border-style: dashed;
+        }
+        .speed-dial-row.drag-over-above {
+            border-top: 3px solid #000 !important;
+        }
+        .speed-dial-row.drag-over-below {
+            border-bottom: 3px solid #000 !important;
+        }
+        .drag-handle {
+            cursor: grab;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        /* Toast notification */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast-item {
+            pointer-events: auto;
+            border: 1px solid #000;
+            background: #fff;
+            padding: 12px 20px;
+            box-shadow: 4px 4px 0 #000;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: toast-in 0.2s ease forwards;
+        }
+        .toast-item.toast-success { border-color: #000; color: #000; }
+        .toast-item.toast-error   { border-color: #dc2626; color: #dc2626; }
+        @keyframes toast-in {
+            from { transform: translateY(20px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- ══ NAVIGATION ══ -->
+    <nav class="max-w-6xl mx-auto px-6 py-10 flex justify-between items-center">
+        <a href="../index.html" class="font-black text-2xl tracking-tighter uppercase italic">OAOA.dev</a>
+        <div class="flex items-center gap-8">
+            <div class="hidden md:flex gap-8 text-[10px] font-bold uppercase tracking-widest">
+                <a href="../products.html" class="hover:text-gray-500 transition-colors">Products</a>
+                <a href="../tools.html" class="text-black">Tools</a>
+            </div>
+            <a href="../index.html#contact" class="btn-outline hidden md:block px-6 py-2 text-[10px] font-bold uppercase tracking-widest">Get in Touch</a>
+        </div>
+    </nav>
+
+    <!-- ══ HEADER ══ -->
+    <header class="max-w-6xl mx-auto px-6 pt-20 pb-12">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
+            <a href="../tools.html" class="hover:text-black">Tools</a> <span class="mx-2">/</span>
+            <a href="../big-tools.html" class="hover:text-black">Big Tools</a> <span class="mx-2">/</span>
+            <span class="text-black">Teams SpeedDial Manager</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-black uppercase leading-[0.9] tracking-tighter mb-8">
+            Teams<br>SpeedDial<br>Manager.
+        </h1>
+        <p class="text-xl md:text-2xl font-medium max-w-2xl text-black leading-tight">
+            Manage, search, and reorder Microsoft Teams speed dial favourites with live Device Code sign-in and drag-and-drop sequencing.
+        </p>
+    </header>
+
+    <section class="max-w-6xl mx-auto px-6 pb-24">
+
+        <!-- ══ TIER 1: OPERATOR SESSION BANNER ══ -->
+        <div class="border border-black bg-gray-50 p-5 mb-10 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
+                <div>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block">Operator session</span>
+                    <span id="auth-name-display"  class="text-sm font-bold">Checking session...</span>
+                    <span id="auth-email-display" class="text-xs text-gray-500 ml-2"></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="../big-tools.html" class="btn-outline px-5 py-2 text-[10px] font-bold uppercase tracking-widest">← Big Tools</a>
+            </div>
+        </div>
+
+        <!-- ══ PREREQUISITES / HOW IT WORKS ══ -->
+        <div class="border border-black bg-white p-6 mb-10 max-w-3xl">
+            <span class="font-black uppercase tracking-widest text-black text-[9px] block mb-3">How It Works</span>
+            <p class="text-[11px] font-medium leading-relaxed text-gray-700 mb-3">
+                Sign in to your work or school <strong>Microsoft Teams</strong> account using the <strong>Device Code Flow</strong>.
+                Once authorized, this tool communicates with Microsoft Teams via the Big Tools backend API to pull your live speed dials.
+            </p>
+            <div class="grid md:grid-cols-3 gap-4 pt-2 border-t border-gray-150 text-[10px] text-gray-600">
+                <div><strong>1. Authenticate:</strong> Link Teams via Device Code (no password stored in browser).</div>
+                <div><strong>2. Reorder:</strong> Drag &amp; drop or use Up/Down buttons to customize order.</div>
+                <div><strong>3. Submit:</strong> Apply changes to commit the sequential order to Teams.</div>
+            </div>
+        </div>
+
+        <!-- ══ MAIN CARD CONTAINER ══ -->
+        <div class="border border-black bg-white" id="tool-container" data-teams-stage="checking">
+
+            <!-- ══ STEP 1: TEAMS CONNECTION & AUTHENTICATION ══ -->
+            <div class="p-8 md:p-12 border-b border-black">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="field-label mb-0">Step 1 — Microsoft Teams Connection</span>
+                    <span id="teams-stage-badge" class="badge badge-neutral">Checking Status</span>
+                </div>
+
+                <!-- Checking Stage -->
+                <div class="teams-stage teams-stage-checking py-6">
+                    <div class="flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-gray-500">
+                        <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
+                        Checking Teams connection status...
+                    </div>
+                </div>
+
+                <!-- Unconnected Stage -->
+                <div class="teams-stage teams-stage-unconnected">
+                    <p class="text-sm font-medium text-gray-600 mb-6 max-w-xl">
+                        Your Teams account is not connected. Sign in using the Device Code Flow to view and manage your speed dial list.
+                    </p>
+
+                    <div class="flex flex-wrap items-center gap-4 mb-6">
+                        <button class="btn-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] flex items-center gap-3"
+                                onclick="openDeviceCodeModal()">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <rect x="0" y="0" width="7.5" height="7.5" fill="#f25022"/>
+                                <rect x="8.5" y="0" width="7.5" height="7.5" fill="#7fba00"/>
+                                <rect x="0" y="8.5" width="7.5" height="7.5" fill="#00a4ef"/>
+                                <rect x="8.5" y="8.5" width="7.5" height="7.5" fill="#ffb900"/>
+                            </svg>
+                            Connect Microsoft Teams
+                        </button>
+                        <button class="btn-outline px-6 py-4 text-[10px] font-bold uppercase tracking-widest"
+                                onclick="toggleAdvancedSettings()">
+                            Advanced Settings ▾
+                        </button>
+                    </div>
+
+                    <!-- Collapsible Advanced Settings -->
+                    <div id="advanced-settings" class="hidden border border-black p-6 bg-gray-50 max-w-2xl mt-4">
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-500 block mb-4">Entra ID Client Overrides (Optional)</span>
+                        <div class="grid md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="field-label">Tenant ID (Default: common)</label>
+                                <input type="text" id="adv-tenant-id" class="field-input font-mono text-xs" placeholder="common">
+                            </div>
+                            <div>
+                                <label class="field-label">Custom Client ID (Optional)</label>
+                                <input type="text" id="adv-client-id" class="field-input font-mono text-xs" placeholder="Leave blank to use server default">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="field-label">API Base URL</label>
+                            <input type="text" id="adv-api-base" class="field-input font-mono text-xs" placeholder="https://bigtools.oaoa.dev">
+                            <span class="text-[10px] text-gray-400 mt-1 block">Local dev: http://localhost:5005. Leave empty to use auto-detected origin.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connected Stage -->
+                <div class="teams-stage teams-stage-connected">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 border border-black bg-gray-50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 border border-black bg-black text-white flex items-center justify-center font-bold text-xs" id="connected-avatar">
+                                TS
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="badge badge-ok">Connected</span>
+                                    <span id="connected-tenant" class="text-[9px] font-mono text-gray-400 uppercase tracking-widest"></span>
+                                </div>
+                                <div id="connected-displayname" class="text-base font-black uppercase">Loading...</div>
+                                <div id="connected-email" class="text-xs font-mono text-gray-600"></div>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <button class="btn-outline btn-sm" onclick="fetchSpeedDials(true)">
+                                Refresh List ⟳
+                            </button>
+                            <button class="btn-danger btn-sm" onclick="disconnectTeams()">
+                                Disconnect
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ══ STEP 2: SPEED DIAL MANAGEMENT WORKSPACE ══ -->
+            <div id="workspace-section" class="p-8 md:p-12 border-b border-black">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                    <div>
+                        <span class="field-label mb-1">Step 2 — Speed Dial Management</span>
+                        <h2 class="text-2xl font-black uppercase tracking-tight">Teams Speed Dials</h2>
+                    </div>
+
+                    <!-- Toolbar Actions -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button class="btn-outline btn-sm flex items-center gap-2" onclick="exportSpeedDials()" id="btn-export" title="Export current list to JSON backup">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Export JSON
+                        </button>
+                        <button class="btn-outline btn-sm flex items-center gap-2" onclick="triggerImport()" id="btn-import" title="Import speed dials from JSON file">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            Import JSON
+                        </button>
+                        <input type="file" id="file-import-input" accept=".json" class="hidden" onchange="handleFileSelected(event)">
+                        <button class="btn-outline btn-sm flex items-center gap-2" onclick="fetchSpeedDials(true)" id="btn-refresh" title="Reload live list from Teams">
+                            ⟳ Refresh
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contact Search & Add Bar -->
+                <div class="relative mb-8">
+                    <label class="field-label mb-2">Search Directory to Add Contact</label>
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <input type="text" id="contact-search-input" class="field-input font-medium pr-10"
+                                   placeholder="Type name or email address to search address book..."
+                                   oninput="handleSearchInput(event)" autocomplete="off">
+                            <div id="search-spinner" class="hidden absolute right-3 top-3">
+                                <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
+                            </div>
+                        </div>
+                        <button class="btn-black px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap"
+                                onclick="executeContactSearch()">
+                            Search
+                        </button>
+                    </div>
+
+                    <!-- Search Results Dropdown -->
+                    <div id="search-results-dropdown" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-black z-30 shadow-lg max-h-72 overflow-y-auto">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- ══ UNSAVED CHANGES / SUBMIT REORDER BAR ══ -->
+                <div id="reorder-pending-bar" class="hidden border-2 border-black bg-yellow-50 p-5 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="badge badge-warn">Unsaved Order</span>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-wider text-black">
+                                    You have rearranged contacts in your list.
+                                </p>
+                                <p class="text-[11px] text-gray-600">
+                                    Click <strong>Submit New Order</strong> to commit changes into Microsoft Teams.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button class="btn-outline btn-sm" onclick="discardReorderChanges()">
+                                Discard
+                            </button>
+                            <button class="btn-black px-6 py-2.5 text-xs font-bold uppercase tracking-[0.2em] shadow-md flex items-center gap-2"
+                                    id="btn-submit-reorder" onclick="submitReorder()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                Submit New Order
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ SAVING IN-PROGRESS INDICATOR ══ -->
+                <div id="reorder-saving-banner" class="hidden border border-black bg-gray-50 p-6 mb-8">
+                    <div class="flex items-center gap-4">
+                        <span class="pulse w-3 h-3 bg-black rounded-full inline-block"></span>
+                        <div>
+                            <p class="text-xs font-bold uppercase tracking-widest text-black mb-1">
+                                Updating Teams speed dial order...
+                            </p>
+                            <p class="text-[11px] text-gray-500">
+                                Sequential re-add algorithm in progress. Please do not close this window.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ══ SPEED DIAL LIST CONTAINER ══ -->
+                <div>
+                    <div class="flex items-center justify-between pb-3 mb-4 border-b border-gray-200">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500" id="list-count-label">
+                            0 Contacts
+                        </span>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">
+                            Drag handle (⋮⋮) or use ▲/▼ arrows to reorder
+                        </span>
+                    </div>
+
+                    <!-- Speed Dial Items List -->
+                    <div id="speed-dial-list" class="space-y-2">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Empty State -->
+                    <div id="speed-dial-empty" class="hidden border border-dashed border-gray-300 p-12 text-center">
+                        <svg class="mx-auto mb-4 text-gray-400" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        <p class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">No Speed Dials Found</p>
+                        <p class="text-[11px] text-gray-400 max-w-sm mx-auto mb-4">
+                            You don't have any speed dials configured in Microsoft Teams yet. Use the search bar above to find colleagues and add them.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ══ STEP 3: RESULTS & DIAGNOSTIC ACTIVITY LOG ══ -->
+            <div class="p-8 md:p-12">
+                <div class="flex items-center justify-between mb-6">
+                    <span class="field-label mb-0">Step 3 — Activity &amp; Raw Responses</span>
+                    <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors" onclick="clearLog()">
+                        Clear Log
+                    </button>
+                </div>
+
+                <!-- Last Action Summary Banner -->
+                <div id="result-summary" class="border border-dashed border-gray-300 p-5 mb-6 text-center">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">No actions performed yet</p>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="mb-6">
+                    <span class="field-label mb-3 block">Activity Log</span>
+                    <div id="activity-log" class="border border-black bg-gray-50 p-6 min-h-32 max-h-64 overflow-y-auto">
+                        <div class="log-entry info">[ Initializing Teams SpeedDial Manager... ]</div>
+                    </div>
+                </div>
+
+                <!-- Raw Response Accordion / Viewer -->
+                <div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="field-label mb-0">Raw API Response</span>
+                        <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black" onclick="toggleRawResponse()">
+                            <span id="raw-toggle-label">Collapse ▴</span>
+                        </button>
+                    </div>
+                    <textarea id="raw-response" class="w-full border border-black p-4 bg-gray-50 text-xs font-mono min-h-32 focus:outline-none" readonly
+                              placeholder="Latest API payload will appear here..."></textarea>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- ══ DEVICE CODE LOGIN MODAL ══ -->
+    <div id="device-code-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="border-2 border-black bg-white p-8 md:p-10 max-w-lg w-full shadow-2xl relative">
+            <div class="flex items-start justify-between mb-6">
+                <div>
+                    <span class="badge badge-neutral mb-2">Device Code Flow</span>
+                    <h3 class="text-2xl font-black uppercase tracking-tight">Connect Microsoft Teams</h3>
+                </div>
+                <button onclick="closeDeviceCodeModal()" class="text-xl font-black hover:text-gray-500 transition-colors p-1" title="Close">
+                    ✕
+                </button>
+            </div>
+
+            <p class="text-xs text-gray-600 mb-6">
+                Authenticate with your Microsoft 365 work or school account. Enter the verification code at the Microsoft login portal.
+            </p>
+
+            <div class="border border-black bg-gray-50 p-6 mb-6">
+                <span class="field-label mb-2 block">1. Open Microsoft Login</span>
+                <div class="mb-4">
+                    <a id="modal-verification-url" href="https://microsoft.com/devicelogin" target="_blank" rel="noopener noreferrer"
+                       class="btn-black inline-flex items-center gap-2 py-3 px-6 text-[10px] font-bold uppercase tracking-widest">
+                        <span>Open microsoft.com/devicelogin</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    </a>
+                </div>
+
+                <span class="field-label mb-2 block">2. Enter This One-Time Code</span>
+                <div class="flex items-center justify-between border border-black bg-white p-4 mb-2">
+                    <span id="modal-user-code" class="device-code-display text-black">——————</span>
+                    <button class="btn-outline btn-sm" id="btn-copy-code" onclick="copyDeviceCode()">
+                        Copy Code
+                    </button>
+                </div>
+                <span class="text-[9px] text-gray-400 font-medium">Code expires in <span id="modal-code-expires">15 minutes</span></span>
+            </div>
+
+            <!-- Polling Indicator -->
+            <div class="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-6">
+                <span class="pulse w-2 h-2 bg-black rounded-full inline-block"></span>
+                <span id="modal-poll-status">Waiting for sign-in in your browser...</span>
+            </div>
+
+            <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                <button class="btn-outline px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest" onclick="closeDeviceCodeModal()">
+                    Cancel
+                </button>
+                <button class="text-[9px] font-bold uppercase tracking-widest text-gray-400 hover:text-black transition-colors"
+                        onclick="requestDeviceCode()">
+                    Regenerate Code
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ IMPORT CONFIRMATION MODAL ══ -->
+    <div id="import-confirm-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="border-2 border-black bg-white p-8 md:p-10 max-w-md w-full shadow-2xl">
+            <span class="badge badge-warn mb-3">Confirm Replacement</span>
+            <h3 class="text-2xl font-black uppercase tracking-tight mb-4">Import Speed Dials</h3>
+            <p class="text-xs text-gray-700 leading-relaxed mb-4">
+                You are about to import <strong id="import-count-preview">0</strong> contacts.
+            </p>
+            <div class="border border-black bg-yellow-50 p-4 mb-6 text-[11px] text-yellow-900 leading-normal">
+                <strong>Warning:</strong> This operation will replace your current Microsoft Teams speed dial list and re-create each contact sequentially in Teams.
+            </div>
+            <div id="import-contacts-preview" class="border border-black bg-gray-50 p-3 max-h-40 overflow-y-auto mb-6 text-xs font-mono">
+                <!-- Populated dynamically -->
+            </div>
+            <div class="flex justify-end gap-3">
+                <button class="btn-outline px-5 py-2 text-[10px] font-bold uppercase tracking-widest" onclick="closeImportModal()">
+                    Cancel
+                </button>
+                <button class="btn-black px-6 py-2.5 text-xs font-bold uppercase tracking-widest" onclick="confirmImport()">
+                    Proceed &amp; Replace
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══ TOAST NOTIFICATION CONTAINER ══ -->
+    <div id="toast-container"></div>
+
+    <!-- ══ FOOTER ══ -->
+    <footer class="max-w-6xl mx-auto px-6 py-20 text-center">
+        <div class="mt-12 pt-10 b-light flex flex-col md:flex-row justify-between items-center text-[9px] font-bold uppercase tracking-[0.4em] text-gray-400">
+            <div class="flex flex-wrap gap-6 md:gap-10 mb-6 md:mb-0 justify-center">
+                <a href="../index.html" class="text-black/80 hover:text-black">Home</a>
+                <a href="../products.html" class="text-black/80 hover:text-black">Products</a>
+                <a href="../tools.html" class="text-black/80 hover:text-black">Tools</a>
+                <a href="../mini-tools.html" class="text-black/80 hover:text-black">Mini Tools</a>
+                <a href="../domain-tools.html" class="text-black/80 hover:text-black">Domain Tools</a>
+                <a href="../network-tools.html" class="text-black/80 hover:text-black">Network Tools</a>
+                <a href="../big-tools.html" class="text-black hover:text-black">Big Tools</a>
+            </div>
+            <p>© 2026 OAOA.DEV | Engineered for Efficiency</p>
+        </div>
+    </footer>
+
+    <!-- ══ APPLICATION LOGIC ══ -->
+    <script>
+        // --- API & State Configuration ---
+        const DEFAULT_API_BASE = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? (window.location.port === '5005' ? '' : 'http://localhost:5005')
+            : 'https://bigtools.oaoa.dev';
+
+        let API_BASE = localStorage.getItem('bigtools_api_base') || DEFAULT_API_BASE;
+
+        // Two-Tier Auth: Tier 1 Operator token
+        let authToken = sessionStorage.getItem('bigtool_token') || localStorage.getItem('big_tools_jwt');
+
+        // Check for dev bypass or URL token
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('token')) {
+            authToken = urlParams.get('token');
+            sessionStorage.setItem('bigtool_token', authToken);
+        }
+
+        // Live Speed Dials state
+        let speedDials = [];           // Currently displayed list (may have unsaved reorder)
+        let savedSpeedDials = [];      // Last known server state for revert/diff
+        let pendingImportList = null;  // For import modal
+        let isReorderDirty = false;    // Has the user moved any item?
+
+        // Device code polling state
+        let activeDeviceCode = null;
+        let pollTimer = null;
+        let pollCount = 0;
+        let searchDebounceTimer = null;
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initApiSettings();
+            verifyOperatorSession();
+        });
+
+        function initApiSettings() {
+            const apiBaseInput = document.getElementById('adv-api-base');
+            if (apiBaseInput) {
+                apiBaseInput.value = API_BASE;
+                apiBaseInput.addEventListener('change', () => {
+                    const val = apiBaseInput.value.trim();
+                    API_BASE = val || DEFAULT_API_BASE;
+                    localStorage.setItem('bigtools_api_base', API_BASE);
+                    appendLog('info', 'API Base URL updated: ' + API_BASE);
+                });
+            }
+        }
+
+        // --- Tier 1 Operator Authentication ---
+        function verifyOperatorSession() {
+            if (!authToken) {
+                // If in dev mode on localhost and no token, allow setting mock token or warn
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    appendLog('pending', 'No Big Tools token found. Running on localhost. You can sign in at ../big-tools.html or provide ?token=...');
+                    document.getElementById('auth-name-display').textContent = 'Local Dev (No Operator Token)';
+                    document.getElementById('auth-email-display').textContent = 'Open big-tools.html to authenticate';
+                    // Attempt Teams status anyway in case cookie session or open port
+                    checkTeamsStatus();
+                    return;
+                }
+                window.location.href = '../big-tools.html';
+                return;
+            }
+
+            fetch(`${API_BASE}/api/profile/me`, {
+                credentials: 'include',
+                headers: { 'Authorization': 'Bearer ' + authToken }
+            })
+            .then(r => r.ok ? r.json() : Promise.reject(r.status))
+            .then(profile => {
+                document.getElementById('auth-name-display').textContent = profile.name || 'Operator';
+                document.getElementById('auth-email-display').textContent = profile.email || '';
+                appendLog('info', `Operator session active — ${profile.name || profile.email}`);
+                checkTeamsStatus();
+            })
+            .catch(() => {
+                appendLog('error', 'Operator session expired or invalid. Redirecting to Big Tools...');
+                sessionStorage.removeItem('bigtool_token');
+                setTimeout(() => { window.location.href = '../big-tools.html'; }, 1500);
+            });
+        }
+
+        // --- Generic API Helper ---
+        async function apiRequest(endpoint, options = {}) {
+            const headers = new Headers(options.headers || {});
+            headers.set('Content-Type', 'application/json');
+            if (authToken) {
+                headers.set('Authorization', 'Bearer ' + authToken);
+            }
+
+            const response = await fetch(`${API_BASE}${endpoint}`, {
+                credentials: 'include',
+                ...options,
+                headers
+            });
+
+            if (response.status === 401) {
+                const errData = await response.json().catch(() => ({}));
+                if (errData.error === 'teams_auth_required') {
+                    appendLog('error', 'Teams authorization required. Please sign in again.');
+                    setTeamsStage('unconnected');
+                    throw new Error('teams_auth_required');
+                }
+            }
+
+            if (!response.ok) {
+                const err = await response.json().catch(() => ({ message: `HTTP ${response.status}` }));
+                throw new Error(err.message || err.error || `HTTP ${response.status}`);
+            }
+
+            return response.json();
+        }
+
+        // --- Tier 2: Teams Authentication ---
+        function setTeamsStage(stage) {
+            document.getElementById('tool-container').setAttribute('data-teams-stage', stage);
+            const badge = document.getElementById('teams-stage-badge');
+            if (stage === 'connected') {
+                badge.className = 'badge badge-ok';
+                badge.textContent = 'Teams Connected';
+            } else if (stage === 'unconnected') {
+                badge.className = 'badge badge-bad';
+                badge.textContent = 'Not Connected';
+            } else {
+                badge.className = 'badge badge-neutral';
+                badge.textContent = 'Checking...';
+            }
+        }
+
+        async function checkTeamsStatus() {
+            setTeamsStage('checking');
+            appendLog('info', 'Checking Microsoft Teams session status...');
+
+            try {
+                const status = await apiRequest('/api/speeddial/auth/status');
+                updateRawResponse(status);
+
+                if (status.isConnected) {
+                    setTeamsStage('connected');
+                    renderConnectedSession(status);
+                    appendLog('success', `Teams session connected: ${status.displayName || status.email}`);
+                    fetchSpeedDials();
+                } else {
+                    setTeamsStage('unconnected');
+                    appendLog('info', 'Teams account not connected.');
+                }
+            } catch (err) {
+                if (err.message !== 'teams_auth_required') {
+                    appendLog('error', 'Failed to check Teams status: ' + err.message);
+                }
+                setTeamsStage('unconnected');
+            }
+        }
+
+        function renderConnectedSession(status) {
+            const nameEl = document.getElementById('connected-displayname');
+            const emailEl = document.getElementById('connected-email');
+            const tenantEl = document.getElementById('connected-tenant');
+            const avatarEl = document.getElementById('connected-avatar');
+
+            nameEl.textContent = status.displayName || 'Teams User';
+            emailEl.textContent = status.email || '';
+            tenantEl.textContent = status.tenantId ? `Tenant: ${status.tenantId}` : '';
+
+            // Initials
+            const nameParts = (status.displayName || status.email || 'TU').trim().split(/\s+/);
+            const initials = nameParts.length > 1
+                ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase()
+                : (nameParts[0].substring(0, 2)).toUpperCase();
+            avatarEl.textContent = initials;
+        }
+
+        async function disconnectTeams() {
+            if (!confirm('Are you sure you want to disconnect your Microsoft Teams session?')) return;
+            appendLog('pending', 'Disconnecting Teams session...');
+
+            try {
+                await apiRequest('/api/speeddial/auth/session', { method: 'DELETE' });
+                appendLog('info', 'Teams session disconnected.');
+                showToast('Teams session disconnected.', 'success');
+                setTeamsStage('unconnected');
+                speedDials = [];
+                savedSpeedDials = [];
+                renderSpeedDialList();
+            } catch (err) {
+                appendLog('error', 'Failed to disconnect: ' + err.message);
+                showToast('Error disconnecting: ' + err.message, 'error');
+            }
+        }
+
+        function toggleAdvancedSettings() {
+            const el = document.getElementById('advanced-settings');
+            el.classList.toggle('hidden');
+        }
+
+        // --- Device Code Flow Modal ---
+        function openDeviceCodeModal() {
+            document.getElementById('device-code-modal').classList.remove('hidden');
+            requestDeviceCode();
+        }
+
+        function closeDeviceCodeModal() {
+            stopDeviceCodePolling();
+            document.getElementById('device-code-modal').classList.add('hidden');
+        }
+
+        async function requestDeviceCode() {
+            stopDeviceCodePolling();
+            const tenantId = document.getElementById('adv-tenant-id').value.trim();
+            const clientId = document.getElementById('adv-client-id').value.trim();
+
+            appendLog('pending', 'Requesting Microsoft Teams device code...');
+            document.getElementById('modal-user-code').textContent = 'Loading...';
+            document.getElementById('modal-poll-status').textContent = 'Requesting code from Microsoft...';
+
+            try {
+                const res = await apiRequest('/api/speeddial/auth/device-code', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        tenantId: tenantId || 'common',
+                        clientId: clientId || ''
+                    })
+                });
+
+                updateRawResponse(res);
+                activeDeviceCode = res.device_code;
+                const userCode = res.user_code;
+                const verifyUrl = res.verification_uri || 'https://microsoft.com/devicelogin';
+
+                document.getElementById('modal-user-code').textContent = userCode;
+                const urlLink = document.getElementById('modal-verification-url');
+                urlLink.href = verifyUrl;
+                urlLink.querySelector('span').textContent = `Open ${verifyUrl.replace('https://', '')}`;
+
+                appendLog('success', `Device code issued: ${userCode}. Enter at ${verifyUrl}`);
+                startDeviceCodePolling();
+            } catch (err) {
+                appendLog('error', 'Failed to obtain device code: ' + err.message);
+                document.getElementById('modal-user-code').textContent = 'ERROR';
+                document.getElementById('modal-poll-status').textContent = 'Failed: ' + err.message;
+            }
+        }
+
+        function startDeviceCodePolling() {
+            pollCount = 0;
+            document.getElementById('modal-poll-status').textContent = 'Waiting for sign-in in your browser... (every 5s)';
+            pollTimer = setInterval(pollDeviceCode, 5000);
+        }
+
+        function stopDeviceCodePolling() {
+            if (pollTimer) {
+                clearInterval(pollTimer);
+                pollTimer = null;
+            }
+            activeDeviceCode = null;
+            pollCount = 0;
+        }
+
+        async function pollDeviceCode() {
+            if (!activeDeviceCode) return;
+            pollCount++;
+            document.getElementById('modal-poll-status').textContent = `Waiting for sign-in in your browser... (attempt ${pollCount})`;
+
+            const tenantId = document.getElementById('adv-tenant-id').value.trim();
+            const clientId = document.getElementById('adv-client-id').value.trim();
+
+            try {
+                const pollRes = await apiRequest('/api/speeddial/auth/device-poll', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        deviceCode: activeDeviceCode,
+                        tenantId: tenantId || 'common',
+                        clientId: clientId || ''
+                    })
+                });
+
+                if (pollRes.status === 'authorized') {
+                    stopDeviceCodePolling();
+                    appendLog('success', `Teams authorized successfully: ${pollRes.email}`);
+                    showToast('Teams connected successfully!', 'success');
+                    closeDeviceCodeModal();
+                    checkTeamsStatus();
+                } else if (pollRes.status === 'expired') {
+                    stopDeviceCodePolling();
+                    appendLog('error', 'Device code expired. Please request a new code.');
+                    document.getElementById('modal-poll-status').textContent = 'Code expired. Click Regenerate Code to try again.';
+                } else if (pollRes.status === 'error') {
+                    stopDeviceCodePolling();
+                    appendLog('error', 'Device code authorization failed: ' + (pollRes.error || 'Unknown error'));
+                    document.getElementById('modal-poll-status').textContent = 'Auth error: ' + (pollRes.error || 'Failed');
+                }
+            } catch (err) {
+                // Keep polling on transient network errors up to limit
+                if (pollCount > 120) { // 10 minutes
+                    stopDeviceCodePolling();
+                    document.getElementById('modal-poll-status').textContent = 'Polling timed out.';
+                }
+            }
+        }
+
+        function copyDeviceCode() {
+            const code = document.getElementById('modal-user-code').textContent.trim();
+            if (!code || code === '——————' || code === 'Loading...') return;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.getElementById('btn-copy-code');
+                const orig = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => { btn.textContent = orig; }, 1500);
+            });
+        }
+
+        // --- Speed Dial List Operations ---
+        async function fetchSpeedDials(forceFeedback = false) {
+            appendLog('info', 'Fetching live speed dials from Microsoft Teams...');
+            if (forceFeedback) showToast('Fetching speed dials from Teams...', 'success');
+
+            try {
+                const dials = await apiRequest('/api/speeddial');
+                updateRawResponse(dials);
+                speedDials = Array.isArray(dials) ? dials : [];
+                savedSpeedDials = JSON.parse(JSON.stringify(speedDials));
+                isReorderDirty = false;
+                toggleReorderPendingBar(false);
+                renderSpeedDialList();
+                appendLog('success', `Retrieved ${speedDials.length} speed dial contact(s) from Teams.`);
+                setResultSuccess(`Loaded ${speedDials.length} Teams speed dials.`);
+            } catch (err) {
+                if (err.message !== 'teams_auth_required') {
+                    appendLog('error', 'Failed to fetch speed dials: ' + err.message);
+                    setResultError('Fetch failed: ' + err.message);
+                }
+            }
+        }
+
+        function renderSpeedDialList() {
+            const listEl = document.getElementById('speed-dial-list');
+            const emptyEl = document.getElementById('speed-dial-empty');
+            const countLabel = document.getElementById('list-count-label');
+
+            countLabel.textContent = `${speedDials.length} Contact${speedDials.length === 1 ? '' : 's'}`;
+
+            if (speedDials.length === 0) {
+                listEl.innerHTML = '';
+                emptyEl.classList.remove('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            listEl.innerHTML = '';
+
+            speedDials.forEach((contact, idx) => {
+                const row = document.createElement('div');
+                row.className = 'speed-dial-row border border-black bg-white p-4 flex items-center justify-between gap-4';
+                row.setAttribute('draggable', 'true');
+                row.setAttribute('data-index', idx);
+                row.setAttribute('data-id', contact.id);
+
+                // Initials
+                const initials = (contact.displayName || contact.email || '??')
+                    .split(/\s+/)
+                    .slice(0, 2)
+                    .map(p => p[0])
+                    .join('')
+                    .toUpperCase();
+
+                const isFirst = idx === 0;
+                const isLast = idx === speedDials.length - 1;
+
+                row.innerHTML = `
+                    <div class="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                        <div class="drag-handle text-gray-400 hover:text-black p-1 text-base select-none" title="Drag to reorder">
+                            ⋮⋮
+                        </div>
+                        <div class="font-mono font-bold text-xs bg-black text-white w-6 h-6 flex items-center justify-center shrink-0">
+                            #${idx + 1}
+                        </div>
+                        <div class="w-9 h-9 border border-black bg-gray-100 flex items-center justify-center font-bold text-xs text-black shrink-0">
+                            ${initials}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-sm font-black uppercase truncate">${escapeHtml(contact.displayName || 'Unnamed Contact')}</div>
+                            <div class="text-xs font-mono text-gray-500 truncate">${escapeHtml(contact.email || contact.mri || '')}</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button class="btn-outline px-2.5 py-1 text-xs font-bold" onclick="moveItem(${idx}, -1)" ${isFirst ? 'disabled' : ''} title="Move Up">
+                            ▲
+                        </button>
+                        <button class="btn-outline px-2.5 py-1 text-xs font-bold" onclick="moveItem(${idx}, 1)" ${isLast ? 'disabled' : ''} title="Move Down">
+                            ▼
+                        </button>
+                        <button class="text-gray-400 hover:text-red-600 p-2 text-sm font-bold transition-colors ml-1"
+                                onclick="removeContact('${escapeHtml(contact.id)}', '${escapeHtml(contact.displayName || contact.email)}')"
+                                title="Remove from Speed Dial">
+                            ✕
+                        </button>
+                    </div>
+                `;
+
+                // Attach Drag Events
+                attachDragEvents(row, idx);
+                listEl.appendChild(row);
+            });
+        }
+
+        // --- Drag & Drop Implementation ---
+        let dragSourceIndex = null;
+
+        function attachDragEvents(row, idx) {
+            row.addEventListener('dragstart', (e) => {
+                dragSourceIndex = idx;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', idx);
+                row.classList.add('is-dragging');
+            });
+
+            row.addEventListener('dragend', () => {
+                row.classList.remove('is-dragging');
+                document.querySelectorAll('.speed-dial-row').forEach(r => {
+                    r.classList.remove('drag-over-above', 'drag-over-below');
+                });
+                dragSourceIndex = null;
+            });
+
+            row.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                const rect = row.getBoundingClientRect();
+                const midY = rect.top + rect.height / 2;
+
+                if (e.clientY < midY) {
+                    row.classList.add('drag-over-above');
+                    row.classList.remove('drag-over-below');
+                } else {
+                    row.classList.add('drag-over-below');
+                    row.classList.remove('drag-over-above');
+                }
+            });
+
+            row.addEventListener('dragleave', () => {
+                row.classList.remove('drag-over-above', 'drag-over-below');
+            });
+
+            row.addEventListener('drop', (e) => {
+                e.preventDefault();
+                row.classList.remove('drag-over-above', 'drag-over-below');
+
+                const srcIdx = dragSourceIndex;
+                if (srcIdx === null || srcIdx === undefined) return;
+
+                const rect = row.getBoundingClientRect();
+                const midY = rect.top + rect.height / 2;
+                let targetIdx = idx;
+
+                if (e.clientY >= midY) {
+                    targetIdx++;
+                }
+                if (srcIdx < targetIdx) {
+                    targetIdx--;
+                }
+
+                if (srcIdx !== targetIdx) {
+                    const item = speedDials.splice(srcIdx, 1)[0];
+                    speedDials.splice(targetIdx, 0, item);
+                    markReorderDirty();
+                    renderSpeedDialList();
+                }
+            });
+        }
+
+        // --- Up / Down Buttons Reorder ---
+        function moveItem(index, direction) {
+            const targetIndex = index + direction;
+            if (targetIndex < 0 || targetIndex >= speedDials.length) return;
+
+            const temp = speedDials[index];
+            speedDials[index] = speedDials[targetIndex];
+            speedDials[targetIndex] = temp;
+
+            markReorderDirty();
+            renderSpeedDialList();
+        }
+
+        function markReorderDirty() {
+            isReorderDirty = true;
+            toggleReorderPendingBar(true);
+            appendLog('pending', 'Speed dial order rearranged locally. Pending submission to Teams.');
+        }
+
+        function toggleReorderPendingBar(show) {
+            const bar = document.getElementById('reorder-pending-bar');
+            if (show) {
+                bar.classList.remove('hidden');
+            } else {
+                bar.classList.add('hidden');
+            }
+        }
+
+        function discardReorderChanges() {
+            speedDials = JSON.parse(JSON.stringify(savedSpeedDials));
+            isReorderDirty = false;
+            toggleReorderPendingBar(false);
+            renderSpeedDialList();
+            appendLog('info', 'Reorder discarded. Restored last saved order.');
+            showToast('Reorder changes discarded', 'success');
+        }
+
+        // --- Submit Reorder to Backend API ---
+        async function submitReorder() {
+            if (speedDials.length === 0) return;
+
+            const submitBtn = document.getElementById('btn-submit-reorder');
+            const savingBanner = document.getElementById('reorder-saving-banner');
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Saving...';
+            savingBanner.classList.remove('hidden');
+
+            const contactIds = speedDials.map(c => c.id);
+            appendLog('pending', `Submitting speed dial reorder (${contactIds.length} contacts) to Teams...`);
+
+            try {
+                const res = await apiRequest('/api/speeddial/reorder', {
+                    method: 'POST',
+                    body: JSON.stringify({ contactIds })
+                });
+
+                updateRawResponse(res);
+                if (res.success) {
+                    if (res.speedDials && Array.isArray(res.speedDials)) {
+                        speedDials = res.speedDials;
+                    }
+                    savedSpeedDials = JSON.parse(JSON.stringify(speedDials));
+                    isReorderDirty = false;
+                    toggleReorderPendingBar(false);
+                    renderSpeedDialList();
+
+                    appendLog('success', 'Speed dials reordered successfully in Microsoft Teams.');
+                    setResultSuccess('Order updated! Contacts have been sequentially re-added in Teams.');
+                    showToast('Speed dials reordered successfully in Teams!', 'success');
+                } else {
+                    throw new Error(res.message || 'Reorder failed');
+                }
+            } catch (err) {
+                appendLog('error', 'Reorder failed: ' + err.message);
+                setResultError('Reorder failed: ' + err.message);
+                showToast('Failed to reorder: ' + err.message, 'error');
+
+                // Revert to saved snapshot on error
+                speedDials = JSON.parse(JSON.stringify(savedSpeedDials));
+                isReorderDirty = false;
+                toggleReorderPendingBar(false);
+                renderSpeedDialList();
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Submit New Order
+                `;
+                savingBanner.classList.add('hidden');
+            }
+        }
+
+        // --- Remove Contact ---
+        async function removeContact(contactId, name) {
+            if (!confirm(`Remove "${name}" from Microsoft Teams speed dials?`)) return;
+
+            appendLog('pending', `Removing contact ${name} from speed dials...`);
+            try {
+                await apiRequest(`/api/speeddial/${encodeURIComponent(contactId)}`, {
+                    method: 'DELETE'
+                });
+
+                appendLog('success', `Removed "${name}" from speed dials.`);
+                showToast(`Removed "${name}" from speed dials.`, 'success');
+                fetchSpeedDials();
+            } catch (err) {
+                appendLog('error', `Failed to remove contact: ${err.message}`);
+                showToast(`Remove failed: ${err.message}`, 'error');
+            }
+        }
+
+        // --- Contact Search & Add ---
+        function handleSearchInput(e) {
+            const q = e.target.value.trim();
+            clearTimeout(searchDebounceTimer);
+
+            if (q.length < 2) {
+                document.getElementById('search-results-dropdown').classList.add('hidden');
+                document.getElementById('search-spinner').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('search-spinner').classList.remove('hidden');
+            searchDebounceTimer = setTimeout(() => {
+                executeContactSearch(q);
+            }, 300);
+        }
+
+        async function executeContactSearch(query) {
+            const q = query || document.getElementById('contact-search-input').value.trim();
+            if (!q) return;
+
+            document.getElementById('search-spinner').classList.remove('hidden');
+            appendLog('info', `Searching directory for: "${q}"...`);
+
+            try {
+                const results = await apiRequest(`/api/contacts/search?q=${encodeURIComponent(q)}`);
+                updateRawResponse(results);
+                renderSearchResults(results || []);
+            } catch (err) {
+                appendLog('error', 'Contact search failed: ' + err.message);
+                renderSearchResults([]);
+            } finally {
+                document.getElementById('search-spinner').classList.add('hidden');
+            }
+        }
+
+        function renderSearchResults(results) {
+            const dropdown = document.getElementById('search-results-dropdown');
+            dropdown.classList.remove('hidden');
+
+            if (!results || results.length === 0) {
+                dropdown.innerHTML = `
+                    <div class="p-4 text-xs text-gray-500 font-medium">
+                        No matching contacts found in directory.
+                    </div>
+                `;
+                return;
+            }
+
+            // Map current speed dial IDs/emails for fast lookup
+            const currentIds = new Set(speedDials.map(c => c.id));
+            const currentEmails = new Set(speedDials.map(c => (c.email || '').toLowerCase()));
+
+            dropdown.innerHTML = results.map(c => {
+                const isAlreadyAdded = (c.id && currentIds.has(c.id)) ||
+                                       (c.email && currentEmails.has(c.email.toLowerCase())) ||
+                                       c.isFavourite;
+
+                return `
+                    <div class="p-3 border-b border-gray-150 flex items-center justify-between gap-4 hover:bg-gray-50">
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-black uppercase truncate">${escapeHtml(c.displayName || 'Unknown')}</div>
+                            <div class="text-[11px] font-mono text-gray-500 truncate">${escapeHtml(c.email || c.mri || '')}</div>
+                        </div>
+                        <div>
+                            ${isAlreadyAdded
+                                ? `<span class="badge badge-neutral text-[8px]">In Favorites</span>`
+                                : `<button class="btn-black btn-sm" onclick="addSpeedDialContact('${escapeHtml(c.id || '')}', '${escapeHtml(c.mri || '')}', '${escapeHtml(c.displayName || '')}', '${escapeHtml(c.email || '')}')">+ Add</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Close search dropdown on click outside
+        document.addEventListener('click', (e) => {
+            const searchContainer = document.getElementById('contact-search-input').parentElement.parentElement;
+            if (!searchContainer.contains(e.target)) {
+                document.getElementById('search-results-dropdown').classList.add('hidden');
+            }
+        });
+
+        async function addSpeedDialContact(id, mri, displayName, email) {
+            appendLog('pending', `Adding "${displayName || email}" to speed dial...`);
+            document.getElementById('search-results-dropdown').classList.add('hidden');
+            document.getElementById('contact-search-input').value = '';
+
+            try {
+                const payload = {};
+                if (id) payload.contactId = id;
+                if (mri) payload.mri = mri;
+                if (displayName) payload.displayName = displayName;
+                if (email) payload.email = email;
+
+                const res = await apiRequest('/api/speeddial', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                updateRawResponse(res);
+                appendLog('success', `Added "${displayName || email}" to speed dials.`);
+                showToast(`Added "${displayName || email}" to speed dials.`, 'success');
+                fetchSpeedDials();
+            } catch (err) {
+                appendLog('error', `Failed to add contact: ${err.message}`);
+                showToast(`Failed to add contact: ${err.message}`, 'error');
+            }
+        }
+
+        // --- Export Speed Dials ---
+        async function exportSpeedDials() {
+            appendLog('info', 'Exporting speed dials to JSON...');
+            try {
+                let dataToExport = speedDials;
+                try {
+                    const serverExport = await apiRequest('/api/speeddial/export');
+                    if (Array.isArray(serverExport) && serverExport.length > 0) {
+                        dataToExport = serverExport;
+                    }
+                } catch (e) {
+                    // Fall back to current speedDials state
+                }
+
+                const jsonStr = JSON.stringify(dataToExport, null, 2);
+                const blob = new Blob([jsonStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const dateStr = new Date().toISOString().split('T')[0];
+                a.href = url;
+                a.download = `teams-speed-dials-${dateStr}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                appendLog('success', `Exported ${dataToExport.length} speed dial(s) to JSON.`);
+                showToast(`Exported ${dataToExport.length} contacts to JSON.`, 'success');
+            } catch (err) {
+                appendLog('error', 'Export failed: ' + err.message);
+                showToast('Export failed: ' + err.message, 'error');
+            }
+        }
+
+        // --- Import Speed Dials ---
+        function triggerImport() {
+            document.getElementById('file-import-input').value = '';
+            document.getElementById('file-import-input').click();
+        }
+
+        function handleFileSelected(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    const contactsList = Array.isArray(parsed) ? parsed : (parsed.contacts || []);
+
+                    if (contactsList.length === 0) {
+                        alert('The selected JSON file contains no contacts.');
+                        return;
+                    }
+
+                    pendingImportList = contactsList;
+                    openImportModal(contactsList);
+                } catch (err) {
+                    alert('Invalid JSON file format: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function openImportModal(contacts) {
+            document.getElementById('import-count-preview').textContent = contacts.length;
+            const previewEl = document.getElementById('import-contacts-preview');
+            previewEl.innerHTML = contacts.slice(0, 10).map((c, i) =>
+                `<div>${i + 1}. ${escapeHtml(c.displayName || c.email || 'Contact')} (${escapeHtml(c.email || c.mri || '')})</div>`
+            ).join('') + (contacts.length > 10 ? `<div class="text-gray-400 mt-1">...and ${contacts.length - 10} more</div>` : '');
+
+            document.getElementById('import-confirm-modal').classList.remove('hidden');
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-confirm-modal').classList.add('hidden');
+            pendingImportList = null;
+        }
+
+        async function confirmImport() {
+            if (!pendingImportList || pendingImportList.length === 0) return;
+
+            const contactsToImport = pendingImportList.map(c => ({
+                id: c.id || '',
+                mri: c.mri || '',
+                displayName: c.displayName || '',
+                email: c.email || ''
+            }));
+
+            closeImportModal();
+            appendLog('pending', `Importing ${contactsToImport.length} speed dial(s) into Teams...`);
+            showToast(`Importing ${contactsToImport.length} contacts into Teams...`, 'success');
+
+            try {
+                const res = await apiRequest('/api/speeddial/import', {
+                    method: 'POST',
+                    body: JSON.stringify({ contacts: contactsToImport })
+                });
+
+                updateRawResponse(res);
+                appendLog('success', `Imported ${contactsToImport.length} speed dial(s) successfully.`);
+                showToast('Speed dials imported successfully!', 'success');
+                fetchSpeedDials();
+            } catch (err) {
+                appendLog('error', 'Import failed: ' + err.message);
+                showToast('Import failed: ' + err.message, 'error');
+            }
+        }
+
+        // --- Diagnostics & Activity Logging ---
+        function appendLog(type, msg) {
+            const logEl = document.getElementById('activity-log');
+            const ts = new Date().toLocaleTimeString('en-GB', { hour12: false });
+            const div = document.createElement('div');
+            div.className = `log-entry ${type}`;
+            div.textContent = `[${ts}] ${msg}`;
+            logEl.appendChild(div);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('activity-log').innerHTML = '<div class="log-entry info">[ Activity log cleared ]</div>';
+            document.getElementById('raw-response').value = '';
+            const s = document.getElementById('result-summary');
+            s.className = 'border border-dashed border-gray-300 p-5 mb-6 text-center';
+            s.innerHTML = '<p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">No actions performed yet</p>';
+        }
+
+        function updateRawResponse(data) {
+            try {
+                document.getElementById('raw-response').value = JSON.stringify(data, null, 2);
+            } catch {
+                document.getElementById('raw-response').value = String(data);
+            }
+        }
+
+        function toggleRawResponse() {
+            const textarea = document.getElementById('raw-response');
+            const label = document.getElementById('raw-toggle-label');
+            if (textarea.style.display === 'none') {
+                textarea.style.display = 'block';
+                label.textContent = 'Collapse ▴';
+            } else {
+                textarea.style.display = 'none';
+                label.textContent = 'Expand ▾';
+            }
+        }
+
+        function setResultSuccess(msg) {
+            const el = document.getElementById('result-summary');
+            el.className = 'border border-black bg-white p-6 mb-6 text-left';
+            el.innerHTML = `
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="health-dot health-dot-ok"></span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-black">Operation Succeeded</span>
+                </div>
+                <p class="text-sm font-medium text-black">${escapeHtml(msg)}</p>
+            `;
+        }
+
+        function setResultError(msg) {
+            const el = document.getElementById('result-summary');
+            el.className = 'border border-red-500 bg-white p-6 mb-6 text-left';
+            el.innerHTML = `
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="health-dot health-dot-bad"></span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-red-600">Operation Failed</span>
+                </div>
+                <p class="text-sm font-medium text-red-700">${escapeHtml(msg)}</p>
+            `;
+        }
+
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const item = document.createElement('div');
+            item.className = `toast-item toast-${type}`;
+            item.innerHTML = `
+                <span class="w-2 h-2 bg-black rounded-full inline-block"></span>
+                <span>${escapeHtml(msg)}</span>
+            `;
+            container.appendChild(item);
+            setTimeout(() => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(10px)';
+                item.style.transition = 'all 0.2s ease';
+                setTimeout(() => item.remove(), 200);
+            }, 3500);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+    <script src="../js/main.js"></script>
+</body>
+</html>
