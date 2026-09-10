@@ -552,19 +552,13 @@
             }
         }
 
-        // --- Tier 1 Operator Authentication ---
+        // --- Optional Operator Session Display ---
         function verifyOperatorSession() {
             if (!authToken) {
-                // If in dev mode on localhost and no token, allow setting mock token or warn
-                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-                    appendLog('pending', 'No Big Tools token found. Running on localhost. You can sign in at ../big-tools.html or provide ?token=...');
-                    document.getElementById('auth-name-display').textContent = 'Local Dev (No Operator Token)';
-                    document.getElementById('auth-email-display').textContent = 'Open big-tools.html to authenticate';
-                    // Attempt Teams status anyway in case cookie session or open port
-                    checkTeamsStatus();
-                    return;
-                }
-                window.location.href = '../big-tools.html';
+                document.getElementById('auth-name-display').textContent = 'Direct Access';
+                document.getElementById('auth-email-display').textContent = '(Standalone Mode)';
+                appendLog('info', 'Teams SpeedDial Manager running in standalone mode (no operator SSO required).');
+                checkTeamsStatus();
                 return;
             }
 
@@ -580,9 +574,10 @@
                 checkTeamsStatus();
             })
             .catch(() => {
-                appendLog('error', 'Operator session expired or invalid. Redirecting to Big Tools...');
-                sessionStorage.removeItem('bigtool_token');
-                setTimeout(() => { window.location.href = '../big-tools.html'; }, 1500);
+                document.getElementById('auth-name-display').textContent = 'Direct Access';
+                document.getElementById('auth-email-display').textContent = '(Standalone Mode)';
+                appendLog('info', 'Operator session not active; continuing in standalone mode.');
+                checkTeamsStatus();
             });
         }
 

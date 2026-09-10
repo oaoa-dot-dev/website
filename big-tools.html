@@ -28,10 +28,17 @@
             pointer-events: auto;
             opacity: 1;
         }
-        body:not([data-stage="authed"]) #tool-grid a {
+        body:not([data-stage="authed"]) #tool-grid a:not(.ungated-tool) {
             pointer-events: none;
             opacity: 0.3;
             filter: grayscale(1);
+        }
+        body:not([data-stage="authed"]) #tool-grid a.ungated-tool {
+            pointer-events: auto;
+            opacity: 1;
+            filter: none;
+            position: relative;
+            z-index: 20;
         }
         body:not([data-stage="authed"]) #tool-grid .placeholder-cell {
             opacity: 0.3;
@@ -76,9 +83,9 @@
 
         <!-- ── SIGN IN GATE ── -->
         <div class="stage stage-signedout border border-black p-8 md:p-12 mb-10">
-            <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-4">Authentication Required</span>
+            <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400 block mb-4">Operator Authentication</span>
             <p class="text-sm font-medium text-gray-600 mb-2 max-w-lg">
-                Sign in with your Microsoft or Google account to access the tools below. Your session is used to associate any stored data with your account.
+                Sign in with your Microsoft or Google account to access backend operator utilities. Standalone tools (such as Teams SpeedDial Manager) can be accessed directly below without signing in.
             </p>
             <p class="text-[10px] text-gray-400 mb-8 max-w-lg">
                 A small popup will handle the sign-in — you won't leave this page. No credentials are stored; the API holds only a short-lived session token.
@@ -151,9 +158,9 @@
 
             <!-- Lock overlay shown when signed out -->
             <div id="tool-grid-lock"
-                 class="absolute inset-0 z-10 flex items-center justify-center bg-white/60">
+                 class="absolute inset-0 z-10 flex items-center justify-center bg-white/60 pointer-events-none">
                 <p class="text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                    Sign in above to access tools
+                    Sign in above to access operator tools
                 </p>
             </div>
 
@@ -161,13 +168,18 @@
 
                 <!-- Teams SpeedDial Manager -->
                 <a href="big-tools/teams-speed-dial.html"
-                   class="bg-white p-10 flex flex-col hover:bg-gray-50 transition-colors group">
-                    <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-4">Microsoft Teams · Speed Dial</span>
+                   class="ungated-tool bg-white p-10 flex flex-col hover:bg-gray-50 transition-colors group">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Microsoft Teams · Speed Dial</span>
+                        <span class="border border-black px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider bg-green-50 text-green-800">Direct Access</span>
+                    </div>
                     <h2 class="text-xl font-black uppercase mb-3 group-hover:underline">Teams SpeedDial Manager</h2>
                     <p class="service-text text-sm flex-1 mb-6">
-                        Manage, search, and reorder Microsoft Teams speed dial favourites with live Device Code sign-in and drag-and-drop sequencing.
+                        Manage, search, and reorder Microsoft Teams speed dial favourites with live Device Code sign-in and drag-and-drop sequencing. No SSO required.
                     </p>
-                    <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Open Tool →</span>
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-black flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                        Open Tool (Direct) →
+                    </span>
                 </a>
 
                 <!-- Graph API Mail Sender -->
